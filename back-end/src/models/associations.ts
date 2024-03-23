@@ -2,6 +2,7 @@ import { City } from "./city";
 import { User } from "./user";
 import { Category } from "./category";
 import { Event } from "./event";
+import { Location } from "./locale";
 
 // User - Category
 User.belongsToMany(Category, { through: "UserCategory" });
@@ -12,6 +13,9 @@ User.hasMany(Event, { foreignKey: 'organizerId' });
 // Event - Category
 Event.belongsToMany(Category, { through: "EventCategory" });
 Category.belongsToMany(Event, { through: "EventCategory" });
-// City - Event
-City.hasMany(Event);
-Event.belongsTo(City); // 1 - 1 
+// Event - Location
+Event.belongsTo(Location); // 1 - 1
+Location.hasMany(Event);
+// Location - City
+Location.belongsTo(City);
+City.hasMany(Location);
