@@ -1,13 +1,12 @@
 import { DataTypes, Model } from "sequelize";
 import db from "../db";
 
-class User extends Model {
-  public id!: number;
-  public nome!: string;
-  public email!: string;
+class Category extends Model {
+  public id!: string;
+  public name!: string;
 }
 
-User.init(
+Category.init(
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -15,20 +14,15 @@ User.init(
       autoIncrement: true,
       allowNull: false,
     },
-    nome: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
     },
   },
   {
     sequelize: db,
-    modelName: "User",
+    modelName: "Category",   
   }
 );
 
-export { User };
+export { Category };
