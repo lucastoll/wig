@@ -14,8 +14,8 @@ User.hasMany(Event, { foreignKey: "organizerId" });
 Event.belongsToMany(Category, { through: "EventCategory" });
 Category.belongsToMany(Event, { through: "EventCategory" });
 // Event - Location
-Event.belongsTo(Location); // 1 - 1
-Location.hasMany(Event);
+Event.belongsTo(Location, { foreignKey: 'locationId' }); // 1 - 1
+Location.hasMany(Event, { foreignKey: 'locationId' });
 // Location - City
 Location.belongsTo(City, { foreignKey: 'cityId' });
 City.hasMany(Location, { foreignKey: 'cityId' });

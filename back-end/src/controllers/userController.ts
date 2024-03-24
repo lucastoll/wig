@@ -44,8 +44,6 @@ class UserController {
   static async createUser(req: Request, res: Response): Promise<void> {
     const { name, email, address, categoryIds, zipcode } = req.body;
 
-    console.log({ name, email, address, categoryIds, zipcode });
-
     if (!name) {
       res.status(400).json({
         error: "O campo name é obrigatório",

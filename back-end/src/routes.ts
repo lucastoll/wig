@@ -3,6 +3,7 @@ import UserController from "./controllers/userController";
 import CityController from "./controllers/cityController";
 import LocationController from "./controllers/locationController";
 import { CategoryController } from "./controllers/categoryController";
+import { EventController } from "./controllers/eventController";
 
 const router = express.Router();
 
@@ -18,5 +19,8 @@ router.post("/location", LocationController.createLocation);
 
 router.get("/categories", CategoryController.getCategories);
 router.post("/category", CategoryController.createCategory);
+
+router.get("/events", EventController.getEvents);
+router.post("/event", EventController.createEvent);
 
 export default router;
