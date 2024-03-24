@@ -10,12 +10,31 @@ import { RouterLink, RouterView } from "vue-router";
         alt="Home logo"
         class="logo"
         src="@/assets/Home.png"
-        width="24"
-        height="24"
+        width="20"
+        height="20"
     />
-    <tittle>home</tittle>
+    <tittle>Home</tittle>
   </RouterLink>
-        <RouterLink class="routerlogo" to="/about">About</RouterLink>
+        <RouterLink class="routerlogo" to="/about">
+          <img
+        alt="Evento logo"
+        class="logo"
+        src="@/assets/Vector.png"
+        width="18"
+        height="18"
+    />
+    <tittle>Eventos</tittle>
+        </RouterLink>
+        <RouterLink class="routerlogo" to="/locations">
+        <img
+        alt="Locais logo"
+        class="logo"
+        src="@/assets/Locais.png"
+        width="15"
+        height="20"
+    />
+    <tittle>Locais</tittle>
+  </RouterLink>
       </nav>
     </div>
 </template>
@@ -28,7 +47,7 @@ import { RouterLink, RouterView } from "vue-router";
   position: fixed;
   bottom: 0;
   width: 100%;
-  height: 52px;
+  height: 49px;
 }
 nav{
   display:flex;
@@ -44,9 +63,11 @@ nav{
 .routerlogo{
   display:flex;
   flex-direction: column;
-  align-self: center;
+  align-items: center;
   justify-content: center;
   color:white;
   text-decoration: none;
+  padding-top: 5px;
 }
+
 </style>
