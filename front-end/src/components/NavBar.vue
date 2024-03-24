@@ -13,7 +13,7 @@ import { RouterLink, RouterView } from "vue-router";
         width="22"
         height="22"
     />
-    <tittle>Home</tittle>
+    <span>Home</span>
   </RouterLink>
         <RouterLink class="routerlogo" to="/about">
           <img
@@ -23,7 +23,7 @@ import { RouterLink, RouterView } from "vue-router";
         width="18"
         height="18"
     />
-    <tittle>Eventos</tittle>
+    <span>Eventos</span>
         </RouterLink>
         <RouterLink class="routerlogo" to="/locations">
         <img
@@ -33,7 +33,7 @@ import { RouterLink, RouterView } from "vue-router";
         width="20"
         height="20"
     />
-    <tittle>Locais</tittle>
+    <span>Locais</span>
   </RouterLink>
       </nav>
     </div>
