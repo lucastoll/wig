@@ -70,4 +70,11 @@ nav{
   padding-top: 5px;
 }
 
+@media (min-width: 1024px) {
+  .navbar{
+    display:none;
+  }
+
+}
+
 </style>
