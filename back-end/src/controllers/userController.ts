@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "../models/user";
-import { ValidationError } from "sequelize";
+import { Category } from "../models/category";
 
 class UserController {
   static async getAllUsers(req: Request, res: Response): Promise<void> {
@@ -13,63 +13,102 @@ class UserController {
     }
   }
 
-  static async createUser(req: Request, res: Response): Promise<void> {
-    const { nome, email } = req.body;
-
-    if (!nome || !email) {
+  static async getUserByEmail(req: Request, res: Response): Promise<void> {
+    const { email } = req.params;
+  
+    if (!email) {
       res.status(400).json({
-        error: "Todos os campos são obrigatórios: nome, email, senha",
+        error: "O campo email é obrigatório",
       });
+      return;
     }
-
+  
     try {
-      const newUser = await User.create({ nome, email });
-      res.status(201).json(newUser);
-    } catch (error) {
-      if (error instanceof ValidationError) {
-        console.error("Erro de validação ao criar usuário:", error.errors);
-        res.status(400).json({
-          error: "Erro de validação ao criar usuário",
-          details: error.errors,
-        });
-      } else {
-        console.error("Erro ao criar usuário:", error);
-        res.status(500).json({ error: "Erro ao criar usuário" });
+      const user = await User.findOne({
+        where: { email },
+        include: Category
+      });
+  
+      if (!user) {
+        res.status(404).json({ error: "Usuário não encontrado" });
+        return;
       }
+  
+      res.status(200).json(user);
+    } catch (error) {
+      console.error("Erro ao buscar usuário:", error);
+      res.status(500).json({ error: "Erro ao buscar usuário" });
     }
   }
 
-  static async updateUser(req: Request, res: Response): Promise<void> {
-    const userId = req.params.id;
-    const { nome, email, senha } = req.body;
-    try {
-      const [updatedRows] = await User.update(
-        { nome, email, senha },
-        { where: { id: userId } }
-      );
-      if (updatedRows > 0) {
-        res.json({ message: "Usuário atualizado com sucesso" });
-      } else {
-        res.status(404).json({ error: "Usuário não encontrado" });
-      }
-    } catch (error) {
-      console.error("Erro ao atualizar usuário:", error);
-      res.status(500).json({ error: "Erro ao atualizar usuário" });
-    }
-  }
+  static async createUser(req: Request, res: Response): Promise<void> {
+    const { name, email, address, categoryIds, zipcode } = req.body;
 
-  static async deleteUser(req: Request, res: Response): Promise<void> {
-    const userId = req.params.id;
+    console.log({ name, email, address, categoryIds, zipcode });
+
+    if (!name) {
+      res.status(400).json({
+        error: "O campo name é obrigatório",
+      });
+      return;
+    }
+
+    if (!email) {
+      res.status(400).json({
+        error: "O campo email é obrigatório",
+      });
+      return;
+    }
+
+    if (!address) {
+      res.status(400).json({
+        error: "O campo address é obrigatório",
+      });
+      return;
+    }
+
+    if (!zipcode) {
+      res.status(400).json({
+        error: "O campo zipcode é obrigatório",
+      });
+      return;
+    }
+
+    if (!categoryIds) {
+      res.status(400).json({
+        error: "O campo categoryIds é obrigatório",
+      });
+      return;
+    }
+
+    if (!Array.isArray(categoryIds)) {
+      res.status(400).json({
+        error: "O campo categoryIds deve ser um array",
+      });
+      return;
+    }
+
     try {
-      const deletedRows = await User.destroy({ where: { id: userId } });
-      if (deletedRows > 0) {
-        res.json({ message: "Usuário deletado com sucesso" });
-      } else {
-        res.status(404).json({ error: "Usuário não encontrado" });
+      const categories = await Category.findAll({
+        where: { id: categoryIds }, 
+      });
+
+      if (categories.length !== categoryIds.length) {
+        res
+          .status(400)
+          .json({ error: "Uma ou mais categorias não foram encontradas" });
+        return;
       }
+      const newUser = await User.create({ name, email, address, zipcode });
+
+      await newUser.addCategories(categories);
+
+      const reloadedUser = await newUser.reload({ include: Category });
+
+      res.status(201).json(reloadedUser);
     } catch (error) {
-      console.error("Erro ao deletar usuário:", error);
-      res.status(500).json({ error: "Erro ao deletar usuário" });
+      console.error("Erro ao criar usuário:", error);
+      res.status(500).json({ error: "Erro ao criar usuário" });
     }
   }
 }
