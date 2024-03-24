@@ -9,9 +9,9 @@ import { RouterLink, RouterView } from "vue-router";
         <img
         alt="Home logo"
         class="logo"
-        src="@/assets/Home.png"
-        width="20"
-        height="20"
+        src="@/assets/Home.svg"
+        width="22"
+        height="22"
     />
     <tittle>Home</tittle>
   </RouterLink>
@@ -19,7 +19,7 @@ import { RouterLink, RouterView } from "vue-router";
           <img
         alt="Evento logo"
         class="logo"
-        src="@/assets/Vector.png"
+        src="@/assets/Vector.svg"
         width="18"
         height="18"
     />
@@ -29,8 +29,8 @@ import { RouterLink, RouterView } from "vue-router";
         <img
         alt="Locais logo"
         class="logo"
-        src="@/assets/Locais.png"
-        width="15"
+        src="@/assets/Locais.svg"
+        width="20"
         height="20"
     />
     <tittle>Locais</tittle>
