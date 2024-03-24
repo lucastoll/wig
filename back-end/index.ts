@@ -2,6 +2,7 @@ require("dotenv").config();
 import express from "express";
 import routes from "./src/routes";
 import db from "./src/db";
+import './src/models/associations';
 
 const app = express();
 
