@@ -25,55 +25,54 @@ export default {
         {
           image: 'https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg',
           date: '24 de Março',
-          name: 'Evento 1',
-          category: 'Categoria 1',
-          location: 'Local 1'
+          name: 'Evento: ',
+          category: 'Categorias: ',
+          location: 'Localização '
         },
         {
           image: 'https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg',
           date: '24 de Março',
-          name: 'Evento 1',
-          category: 'Categoria 1',
-          location: 'Local 1'
+          name: 'Evento: ',
+          category: 'Categorias: ',
+          location: 'Localização '
         },
         {
           image: 'https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg',
           date: '24 de Março',
-          name: 'Evento 1',
-          category: 'Categoria 1',
-          location: 'Local 1'
+          name: 'Evento: ',
+          category: 'Categorias: ',
+          location: 'Localização '
         },
         {
           image: 'https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg',
           date: '24 de Março',
-          name: 'Evento 1',
-          category: 'Categoria 1',
-          location: 'Local 1'
+          name: 'Evento: ',
+          category: 'Categoria: ',
+          location: 'Localização '
         },
         {
           image: 'https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg',
           date: '24 de Março',
-          name: 'Evento 1',
-          category: 'Categoria 1',
-          location: 'Local 1'
+          name: 'Evento: ',
+          category: 'Categoria: ',
+          location: 'Localização '
         },
         {
           image: 'https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg',
           date: '24 de Março',
-          name: 'Evento 1',
-          category: 'Categoria 1',
-          location: 'Local 1'
+          name: 'Evento: ',
+          category: 'Categoria: ',
+          location: 'Localização '
         },
         {
           image: 'https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg',
           date: '24 de Março',
-          name: 'Evento 1',
-          category: 'Categoria 1',
-          location: 'Local 1'
-        },
-        // Adicione mais eventos conforme necessário
+          name: 'Evento: ',
+          category: 'Categoria:',
+          location: 'Localização'
+        }
       ],
-      eventWidth: 'calc(100% - 40px)' // Inicialize com uma string vazia para permitir a largura padrão dos cartões
+      eventWidth: 'calc(100% - 40px)'
     };
   },
   mounted() {
@@ -99,6 +98,7 @@ export default {
 <style scoped>
 .recommended-events {
   text-align: left;
+  margin-left: 10px
 }
 
 .events-wrapper {
@@ -106,32 +106,33 @@ export default {
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding-bottom: 20px; /* Adiciona um espaço para a barra de rolagem */
 }
 
 .event-card {
   flex: 0 0 auto;
   margin-left: 20px;
-  width: 170px; /* Ajuste conforme necessário */
+  width: 170px;
+  border-radius: 10px;
 }
 
 .event-card img {
   width: 100%;
-  height: 200px;
+  height: auto;
 }
 
 .event-details {
-  background-color: #2c3e50;
-  color: #fff;
-  padding: 10px;
+  background-color: #868585;
+  color: black;
 }
 
 .event-date {
   font-weight: bold;
-  background-color: blue;
+  background-color: #505050;
+  text-align: center;
 }
 
 .event-info {
-  margin-top: 10px;
+  margin-left: 10px;
+  margin-bottom: 20px;
 }
 </style>
