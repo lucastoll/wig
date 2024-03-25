@@ -1,9 +1,9 @@
 <template>
   <div class="recommended-events">
-    <h2>Eventos Recomendados</h2>
+    <h2 class="title">Eventos Recomendados</h2>
     <div class="events-wrapper" ref="eventsWrapper">
       <div class="arrow-left-container" v-if="showLeftArrow" @click="scrollLeft">
-        <div class="arrow-left">&#10094;</div>
+        <div class="arrow-click-area">&#10094;</div>
       </div>
       <div class="event-card" v-for="(event, index) in events" :key="index" :style="{ width: eventWidth }">
         <img :src="event.image" alt="Event Image">
@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="arrow-right-container" v-if="showRightArrow" @click="scrollRight">
-        <div class="arrow-right">&#10095;</div>
+        <div class="arrow-click-area">&#10095;</div>
       </div>
     </div>
   </div>
@@ -149,9 +149,13 @@ export default {
 
 <style scoped>
 .recommended-events {
-  text-align: left;
-  margin-left: 10px;
   position: relative;
+}
+
+.title{
+  text-align: left;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .events-wrapper {
@@ -185,6 +189,7 @@ export default {
   font-weight: bold;
   background-color: #505050;
   text-align: center;
+  margin-top: 0%;
 }
 
 .event-info {
@@ -201,6 +206,17 @@ export default {
   z-index: 1;
 }
 
+.arrow-click-area {
+  width: 30px; /* Largura desejada para a área de clique */
+  height: 350px; /* Altura igual à altura do card */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 40px;
+  color: black;
+}
+
 .arrow-left-container {
   left: 0;
 }
@@ -209,9 +225,4 @@ export default {
   right: 0;
 }
 
-.arrow-left,
-.arrow-right {
-  font-size: 24px;
-  color: black;
-}
 </style>
