@@ -15,7 +15,7 @@ import { RouterLink, RouterView } from "vue-router";
     />
     <span>Home</span>
   </RouterLink>
-        <RouterLink class="routerlogo" to="/about">
+        <RouterLink class="routerlogo" to="/events">
           <img
         alt="Evento logo"
         class="logo"

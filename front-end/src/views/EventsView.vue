@@ -1,5 +1,6 @@
 <template>
   <div class="swiper-container">
+ 
     <div class="swiper-wrapper">
       <div v-for="(item, index) in items" :key="index" class="swiper-slide">
         <img :src="item.image" :alt="item.alt" />
