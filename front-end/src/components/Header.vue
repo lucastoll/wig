@@ -1,3 +1,43 @@
+<!--<template>
+    <div>
+      <button @click="openPopup">Abrir Pop-up</button>
+      <div v-if="showPopup" class="popup">
+        <div class="popup-content">
+          <p>Este é um pop-up!</p>
+          <button @click="closePopup">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref } from 'vue';
+  
+  const showPopup = ref(false);
+  const openPopup = () => {
+    showPopup.value = true;
+  };
+  const closePopup = () => {
+    showPopup.value = false;
+  };
+  </script>
+  
+  <style>
+  .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+  }
+  
+  .popup-content {
+    background: #fff;
+    padding: 20px;
+  }
+  </style>-->
+
 <script setup lang="ts">
 import { ref } from "vue";
 const showPopup = ref(false);
