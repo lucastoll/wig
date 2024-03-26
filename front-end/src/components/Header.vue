@@ -1,4 +1,52 @@
+<!--<template>
+    <div>
+      <button @click="openPopup">Abrir Pop-up</button>
+      <div v-if="showPopup" class="popup">
+        <div class="popup-content">
+          <p>Este é um pop-up!</p>
+          <button @click="closePopup">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref } from 'vue';
+  
+  const showPopup = ref(false);
+  const openPopup = () => {
+    showPopup.value = true;
+  };
+  const closePopup = () => {
+    showPopup.value = false;
+  };
+  </script>
+  
+  <style>
+  .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+  }
+  
+  .popup-content {
+    background: #fff;
+    padding: 20px;
+  }
+  </style>-->
+  
 <script setup lang="ts">
+import { ref } from 'vue';
+const showPopup = ref(false);
+const closePopup = () => {
+  showPopup.value = false;
+};
+const openPopup = () => {
+    showPopup.value = true;
+  };
 </script>
 <template>
     <div class="header">
@@ -17,7 +65,12 @@
         width="20"
         height="20"
     />
-    <span class ="cidade">Sorocaba</span>
+    <button class ="cidade" @click="openPopup" >Sorocaba</button>
+    <div v-if="showPopup" class="popup">
+    <div class="popup-content">
+        <span style="color: red">oi</span>
+    </div>
+    </div>
 </div>
     <img
         alt="Logo site"
@@ -51,6 +104,17 @@ padding-right: 16px;
     justify-content: center;
     gap:5px;
     color:white;
+    position: relative;
   
+}
+.popup {
+  position: absolute;
+  bottom: -144px;
+}
+.popup-content {
+    width: 233px;
+  height: 123px;
+  background: #fff;
+  padding: 20px;
 }
 </style>
