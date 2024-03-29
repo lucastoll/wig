@@ -15,13 +15,13 @@
         :key="index"
         :style="{ width: eventWidth }"
       >
-        <img :src="event.image" alt="Event Image" />
+        <img :src="event.imageMobile" alt="Event Image" />
         <div class="event-details">
-          <div class="event-date">{{ event.date }}</div>
+          <div class="event-date">{{ event?.date }}</div>
           <div class="event-info">
-            <div class="event-name">{{ event.name }}</div>
-            <div class="event-category">{{ event.category }}</div>
-            <div class="event-location">{{ event.location }}</div>
+            <div class="event-name">{{ event?.name }}</div>
+            <div class="event-category">{{ event?.Categories[0]?.name }}</div>
+            <div class="event-location">{{ event?.Location?.address }}</div>
           </div>
         </div>
       </div>
@@ -38,92 +38,13 @@
 
 <script>
 import axios from "axios";
+import IconCommunity from "./icons/IconCommunity.vue";
 
 export default {
   data() {
     return {
       events: [
-        {
-          image:
-            "https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg",
-          date: "24 de Março",
-          name: "Evento 1",
-          category: "Categoria 1",
-          location: "Localização 1",
-        },
-        {
-          image:
-            "https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg",
-          date: "25 de Março",
-          name: "Evento 2",
-          category: "Categoria 2",
-          location: "Localização 2",
-        },
-        {
-          image:
-            "https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg",
-          date: "24 de Março",
-          name: "Evento 1",
-          category: "Categoria 1",
-          location: "Localização 1",
-        },
-        {
-          image:
-            "https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg",
-          date: "25 de Março",
-          name: "Evento 2",
-          category: "Categoria 2",
-          location: "Localização 2",
-        },
-        {
-          image:
-            "https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg",
-          date: "24 de Março",
-          name: "Evento 1",
-          category: "Categoria 1",
-          location: "Localização 1",
-        },
-        {
-          image:
-            "https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg",
-          date: "25 de Março",
-          name: "Evento 2",
-          category: "Categoria 2",
-          location: "Localização 2",
-        },
-        {
-          image:
-            "https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg",
-          date: "24 de Março",
-          name: "Evento 1",
-          category: "Categoria 1",
-          location: "Localização 1",
-        },
-        {
-          image:
-            "https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg",
-          date: "25 de Março",
-          name: "Evento 2",
-          category: "Categoria 2",
-          location: "Localização 2",
-        },
-        {
-          image:
-            "https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg",
-          date: "24 de Março",
-          name: "Evento 1",
-          category: "Categoria 1",
-          location: "Localização 1",
-        },
-        {
-          image:
-            "https://i.pinimg.com/564x/35/04/b8/3504b8d1f12c20a6885459e6585b671f.jpg",
-          date: "25 de Março",
-          name: "Evento 2",
-          category: "Categoria 2",
-          location: "Localização 2",
-        },
-        // Eventos aqui
+
       ],
       eventWidth: "calc(100% - 40px)",
       showLeftArrow: false,
@@ -144,6 +65,7 @@ export default {
         const response = await axios.get(
           "http://localhost:3000/events?cityId=1"
         );
+        this.events = response.data;
         console.log(response.data);
       } catch (error) {
         console.error("Erro ao buscar eventos:", error);
@@ -162,7 +84,7 @@ export default {
       this.showLeftArrow = !isMobile && scrollLeft > 0;
       this.showRightArrow =
         !isMobile &&
-        lastCard.offsetLeft + lastCard.clientWidth > clientWidth &&
+        lastCard?.offsetLeft + lastCard?.clientWidth > clientWidth &&
         scrollLeft < maxScroll;
 
       if (scrollWidth > clientWidth) {
