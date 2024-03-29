@@ -1,16 +1,29 @@
 <template>
-    <div>
+    <div class="all-events-container">
+        <p class="all-events">Todos os eventos</p>
+        <p>-></p>
+    </div>
+    <div class="container">
       <div class="custom-field">
-        <input type="text" placeholder="Digite sua mensagem...">
-        <button @click="faleConosco">Fale Conosco</button>
+        <p class="title">Cadastro de eventos</p>
+        <p class="text-field">Você é um organizador de eventos buscando divulgar seu evento em Sorocaba? </p>
+        <button class="custom-button" @click="faleConosco">{{ buttonText }}</button>
       </div>
     </div>
+    <p class="rights-reserved">WIG 2024 © - Todos os direitos reservados </p>
   </template>
   
   <script>
   export default {
+    data() {
+      return {
+        mensagem: '',
+        buttonText: 'Fale Conosco'
+      };
+    },
     methods: {
       faleConosco() {
+        // Lógica para lidar com o clique no botão "Fale Conosco"
         console.log("Botão 'Fale Conosco' clicado!");
       }
     }
@@ -18,34 +31,61 @@
   </script>
   
   <style scoped>
+  .all-events {
+  text-decoration: underline;
+  }
+
+  .all-events-container {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+  color: white;
+  }
+
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
   .custom-field {
-    display: inline-block;
-    position: relative;
-  }
-  
-  .custom-field input[type="text"] {
+    text-align: center;
     padding: 10px;
-    border-radius: 20px;
+    border-radius: 8px;
     border: none;
-    background-color: blue;
-    color: white;
-  }
-  
-  .custom-field button {
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
+    background-color: #1597B1;
+    width: 320px;
+    height: 170px;
+  }  
+  .custom-button {
+    margin-top: 10px;
     padding: 10px 20px;
     border: none;
-    border-radius: 20px;
+    width: 280px;
+    height: 40px;
     background-color: white;
-    color: blue;
+    color: black;
     cursor: pointer;
   }
   
-  .custom-field button:hover {
+  .custom-button:hover {
     background-color: #f0f0f0;
+  }
+  
+  .title,
+  .text-field {
+    text-align: left;
+    color: white;
+    margin-left: 10px;
+    margin-right: 10px
+  }
+
+  .rights-reserved{
+    text-align: center;
+    color: black;
+    font-size: 15px;
+    margin-top: 20px;
   }
   </style>
   
