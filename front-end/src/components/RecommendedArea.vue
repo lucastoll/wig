@@ -151,12 +151,15 @@
   .recommended-events {
     position: relative;
     margin-top: 40px;
+    padding-bottom: 20px;
   }
   
   .title{
     text-align: left;
+    font-size: 20px;
     margin-left: 5px;
     margin-right: 5px;
+    color: black;
   }
   
   .events-wrapper {
@@ -169,14 +172,16 @@
   .event-card {
     flex: 0 0 auto;
     margin-left: 20px;
-    width: 170px;
+    width: 140px;
     border-radius: 10px;
     overflow: hidden; /* Garante que qualquer conteúdo que ultrapasse a borda do card seja cortado */
+    border: solid black 1px;
   }
   
   .event-card img {
     width: 100%;
-    height: auto;
+    height: 100px;
+    margin-bottom: -7px;
   }
   
   
@@ -184,10 +189,12 @@
     background-color: #1597B1;
     color: white;
     border-radius: 10px;
+    height: 100px
   }
   
   .event-date {
     font-weight: bold;
+    font-size: 12px;
     background-color: #505050;
     text-align: center;
     margin-top: 0%;
@@ -196,6 +203,16 @@
   .event-info {
     margin-left: 10px;
     margin-bottom: 20px;
+  }
+  
+  .event-location,
+  .event-category{
+    font-size: 12px;
+  }
+
+  .event-location{
+    margin-top: 5px;
+    margin-bottom: 5px;
   }
   
   .arrow-left-container,
