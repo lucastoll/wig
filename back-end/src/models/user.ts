@@ -1,6 +1,6 @@
 import { BelongsToManyAddAssociationsMixin, DataTypes, Model } from "sequelize";
 import db from "../db";
-import { Category } from "./category";
+import { Category } from "./Category";
 
 interface UserInstance extends Model {
   addCategories: BelongsToManyAddAssociationsMixin<Category, number>;
@@ -15,7 +15,6 @@ class User extends Model implements UserInstance {
 
   public addCategories!: BelongsToManyAddAssociationsMixin<Category, number>;
 }
-
 
 User.init(
   {
@@ -43,7 +42,7 @@ User.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       unique: false,
-    }
+    },
   },
   {
     sequelize: db,

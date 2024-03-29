@@ -1,8 +1,8 @@
 import { BelongsToManyAddAssociationsMixin, DataTypes, Model } from "sequelize";
 import db from "../db";
-import { User } from "./user";
-import { Location } from "./location";
-import { Category } from "./category";
+import { User } from "./User";
+import { Location } from "./Location";
+import { Category } from "./Category";
 
 interface EventInstance extends Model {
   addCategories: BelongsToManyAddAssociationsMixin<Category, number>;

@@ -1,8 +1,8 @@
-import { City } from "./city";
-import { User } from "./user";
-import { Category } from "./category";
-import { Event } from "./event";
-import { Location } from "./location";
+import { City } from "./models/City";
+import { User } from "./models/User";
+import { Category } from "./models/Category";
+import { Event } from "./models/Event";
+import { Location } from "./models/Location";
 
 // User - Category
 User.belongsToMany(Category, { through: "UserCategory" });
@@ -14,8 +14,8 @@ User.hasMany(Event, { foreignKey: "organizerId" });
 Event.belongsToMany(Category, { through: "EventCategory" });
 Category.belongsToMany(Event, { through: "EventCategory" });
 // Event - Location
-Event.belongsTo(Location, { foreignKey: 'locationId' }); // 1 - 1
-Location.hasMany(Event, { foreignKey: 'locationId' });
+Event.belongsTo(Location, { foreignKey: "locationId" }); // 1 - 1
+Location.hasMany(Event, { foreignKey: "locationId" });
 // Location - City
-Location.belongsTo(City, { foreignKey: 'cityId' });
-City.hasMany(Location, { foreignKey: 'cityId' });
+Location.belongsTo(City, { foreignKey: "cityId" });
+City.hasMany(Location, { foreignKey: "cityId" });

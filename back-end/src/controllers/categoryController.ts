@@ -1,18 +1,17 @@
-import { Request, Response } from 'express';
-import { Category } from '../models/category';
+import { Request, Response, NextFunction } from "express";
+import { CategoryService } from "../services/CategoryService";
 
 class CategoryController {
-  static async getCategories(req: Request, res: Response): Promise<void> {
+  static async getCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const categories = await Category.findAll();
+      const categories = await CategoryService.getCategories();
       res.status(200).json(categories);
     } catch (error) {
-      console.error("Erro ao buscar categorias:", error);
-      res.status(500).json({ error: "Erro ao buscar categorias" });
+      next(error);
     }
   }
 
-  static async createCategory(req: Request, res: Response): Promise<void> {
+  static async createCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { name } = req.body;
 
     if (!name) {
@@ -23,11 +22,10 @@ class CategoryController {
     }
 
     try {
-      const newCategory = await Category.create({ name });
+      const newCategory = await CategoryService.createCategory(name);
       res.status(201).json(newCategory);
     } catch (error) {
-      console.error("Erro ao criar categoria:", error);
-      res.status(500).json({ error: "Erro ao criar categoria" });
+      next(error);
     }
   }
 }

@@ -1,9 +1,9 @@
 import express from "express";
-import UserController from "./controllers/userController";
-import CityController from "./controllers/cityController";
-import LocationController from "./controllers/locationController";
-import { CategoryController } from "./controllers/categoryController";
-import { EventController } from "./controllers/eventController";
+import { UserController } from "./controllers/UserController";
+import { CityController } from "./controllers/CityController";
+import { LocationController } from "./controllers/LocationController";
+import { CategoryController } from "./controllers/CategoryController";
+import { EventController } from "./controllers/EventController";
 
 const router = express.Router();
 
