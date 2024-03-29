@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
-import NavBar from "./components/NavBar.vue";
+import NextEvents from "./components/NextEvents.vue";
 </script>
 
 <template>
-  <NavBar />
-  <RouterView />
+  <NextEvents/>
 </template>
 
 <style scoped></style>
