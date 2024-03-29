@@ -150,6 +150,7 @@
   <style scoped>
   .recommended-events {
     position: relative;
+    margin-top: 40px;
   }
   
   .title{
@@ -180,8 +181,8 @@
   
   
   .event-details {
-    background-color: #868585;
-    color: black;
+    background-color: #1597B1;
+    color: white;
     border-radius: 10px;
   }
   
