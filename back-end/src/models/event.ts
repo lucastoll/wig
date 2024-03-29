@@ -1,19 +1,28 @@
-import { DataTypes, Model } from "sequelize";
+import { BelongsToManyAddAssociationsMixin, DataTypes, Model } from "sequelize";
 import db from "../db";
-import { User } from "./user";
-import { City } from "./city";
+import { User } from "./User";
+import { Location } from "./Location";
+import { Category } from "./Category";
 
-class Event extends Model {
+interface EventInstance extends Model {
+  addCategories: BelongsToManyAddAssociationsMixin<Category, number>;
+}
+
+class Event extends Model implements EventInstance {
   public name!: string;
-  public image!: string;
+  public imageMobile!: string;
+  public imageDesktop!: string;
   public organizer!: User;
-  public date!: Date;
-  public price!: number;
-  public address!: string;
+  public initialDate!: Date;
+  public finalDate!: Date;
+  public initialPrice!: number;
+  public finalPrice!: number;
   public minAge!: number;
   public description!: string;
   public instagramEmbed!: string;
-  public city!: City;
+  public location!: Location;
+
+  public addCategories!: BelongsToManyAddAssociationsMixin<Category, number>;
 }
 
 Event.init(
@@ -28,21 +37,29 @@ Event.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    image: {
+    imageMobile: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    date: {
+    imageDesktop: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    initialDate: {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    price: {
+    finalDate: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    initialPrice: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    address: {
-      type: DataTypes.STRING,
-      allowNull: false,
+    finalPrice: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
     },
     minAge: {
       type: DataTypes.INTEGER,
