@@ -39,7 +39,7 @@ export default {
     },
     formatDate(dateString) {
       const eventDate = new Date(dateString);
-        return eventDate.toLocaleDateString('pt-BR'); 
+      return eventDate.toLocaleDateString('pt-BR'); 
     }
   }
 }
@@ -48,13 +48,14 @@ export default {
 <style scoped>
 .main-event {
   position: relative;
+  max-width: 100%;
 }
 
 .main-image {
   width: 100%;
-  height: 300px;
-  object-fit: none;
-  box-shadow: 7px -50px 60px 0px #000000 inset;
+  height: auto;
+  object-fit: cover;
+  z-index: 1;
 }
 
 .details {
@@ -63,6 +64,7 @@ export default {
   bottom: 6px;
   padding: 10px;
   color: white;
+  z-index: 2;
 }
 
 .details img {
@@ -71,11 +73,7 @@ export default {
   margin-right: 5px;
 }
 
-.event {
-  margin-top: 20px;
-}
-
-.event-date{
+.event-date {
   display: inline;
   margin-top: -30px;
 }
@@ -83,5 +81,17 @@ export default {
 .event img {
   width: 100%;
   display: block;
+}
+
+.main-event::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-shadow: 7px -50px 60px 0px #000000 inset;
+
+  z-index: 0;
 }
 </style>
