@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <div v-if="events.length > 0" class="main-event">
-      <img :src="events[0].image" :alt="'Event Image ' + events[0].name" class="main-image">
+      <img :src="events[0].imageDesktop" :alt="'Event Image ' + events[0].name" class="main-image">
       <div class="details">
         <img src="@/assets/Calendario.png" alt="Calendar Icon">
         <div class="event-date">
-          <span>{{ events[0].date }}</span>
+          <span>{{ formatDate(events[0].finalDate) }}</span>
         </div>
         <p>{{ events[0].name }}</p>
       </div>
@@ -14,26 +14,32 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
-      events: [
-        { 
-          image: 'https://imgs.search.brave.com/klD5KUtMfSVTPp5Hx6uPQ8QGMWOFMXUirFuXRryvtjA/rs:fit:500:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMyLmFscGhhY29k/ZXJzLmNvbS83MDkv/NzA5OTc2LnBuZw',
-          date: '27/03/2024',
-          name: 'Event 1'
-        },
-        { 
-          image: 'https://imgs.search.brave.com/klD5KUtMfSVTPp5Hx6uPQ8QGMWOFMXUirFuXRryvtjA/rs:fit:500:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMyLmFscGhhY29k/ZXJzLmNvbS83MDkv/NzA5OTc2LnBuZw',
-          date: '28/03/2024',
-          name: 'Event 2'
-        },
-        { 
-          image: 'https://imgs.search.brave.com/klD5KUtMfSVTPp5Hx6uPQ8QGMWOFMXUirFuXRryvtjA/rs:fit:500:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMyLmFscGhhY29k/ZXJzLmNvbS83MDkv/NzA5OTc2LnBuZw',
-          date: '29/03/2024',
-          name: 'Event 3'
-        }
-      ]
+      events: []
+    }
+  },
+  mounted() {
+    this.fetchEvents();
+  },
+  methods: {
+    async fetchEvents() {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/events?cityId=1"
+        );
+        this.events = response.data;
+        console.log(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar eventos:", error);
+      }
+    },
+    formatDate(dateString) {
+      const eventDate = new Date(dateString);
+        return eventDate.toLocaleDateString('pt-BR'); 
     }
   }
 }
@@ -51,9 +57,11 @@ export default {
 
 .details {
   position: absolute;
-  bottom: 20px;
-  left: 20px;
+  width: 100%;
+  bottom: 6px;
   padding: 10px;
+  color: white;
+  box-shadow: 7px -50px 60px 0px #000000 inset;
 }
 
 .details img {
