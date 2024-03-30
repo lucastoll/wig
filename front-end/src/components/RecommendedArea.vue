@@ -105,7 +105,7 @@ export default {
       } else if (eventDate.toDateString() === tomorrow.toDateString()) {
         return "Amanhã";
       } else {
-        return eventDate.toLocaleDateString('pt-BR'); // Altere o local conforme necessário
+        return eventDate.toLocaleDateString('pt-BR');
       }
     },
     eventDateBackgroundColor(dateString) {
@@ -115,9 +115,9 @@ export default {
       tomorrow.setDate(tomorrow.getDate() + 1);
 
       if (eventDate.toDateString() === today.toDateString() || eventDate.toDateString() === tomorrow.toDateString()) {
-        return "green"; // Define o fundo como verde se for hoje ou amanhã
+        return "green";
       } else {
-        return "#505050"; // Mantém a cor de fundo padrão
+        return "#505050";
       }
     }
   },
@@ -149,10 +149,10 @@ export default {
 .event-card {
   flex: 0 0 auto;
   margin-left: 20px;
-  width: 140px; /* Largura fixa para os cards */
+  width: 140px;
   height: auto;
   border-radius: 10px;
-  overflow: hidden; /* Garante que qualquer conteúdo que ultrapasse a borda do card seja cortado */
+  overflow: hidden;
   border: solid black 1px;
   background-color: #1597b1;
 }
@@ -201,8 +201,8 @@ export default {
 }
 
 .arrow-click-area {
-  width: 30px; /* Largura desejada para a área de clique */
-  height: 350px; /* Altura igual à altura do card */
+  width: 30px;
+  height: 350px;
   display: flex;
   justify-content: center;
   align-items: center;
