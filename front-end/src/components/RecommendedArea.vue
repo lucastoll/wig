@@ -9,12 +9,7 @@
       >
         <div class="arrow-click-area">&#10094;</div>
       </div>
-      <div
-        class="event-card"
-        v-for="(event, index) in events"
-        :key="index"
-        :style="{ width: eventWidth }"
-      >
+      <div class="event-card" v-for="(event, index) in events" :key="index">
         <img :src="event.imageMobile" alt="Event Image" />
         <div class="event-details">
           <div
@@ -49,7 +44,6 @@ export default {
   data() {
     return {
       events: [],
-      eventWidth: "calc(100% - 40px)",
       showLeftArrow: false,
       showRightArrow: false,
     };
@@ -80,22 +74,15 @@ export default {
       const clientWidth = wrapper.clientWidth;
       const scrollLeft = wrapper.scrollLeft;
       const maxScroll = scrollWidth - clientWidth;
-      const lastCard = wrapper.children[wrapper.children.length - 2];
-
       const isMobile = window.innerWidth < 768;
 
       this.showLeftArrow = !isMobile && scrollLeft > 0;
       this.showRightArrow =
         !isMobile &&
-        lastCard?.offsetLeft + lastCard?.clientWidth > clientWidth &&
+        wrapper.children[wrapper.children.length - 2]?.offsetLeft +
+          wrapper.children[wrapper.children.length - 2]?.clientWidth >
+          clientWidth &&
         scrollLeft < maxScroll;
-
-      if (scrollWidth > clientWidth) {
-        wrapper.style.overflowX = "scroll";
-        this.eventWidth = "";
-      } else {
-        this.eventWidth = "calc((100% / 7) - 20px)";
-      }
     },
     scrollLeft() {
       const wrapper = this.$refs.eventsWrapper;
@@ -162,7 +149,7 @@ export default {
 .event-card {
   flex: 0 0 auto;
   margin-left: 20px;
-  width: 140px;
+  width: 140px; /* Largura fixa para os cards */
   height: auto;
   border-radius: 10px;
   overflow: hidden; /* Garante que qualquer conteúdo que ultrapasse a borda do card seja cortado */
