@@ -53,6 +53,8 @@ export default {
 .main-image {
   width: 100%;
   height: 300px;
+  object-fit: none;
+  box-shadow: 7px -50px 60px 0px #000000 inset;
 }
 
 .details {
@@ -61,7 +63,6 @@ export default {
   bottom: 6px;
   padding: 10px;
   color: white;
-  box-shadow: 7px -50px 60px 0px #000000 inset;
 }
 
 .details img {
