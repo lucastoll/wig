@@ -7,7 +7,7 @@ const props = defineProps<{
 }>();
 
 const handleClickOutside = (event: MouseEvent) => {
-  if ((event.target as HTMLElement)?.id !== "popUpCity") {
+  if ((event.target as HTMLElement)?.id !== "popUpLogin") {
     props.closePopup();
   }
 };
@@ -22,7 +22,7 @@ onUnmounted(() => {
 </script>
 <template>
   <div class="popup">
-    <div id="popUpCity" class="popup-content">
+    <div id="popUpLogin" class="popup-content">
       <span style="color: red">oi</span>
     </div>
   </div>
@@ -31,6 +31,7 @@ onUnmounted(() => {
 .popup {
   position: absolute;
   bottom: -143px;
+  right: -9px;
   background: #1597b1;
 }
 .popup-content {
@@ -42,11 +43,12 @@ onUnmounted(() => {
 .popup-content::after {
   content: "";
   position: absolute;
-  top: -8px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: auto;
+  right: 10px;
+  transform: none;
   width: 0;
   height: 0;
+  top: -8px;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
   border-bottom: 10px solid #1597b1;
@@ -56,16 +58,11 @@ onUnmounted(() => {
   right: 10px;
   transform: none;
 }
+
 @media screen and (min-width: 1024px) {
   .popup {
     bottom: -150px;
     right: 0;
-  }
-
-  .popup-content::after {
-    right: 10px;
-    left: auto;
-    transform: none;
   }
 }
 </style>

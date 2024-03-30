@@ -1,16 +1,29 @@
 <script setup lang="ts">
 import PopupCity from "@/components/PopupCity.vue";
+import PopupLogin from "@/components/PopupLogin.vue";
 import { RouterLink } from "vue-router";
 import { ref } from "vue";
-const showPopup = ref(false);
+const showPopupCity = ref(false);
+const showPopupLogin = ref(false);
 
-const closePopup = () => {
-  showPopup.value = false;
+const closePopupLogin = () => {
+  showPopupLogin.value = false;
 };
 
-const openPopup = (event: MouseEvent) => {
+const openPopupLogin = (event: MouseEvent) => {
   event.stopPropagation();
-  showPopup.value = true;
+  showPopupLogin.value = true;
+  showPopupCity.value = false;
+};
+
+const closePopupCity = () => {
+  showPopupCity.value = false;
+};
+
+const openPopupCity = (event: MouseEvent) => {
+  event.stopPropagation();
+  showPopupCity.value = true;
+  showPopupLogin.value = false;
 };
 </script>
 
@@ -29,7 +42,7 @@ const openPopup = (event: MouseEvent) => {
         >
         <div></div>
       </div>
-      <div class="header__menu">
+      <div class="header__menu" @click="openPopupCity">
         <img
           alt="Logo site"
           class="header__menu-icon"
@@ -37,21 +50,19 @@ const openPopup = (event: MouseEvent) => {
           width="20"
           height="20"
         />
-        <span class="header__menu-city" @click="openPopup">Sorocaba</span>
-        <div v-if="showPopup" class="header__menu-popup">
-          <div class="header__menu-popup-content">
-            <span style="color: red">oi</span>
-          </div>
-        </div>
-        <PopupCity v-if="showPopup" :closePopup="closePopup" />
+        <span class="header__menu-city">Sorocaba</span>
+        <PopupCity v-if="showPopupCity" :closePopup="closePopupCity" />
       </div>
-      <img
-        alt="Logo site"
-        class="header__menu-icon"
-        src="@/assets/Direita.svg"
-        width="40"
-        height="40"
-      />
+      <div class="header__menu" @click="openPopupLogin">
+        <img
+          alt="Usuário"
+          class="header__menu-icon"
+          src="@/assets/Direita.svg"
+          width="40"
+          height="40"
+        />
+        <PopupLogin v-if="showPopupLogin" :closePopup="closePopupLogin" />
+      </div>
     </div>
   </div>
 </template>
@@ -114,6 +125,10 @@ const openPopup = (event: MouseEvent) => {
 .header__menu-icon {
   width: 24px;
   height: 24px;
+}
+
+.header__menu-icon--relative {
+  position: relative;
 }
 
 .header__menu-popup {
