@@ -17,7 +17,7 @@
       >
         <img :src="event.imageMobile" alt="Event Image" />
         <div class="event-details">
-          <div class="event-date">{{ event?.date }}</div>
+          <div class="event-date">{{ formatDate(event.finalDate) }}</div>
           <div class="event-info">
             <div class="event-name">{{ event?.name }}</div>
             <div class="event-category">{{ event?.Categories[0]?.name }}</div>
@@ -43,9 +43,7 @@ import IconCommunity from "./icons/IconCommunity.vue";
 export default {
   data() {
     return {
-      events: [
-
-      ],
+      events: [],
       eventWidth: "calc(100% - 40px)",
       showLeftArrow: false,
       showRightArrow: false,
@@ -104,6 +102,10 @@ export default {
       wrapper.scrollBy({ left: 150, behavior: "smooth" });
       this.checkScroll();
     },
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('pt-BR'); // Altere o local conforme necessário
+    }
   },
 };
 </script>
@@ -134,22 +136,23 @@ export default {
   flex: 0 0 auto;
   margin-left: 20px;
   width: 140px;
+  height: auto;
   border-radius: 10px;
   overflow: hidden; /* Garante que qualquer conteúdo que ultrapasse a borda do card seja cortado */
   border: solid black 1px;
+  background-color: #1597b1;
 }
 
 .event-card img {
   width: 100%;
-  height: 100px;
+  height: auto;
   margin-bottom: -7px;
 }
 
 .event-details {
-  background-color: #1597b1;
   color: white;
   border-radius: 10px;
-  height: 100px;
+  height: auto;
 }
 
 .event-date {
@@ -162,7 +165,7 @@ export default {
 
 .event-info {
   margin-left: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .event-location,
