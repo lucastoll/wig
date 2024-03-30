@@ -141,7 +141,7 @@ export default {
 
 .events-wrapper {
   display: flex;
-  overflow-x: hidden;
+  overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
