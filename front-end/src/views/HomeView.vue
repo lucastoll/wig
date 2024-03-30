@@ -1,5 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import LoginGoogle from "../components/LoginGoogle.vue";
+import { userStore } from "../store";
+</script>
 
 <template>
-  <main>Home</main>
+  <div>
+    {{ userStore.name }}
+    <LoginGoogle />
+  </div>
 </template>

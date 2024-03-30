@@ -19,5 +19,7 @@ front-end/.vscode/*
 front-end/!.vscode/extensions.json
 front-end/*.tsbuildinfo
 
+front-end/.env
+
 back-end/node_modules
 back-end/.env
