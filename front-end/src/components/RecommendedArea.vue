@@ -17,7 +17,12 @@
       >
         <img :src="event.imageMobile" alt="Event Image" />
         <div class="event-details">
-          <div class="event-date">{{ formatDate(event.finalDate) }}</div>
+          <div
+            class="event-date"
+            :style="{ backgroundColor: eventDateBackgroundColor(event.finalDate) }"
+          >
+            {{ formatDate(event.finalDate) }}
+          </div>
           <div class="event-info">
             <div class="event-name">{{ event?.name }}</div>
             <div class="event-category">{{ event?.Categories[0]?.name }}</div>
@@ -103,8 +108,30 @@ export default {
       this.checkScroll();
     },
     formatDate(dateString) {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('pt-BR'); // Altere o local conforme necessário
+      const eventDate = new Date(dateString);
+      const today = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      if (eventDate.toDateString() === today.toDateString()) {
+        return "Hoje";
+      } else if (eventDate.toDateString() === tomorrow.toDateString()) {
+        return "Amanhã";
+      } else {
+        return eventDate.toLocaleDateString('pt-BR'); // Altere o local conforme necessário
+      }
+    },
+    eventDateBackgroundColor(dateString) {
+      const eventDate = new Date(dateString);
+      const today = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      if (eventDate.toDateString() === today.toDateString() || eventDate.toDateString() === tomorrow.toDateString()) {
+        return "green"; // Define o fundo como verde se for hoje ou amanhã
+      } else {
+        return "#505050"; // Mantém a cor de fundo padrão
+      }
     }
   },
 };
@@ -158,7 +185,6 @@ export default {
 .event-date {
   font-weight: bold;
   font-size: 12px;
-  background-color: #505050;
   text-align: center;
   margin-top: 0%;
 }
