@@ -5,7 +5,6 @@ import { userStore } from "../store";
 
 <template>
   <div>
-    {{ userStore.name }}
-    <LoginGoogle />
+    Main
   </div>
 </template>
