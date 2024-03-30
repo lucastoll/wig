@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { onMounted } from "vue";
 import { decodeCredential, googleOneTap } from "vue3-google-login";
-
-const user = ref({ loggedIn: false });
+import { userStore } from "../store";
 
 const callback = (response) => {
   const userData = decodeCredential(response.credential);
   localStorage.setItem("credential", response.credential);
-  user.value = {
-    loggedIn: true,
-    name: userData.name,
-    email: userData.email,
-    profilePicture: userData.picture,
-  };
+  userStore.loggedIn = true;
+  userStore.name = userData.name;
+  userStore.email = userData.email;
+  userStore.profilePicture = userData.picture;
 };
 
 const logout = () => {
   localStorage.removeItem("credential");
-  user.value = { loggedIn: false };
+  userStore.loggedIn = false;
+  userStore.name = "";
+  userStore.email = "";
+  userStore.profilePicture = "";
 };
 
 onMounted(() => {
@@ -35,14 +35,14 @@ onMounted(() => {
 
 <template>
   <div>
-    <div v-if="user.loggedIn === false">
+    <div v-if="!userStore.loggedIn">
       <GoogleLogin :callback="callback" auto-login />
     </div>
     <button v-else @click="logout">Logout</button>
 
-    <div v-if="user">
-      <p>Name: {{ user.name }}</p>
-      <p>Email: {{ user.email }}</p>
+    <div v-if="userStore.loggedIn">
+      <p>Name: {{ userStore.name }}</p>
+      <p>Email: {{ userStore.email }}</p>
     </div>
   </div>
 </template>
