@@ -1,6 +1,6 @@
 <template>
   <div class="recommended-events">
-    <h2 class="title">Eventos Recomendados</h2>
+    <h2 class="title">{{ title }}</h2>
     <div class="events-wrapper" ref="eventsWrapper">
       <div
         class="arrow-left-container"
@@ -14,7 +14,9 @@
         <div class="event-details">
           <div
             class="event-date"
-            :style="{ backgroundColor: eventDateBackgroundColor(event.finalDate) }"
+            :style="{
+              backgroundColor: eventDateBackgroundColor(event.finalDate),
+            }"
           >
             {{ formatDate(event.finalDate) }}
           </div>
@@ -38,9 +40,18 @@
 
 <script>
 import axios from "axios";
-import IconCommunity from "./icons/IconCommunity.vue";
 
 export default {
+  props: {
+    endpoint: {
+      type: String,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       events: [],
@@ -59,9 +70,7 @@ export default {
   methods: {
     async fetchEvents() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/events?cityId=1"
-        );
+        const response = await axios.get(this.endpoint);
         this.events = response.data;
         console.log(response.data);
       } catch (error) {
@@ -105,7 +114,7 @@ export default {
       } else if (eventDate.toDateString() === tomorrow.toDateString()) {
         return "Amanhã";
       } else {
-        return eventDate.toLocaleDateString('pt-BR');
+        return eventDate.toLocaleDateString("pt-BR");
       }
     },
     eventDateBackgroundColor(dateString) {
@@ -114,12 +123,15 @@ export default {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
 
-      if (eventDate.toDateString() === today.toDateString() || eventDate.toDateString() === tomorrow.toDateString()) {
+      if (
+        eventDate.toDateString() === today.toDateString() ||
+        eventDate.toDateString() === tomorrow.toDateString()
+      ) {
         return "green";
       } else {
         return "#505050";
       }
-    }
+    },
   },
 };
 </script>
@@ -135,8 +147,10 @@ export default {
   text-align: left;
   font-size: 20px;
   margin-left: 5px;
+  padding-left: 16px;
   margin-right: 5px;
   color: black;
+  margin-bottom: 10px;
 }
 
 .events-wrapper {
@@ -157,9 +171,20 @@ export default {
   background-color: #1597b1;
 }
 
+.event-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 700;
+  line-height: 20px;
+}
+
 .event-card img {
   width: 100%;
-  height: auto;
+  height: 120px;
+  object-fit: cover;
   margin-bottom: -7px;
 }
 
@@ -177,8 +202,10 @@ export default {
 }
 
 .event-info {
-  margin-left: 10px;
-  margin-bottom: 10px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .event-location,
@@ -189,6 +216,11 @@ export default {
 .event-location {
   margin-top: 5px;
   margin-bottom: 5px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .arrow-left-container,

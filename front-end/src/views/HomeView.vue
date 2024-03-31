@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
-import RecommendedArea from "../components/RecommendedArea.vue";
+import EventList from "../components/EventList.vue";
 </script>
 
 <template>
-  <RecommendedArea />
+  <EventList
+    endpoint="http://localhost:3000/events?cityId=1"
+    title="Eventos Recomendados"
+  />
+  <EventList
+    endpoint="http://localhost:3000/events?cityId=1"
+    title="Próximos eventos"
+  />
 </template>
 
 <style scoped></style>
