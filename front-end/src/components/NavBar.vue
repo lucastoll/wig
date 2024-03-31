@@ -19,7 +19,7 @@ import { RouterLink } from "vue-router";
         <img
           alt="Evento logo"
           class="logo"
-          src="@/assets/Vector.svg"
+          src="@/assets/Calendar.svg"
           width="18"
           height="18"
         />
