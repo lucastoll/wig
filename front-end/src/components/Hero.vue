@@ -1,9 +1,13 @@
 <template>
   <div id="app">
     <div v-if="events.length > 0" class="main-event">
-      <img :src="events[0].imageDesktop" :alt="'Event Image ' + events[0].name" class="main-image">
+      <img
+        :src="imageSrc"
+        :alt="'Event Image ' + events[0].name"
+        class="main-image"
+      />
       <div class="details">
-        <img src="@/assets/Calendario.png" alt="Calendar Icon">
+        <img src="@/assets/Calendario.png" alt="Calendar Icon" />
         <div class="event-date">
           <span>{{ formatDate(events[0].finalDate) }}</span>
         </div>
@@ -19,13 +23,28 @@ import axios from "axios";
 export default {
   data() {
     return {
-      events: []
-    }
+      events: [],
+      windowWidth: window.innerWidth,
+    };
+  },
+  computed: {
+    imageSrc() {
+      return this.windowWidth < 768
+        ? this.events[0].imageMobile
+        : this.events[0].imageDesktop;
+    },
   },
   mounted() {
     this.fetchEvents();
+    window.addEventListener("resize", this.handleResize);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.handleResize);
   },
   methods: {
+    handleResize() {
+      this.windowWidth = window.innerWidth;
+    },
     async fetchEvents() {
       try {
         const response = await axios.get(
@@ -39,10 +58,10 @@ export default {
     },
     formatDate(dateString) {
       const eventDate = new Date(dateString);
-      return eventDate.toLocaleDateString('pt-BR'); 
-    }
-  }
-}
+      return eventDate.toLocaleDateString("pt-BR");
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -84,7 +103,7 @@ export default {
 }
 
 .main-event::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
