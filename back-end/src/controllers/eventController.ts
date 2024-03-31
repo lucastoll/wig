@@ -21,6 +21,25 @@ class EventController {
     }
   }
 
+  static async getEventsByDate(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const cityId = typeof req.query.cityId === 'string' ? req.query.cityId : undefined;
+    const cityName = typeof req.query.cityName === 'string' ? req.query.cityName : undefined;
+
+    if (!cityId && !cityName) {
+      res.status(400).json({
+        error: "Você deve fornecer um cityId ou cityName",
+      });
+      return;
+    }
+
+    try {
+      const events = await EventService.getEventsByDate(cityId, cityName);
+      res.status(200).json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async createEvent(req: Request, res: Response, next: NextFunction): Promise<void> {
     const fields = [
       "name",
