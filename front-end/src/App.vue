@@ -2,9 +2,12 @@
 import { RouterView } from "vue-router";
 import NavBar from "./components/NavBar.vue";
 import Header from "./components/Header.vue";
+import PopupRegister from "./components/PopupRegister.vue";
 import { onMounted } from "vue";
+import type { CallbackTypes } from "vue3-google-login";
 import { logout } from "@/helpers/logout.ts";
 import { login } from "@/helpers/login.ts";
+import { userStore } from "./store";
 
 onMounted(() => {
   const credential = localStorage.getItem("credential");
@@ -24,6 +27,7 @@ onMounted(() => {
   <Header />
   <NavBar />
   <RouterView />
+  <PopupRegister :isOpen="userStore.registerDone === false" />
 </template>
 
 <style scoped></style>
