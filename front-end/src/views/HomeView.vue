@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import LoginGoogle from "../components/LoginGoogle.vue";
 import Hero from "../components/Hero.vue";
-import { userStore } from "../store";
+import EventList from "../components/EventList.vue";
 </script>
 
 <template>
-  <div>
-    <Hero />
-    {{ userStore.name }}
-    <LoginGoogle />
-  </div>
+  <Hero />
+  <EventList
+    endpoint="http://localhost:3000/events?cityId=1"
+    title="Eventos Recomendados"
+  />
+  <EventList
+    endpoint="http://localhost:3000/events?cityId=1"
+    title="Próximos eventos"
+  />
 </template>
