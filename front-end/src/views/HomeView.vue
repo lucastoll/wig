@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
 import EventList from "../components/EventList.vue";
 </script>
 
@@ -13,5 +12,3 @@ import EventList from "../components/EventList.vue";
     title="Próximos eventos"
   />
 </template>
-
-<style scoped></style>

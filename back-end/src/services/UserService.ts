@@ -1,6 +1,25 @@
 import { User } from "../models/User";
 import { Category } from "../models/Category";
 import { CustomError } from "../errors/CustomError";
+import { OAuth2Client } from "google-auth-library";
+require("dotenv").config();
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+async function verify(token: string) {
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    if (!payload) throw new CustomError("Token inválido", 400);
+    const userid = payload["sub"];
+    return payload;
+  } catch (err) {
+    throw new CustomError("Token inválido", 400);
+  }
+}
 
 class UserService {
   static async getAllUsers(): Promise<User[]> {
@@ -21,8 +40,17 @@ class UserService {
     email: string,
     address: string,
     categoryIds: number[],
-    zipcode: string
+    zipcode: string,
+    googleToken: string
   ): Promise<User> {
+    const googleUser = await verify(googleToken);
+    if (googleUser.email !== email) {
+      throw new CustomError(
+        "O token do Google não corresponde ao email fornecido",
+        400
+      );
+    }
+
     const categories = await Category.findAll({
       where: { id: categoryIds },
     });

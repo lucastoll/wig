@@ -36,14 +36,15 @@ class UserController {
   }
 
   static async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { name, email, address, categoryIds, zipcode } = req.body;
+    const { name, email, address, categoryIds, zipcode, googleToken } = req.body;
 
     const fields = [
       "name",
       "email",
       "address",
       "zipcode",
-      "categoryIds"
+      "categoryIds",
+      "googleToken"
     ];
     
     for (let field of fields) {
@@ -63,7 +64,7 @@ class UserController {
     }
 
     try {
-      const newUser = await UserService.createUser(name, email, address, categoryIds, zipcode);
+      const newUser = await UserService.createUser(name, email, address, categoryIds, zipcode, googleToken);
       res.status(201).json(newUser);
     } catch (error) {
       next(error);
