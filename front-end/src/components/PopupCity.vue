@@ -27,7 +27,6 @@ onMounted(async() => {
     const response = await axios.get('http://localhost:3000/cities');
     loading.value = false
     cities.value=response.data;
-    console.log(cities.value)
   }
   catch(error){
     console.log("erro")

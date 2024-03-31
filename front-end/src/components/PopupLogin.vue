@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onUnmounted } from "vue";
 import { onMounted } from "vue";
+import LoginGoogle from "./LoginGoogle.vue";
 
 const props = defineProps<{
   closePopup: () => void;
@@ -23,7 +24,7 @@ onUnmounted(() => {
 <template>
   <div class="popup">
     <div id="popUpLogin" class="popup-content">
-      <span style="color: red">oi</span>
+      <LoginGoogle />
     </div>
   </div>
 </template>
@@ -35,9 +36,14 @@ onUnmounted(() => {
   background: #1597b1;
 }
 .popup-content {
-  width: 233px;
+  width: fit-content;
+  min-width: 200px;
   height: 123px;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .popup-content::after {
