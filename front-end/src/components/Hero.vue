@@ -7,7 +7,7 @@
         class="main-image"
       />
       <div class="details">
-        <img src="@/assets/Calendario.png" alt="Calendar Icon" />
+        <ig smrc="@/assets/Calendario.png" alt="Calendar Icon" />
         <div class="event-date">
           <span>{{ formatDate(events[0].finalDate) }}</span>
         </div>
@@ -81,9 +81,10 @@ export default {
   position: absolute;
   width: 100%;
   bottom: 6px;
-  padding: 10px;
+  padding-left: 16px;
   color: white;
   z-index: 2;
+  max-width: 1280px;
 }
 
 .details img {
@@ -112,5 +113,13 @@ export default {
   box-shadow: 7px -50px 60px 0px #000000 inset;
 
   z-index: 0;
+}
+
+@media (min-width: 1024px) {
+  .details {
+    left: 50%;
+    transform: translateX(-50%);
+    padding-left: 20px;
+  }
 }
 </style>

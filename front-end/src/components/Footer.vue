@@ -51,7 +51,6 @@ export default {
 .all-events-container {
   display: flex;
   align-items: center;
-  margin-left: 20px;
   color: #000000;
 }
 
@@ -106,15 +105,17 @@ export default {
     align-items: center;
   }
 
-  .all-events-container{
+  .all-events-container {
     width: 100%;
     max-width: 1280px;
+    margin-left: 20px;
   }
 
   .container {
     justify-content: flex-start;
     max-width: 1280px;
     width: 100%;
+    margin-left: 20px;
   }
 }
 </style>

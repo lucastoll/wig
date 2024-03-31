@@ -1,38 +1,40 @@
 <template>
-  <div class="recommended-events">
-    <h2 class="title">{{ title }}</h2>
-    <div class="events-wrapper" ref="eventsWrapper">
-      <div
-        class="arrow-left-container"
-        v-if="showLeftArrow"
-        @click="scrollLeft"
-      >
-        <div class="arrow-click-area">&#10094;</div>
-      </div>
-      <div class="event-card" v-for="(event, index) in events" :key="index">
-        <img :src="event.imageMobile" alt="Event Image" />
-        <div class="event-details">
-          <div
-            class="event-date"
-            :style="{
-              backgroundColor: eventDateBackgroundColor(event.finalDate),
-            }"
-          >
-            {{ formatDate(event.finalDate) }}
-          </div>
-          <div class="event-info">
-            <div class="event-name">{{ event?.name }}</div>
-            <div class="event-category">{{ event?.Categories[0]?.name }}</div>
-            <div class="event-location">{{ event?.Location?.address }}</div>
+  <div class="event-list">
+    <div class="event-list-container">
+      <h2 class="title">{{ title }}</h2>
+      <div class="events-wrapper" ref="eventsWrapper">
+        <div
+          class="arrow-left-container"
+          v-if="showLeftArrow"
+          @click="scrollLeft"
+        >
+          <div class="arrow-click-area">&#10094;</div>
+        </div>
+        <div class="event-card" v-for="(event, index) in events" :key="index">
+          <img :src="event.imageMobile" alt="Event Image" />
+          <div class="event-details">
+            <div
+              class="event-date"
+              :style="{
+                backgroundColor: eventDateBackgroundColor(event.finalDate),
+              }"
+            >
+              {{ formatDate(event.finalDate) }}
+            </div>
+            <div class="event-info">
+              <div class="event-name">{{ event?.name }}</div>
+              <div class="event-category">{{ event?.Categories[0]?.name }}</div>
+              <div class="event-location">{{ event?.Location?.address }}</div>
+            </div>
           </div>
         </div>
-      </div>
-      <div
-        class="arrow-right-container"
-        v-if="showRightArrow"
-        @click="scrollRight"
-      >
-        <div class="arrow-click-area">&#10095;</div>
+        <div
+          class="arrow-right-container"
+          v-if="showRightArrow"
+          @click="scrollRight"
+        >
+          <div class="arrow-click-area">&#10095;</div>
+        </div>
       </div>
     </div>
   </div>
@@ -72,6 +74,7 @@ export default {
       try {
         const response = await axios.get(this.endpoint);
         this.events = response.data;
+        this.events = [...response.data, ...response.data, ...response.data];
         console.log(response.data);
       } catch (error) {
         console.error("Erro ao buscar eventos:", error);
@@ -137,20 +140,27 @@ export default {
 </script>
 
 <style scoped>
-.recommended-events {
+.event-list {
   position: relative;
-  margin-top: 40px;
+  margin-top: 20px;
   padding-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.event-list-container {
+  width: 100%;
+  max-width: 1280px;
 }
 
 .title {
   text-align: left;
   font-size: 20px;
-  margin-left: 5px;
   padding-left: 16px;
   margin-right: 5px;
   color: black;
   margin-bottom: 10px;
+  font-weight: bold;
 }
 
 .events-wrapper {
@@ -158,11 +168,12 @@ export default {
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  padding-right: 20px;
 }
 
 .event-card {
   flex: 0 0 auto;
-  margin-left: 20px;
+  margin-left: 16px;
   width: 140px;
   height: auto;
   border-radius: 10px;
@@ -230,6 +241,7 @@ export default {
   transform: translateY(-50%);
   cursor: pointer;
   z-index: 1;
+  display: none;
 }
 
 .arrow-click-area {
