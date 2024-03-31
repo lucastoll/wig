@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Footer from "../components/Footer.vue";
 import Hero from "../components/Hero.vue";
 import EventList from "../components/EventList.vue";
 </script>
@@ -13,4 +14,5 @@ import EventList from "../components/EventList.vue";
     endpoint="http://localhost:3000/events?cityId=1"
     title="Próximos eventos"
   />
+  <Footer />
 </template>
