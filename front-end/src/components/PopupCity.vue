@@ -42,7 +42,8 @@ onUnmounted(() => {
 <template>
   <div class="popup">
     <div id="popUpCity" class="popup-content">
-      <select>
+      <span class="changecity">Trocar cidade</span>
+      <select class="cities">
         <option v-for="city in cities">{{ city.name }}</option>
 
       </select>
@@ -56,9 +57,14 @@ onUnmounted(() => {
   background: #1597b1;
 }
 .popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: top;
   width: 233px;
   height: 123px;
-  padding: 20px;
+  gap:5px;
+padding-top: 10px;
 }
 
 .popup-content::after {
@@ -77,6 +83,12 @@ onUnmounted(() => {
   left: auto;
   right: 10px;
   transform: none;
+}
+
+.cities{
+width: 201px;
+height: 41px;
+border-radius: 10px;
 }
 @media screen and (min-width: 1024px) {
   .popup {
