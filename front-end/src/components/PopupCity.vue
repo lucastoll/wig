@@ -1,10 +1,17 @@
 <script setup lang="ts">
-import { onUnmounted } from "vue";
-import { onMounted } from "vue";
+import { onUnmounted, ref, onMounted } from "vue";
+import axios from 'axios';
+
+interface City{
+  name:string
+}
 
 const props = defineProps<{
   closePopup: () => void;
 }>();
+
+
+
 
 const handleClickOutside = (event: MouseEvent) => {
   if ((event.target as HTMLElement)?.id !== "popUpCity") {
@@ -12,7 +19,19 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
-onMounted(() => {
+const cities = ref<City[]>()
+const loading = ref<boolean>(true)
+
+onMounted(async() => {
+  try{
+    const response = await axios.get('http://localhost:3000/cities');
+    loading.value = false
+    cities.value=response.data;
+    console.log(cities.value)
+  }
+  catch(error){
+    console.log("erro")
+  }
   document.addEventListener("click", handleClickOutside);
 });
 
@@ -23,7 +42,10 @@ onUnmounted(() => {
 <template>
   <div class="popup">
     <div id="popUpCity" class="popup-content">
-      <span style="color: red">oi</span>
+      <select>
+        <option v-for="city in cities">{{ city.name }}</option>
+
+      </select>
     </div>
   </div>
 </template>
