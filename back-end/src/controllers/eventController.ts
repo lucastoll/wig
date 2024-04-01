@@ -21,6 +21,34 @@ class EventController {
     }
   }
 
+  static async getEventsRecomended(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const cityId = typeof req.query.cityId === 'string' ? req.query.cityId : undefined;
+    const cityName = typeof req.query.cityName === 'string' ? req.query.cityName : undefined;
+    const userId = typeof req.query.userId === 'string' ? req.query.userId : undefined;
+
+    if (!cityId && !cityName) {
+      res.status(400).json({
+        error: "Você deve fornecer um cityId ou cityName",
+      });
+      return;
+    }
+
+    if (!userId) {
+      res.status(400).json({
+        error: "Você deve fornecer um userId",
+      });
+      return;
+    }
+
+    try {
+      const events = await EventService.getEventsRecomendation(cityId, cityName, userId);
+      res.status(200).json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  
   static async createEvent(req: Request, res: Response, next: NextFunction): Promise<void> {
     const fields = [
       "name",

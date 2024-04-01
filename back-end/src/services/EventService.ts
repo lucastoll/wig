@@ -4,6 +4,7 @@ import { Location } from "../models/Location";
 import { Category } from "../models/Category";
 import { CustomError } from "../errors/CustomError";
 import { City } from "../models/City";
+import * as geolib from 'geolib';
 
 type EventData = Event &
   Partial<Location> & {
@@ -43,6 +44,69 @@ class EventService {
 
     return events;
   }
+  
+  static async getEventsRecomendation(
+    cityId: string | undefined,
+    cityName: string | undefined,
+    userId: string | undefined
+  ): Promise<Event[]> {
+    let city;
+    if (cityId) {
+      city = await City.findByPk(String(cityId));
+    } else if (cityName) {
+      city = await City.findOne({ where: { name: String(cityName) } });
+    }
+    if (!city) {
+      throw new CustomError("Cidade não encontrada", 404);
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new CustomError("Usuário não encontrado", 404);
+    }
+
+    const events = await Event.findAll({
+      include: [
+        { model: Category },
+        { model: User, as: "organizer" },
+        {
+          model: Location,
+          where: { cityId: city.id },
+          include: [{ model: City }],
+        },
+      ],
+    });
+
+    const zipcode = "18052280"; // Exemplo de CEP
+    const url = `https://nominatim.openstreetmap.org/search?postalcode=${zipcode}&format=json`;
+    
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        // Verifique se há resultados
+        if (data && data.length > 0) {
+          // Obtenha as coordenadas da primeira correspondência
+          const latitude = data[0].lat;
+          const longitude = data[0].lon;
+          
+          console.log("Latitude:", latitude);
+          console.log("Longitude:", longitude);
+        } else {
+          console.log("Nenhum resultado encontrado para o CEP especificado.");
+        }
+      })
+      .catch(error => {
+        console.error("Erro ao processar a solicitação:", error);
+  });
+
+    return events;
+    
+  }
+
+
+  
+
+
 
   static async createEvent(eventData: EventData): Promise<Event> {
     const {
