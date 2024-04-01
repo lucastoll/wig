@@ -4,7 +4,8 @@ import { Location } from "../models/Location";
 import { Category } from "../models/Category";
 import { CustomError } from "../errors/CustomError";
 import { City } from "../models/City";
-import * as geolib from 'geolib';
+import axios from "axios";
+import * as geolib from "geolib";
 
 type EventData = Event &
   Partial<Location> & {
@@ -44,7 +45,7 @@ class EventService {
 
     return events;
   }
-  
+
   static async getEventsRecomendation(
     cityId: string | undefined,
     cityName: string | undefined,
@@ -77,36 +78,95 @@ class EventService {
       ],
     });
 
-    const zipcode = "18052280"; // Exemplo de CEP
-    const url = `https://nominatim.openstreetmap.org/search?postalcode=${zipcode}&format=json`;
-    
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        // Verifique se há resultados
-        if (data && data.length > 0) {
-          // Obtenha as coordenadas da primeira correspondência
-          const latitude = data[0].lat;
-          const longitude = data[0].lon;
-          
-          console.log("Latitude:", latitude);
-          console.log("Longitude:", longitude);
-        } else {
-          console.log("Nenhum resultado encontrado para o CEP especificado.");
-        }
-      })
-      .catch(error => {
-        console.error("Erro ao processar a solicitação:", error);
-  });
+    const userCoordinates = await EventService.getCoordinates(
+      user.zipcode.toString()
+    );
 
-    return events;
-    
+    const eventsWithRecommendations = events.map(async (event) => {
+      const eventCoordinates = await EventService.getCoordinates(
+        event.Location.zipcode.toString()
+      );
+      const distance = EventService.getDistance(
+        userCoordinates,
+        eventCoordinates
+      );
+
+      let recommendationPoints = 0;
+
+      if (distance <= 1.0) {
+        recommendationPoints += 15;
+      } else if (distance <= 3.0) {
+        recommendationPoints += 10;
+      } else if (distance <= 5.0) {
+        recommendationPoints += 5;
+      }
+
+      console.log(
+        `A distância entre o usuário e o evento ${event.name} é de ${distance} km. Pontos de recomendação: ${recommendationPoints}`
+      );
+
+      return {
+        ...event.get({ plain: true }),
+        recommendationPoints,
+      };
+    });
+
+    const resolvedEvents = await Promise.all(eventsWithRecommendations);
+    resolvedEvents.sort(
+      (a, b) => b.recommendationPoints - a.recommendationPoints
+    );
+
+    return resolvedEvents;
   }
 
+  static async getCoordinates(zipcode: string) {
+    const url = `https://nominatim.openstreetmap.org/search?postalcode=${zipcode}&format=json`;
 
-  
+    try {
+      const response = await axios.get(url);
+      const data = response.data;
 
+      if (data && data.length > 0) {
+        return {
+          latitude: data[0].lat,
+          longitude: data[0].lon,
+        };
+      } else {
+        console.log("Nenhum resultado encontrado para o CEP especificado.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Erro ao processar a solicitação:", error);
+      return null;
+    }
+  }
 
+  static getDistance(coord1: any, coord2: any) {
+    const lat1 = coord1.latitude;
+    const lon1 = coord1.longitude;
+    const lat2 = coord2.latitude;
+    const lon2 = coord2.longitude;
+
+    if (lat1 == lat2 && lon1 == lon2) {
+      return 0;
+    } else {
+      var radlat1 = (Math.PI * lat1) / 180;
+      var radlat2 = (Math.PI * lat2) / 180;
+      var theta = lon1 - lon2;
+      var radtheta = (Math.PI * theta) / 180;
+      var dist =
+        Math.sin(radlat1) * Math.sin(radlat2) +
+        Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+      if (dist > 1) {
+        dist = 1;
+      }
+      dist = Math.acos(dist);
+      dist = (dist * 180) / Math.PI;
+      dist = dist * 60 * 1.1515;
+      dist = dist * 1.609344;
+      return dist;
+    }
+  }
 
   static async createEvent(eventData: EventData): Promise<Event> {
     const {
