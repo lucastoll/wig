@@ -1,4 +1,5 @@
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
+
 
 export interface IUserStore {
   id?: string;
@@ -12,3 +13,5 @@ export interface IUserStore {
 export const userStore: IUserStore = reactive({
   loggedIn: false,
 });
+
+export const selectCity = ref(1);

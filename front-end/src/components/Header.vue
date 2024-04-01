@@ -3,6 +3,7 @@ import PopupCity from "@/components/PopupCity.vue";
 import PopupLogin from "@/components/PopupLogin.vue";
 import { RouterLink } from "vue-router";
 import { ref } from "vue";
+import {selectCity} from '../store';
 const showPopupCity = ref(false);
 const showPopupLogin = ref(false);
 
@@ -50,7 +51,7 @@ const openPopupCity = (event: MouseEvent) => {
           width="20"
           height="20"
         />
-        <span class="header__menu-city">Sorocaba</span>
+        <span class="header__menu-city">{{ selectCity }}</span>
         <PopupCity v-if="showPopupCity" :closePopup="closePopupCity" />
       </div>
       <div class="header__menu" @click="openPopupLogin">

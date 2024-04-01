@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { onUnmounted, ref, onMounted } from "vue";
+import { onUnmounted, ref, onMounted, computed } from "vue";
 import axios from 'axios';
+import {selectCity} from '../store';
 
 interface City{
   name:string
+  id:number
 }
 
 const props = defineProps<{
   closePopup: () => void;
 }>();
 
-
-
+;
 
 const handleClickOutside = (event: MouseEvent) => {
   if ((event.target as HTMLElement)?.id !== "popUpCity") {
@@ -21,6 +22,7 @@ const handleClickOutside = (event: MouseEvent) => {
 
 const cities = ref<City[]>()
 const loading = ref<boolean>(true)
+
 
 onMounted(async() => {
   try{
@@ -42,10 +44,10 @@ onUnmounted(() => {
   <div class="popup">
     <div id="popUpCity" class="popup-content">
       <span class="changecity">Trocar cidade</span>
-      <select class="cities">
-        <option v-for="city in cities">{{ city.name }}</option>
-
+      <select class="cities" v-model="selectCity">
+        <option v-for="city in cities" :key="city.id" :value="city.id">{{ city.name }}</option>
       </select>
+      <span>{{selectCity}}</span>
     </div>
   </div>
 </template>
@@ -54,6 +56,7 @@ onUnmounted(() => {
   position: absolute;
   bottom: -143px;
   background: #1597b1;
+  border-radius: 5px;
 }
 .popup-content {
   display: flex;
@@ -63,7 +66,8 @@ onUnmounted(() => {
   width: 233px;
   height: 123px;
   gap:5px;
-padding-top: 10px;
+  padding-top: 10px;
+  
 }
 
 .popup-content::after {
@@ -77,11 +81,13 @@ padding-top: 10px;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
   border-bottom: 10px solid #1597b1;
+  
 }
 .popup-content.right::after {
   left: auto;
   right: 10px;
   transform: none;
+  
 }
 
 .cities{
