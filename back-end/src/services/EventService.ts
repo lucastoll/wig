@@ -101,6 +101,12 @@ class EventService {
         recommendationPoints += 5;
       }
 
+      userCategories.forEach(userCategoryId => {
+        if (eventCategories.includes(userCategoryId)) {
+            recommendationPoints += 4;
+        }
+    });
+
       console.log(
         `A distância entre o usuário e o evento ${event.name} é de ${distance} km. Pontos de recomendação: ${recommendationPoints}`
       );

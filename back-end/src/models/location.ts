@@ -2,10 +2,12 @@ import { DataTypes, Model } from "sequelize";
 import db from "../db";
 
 class Location extends Model {
-  public id!: string;
+  public id!: number;
   public address!: string;
   public zipcode!: number;
   public maxCapacity!: number;
+  public coordlat!: number;
+  public coordlon!: number;
 }
 
 Location.init(
@@ -26,6 +28,14 @@ Location.init(
     },
     maxCapacity: {
       type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    coordlat: {
+      type: DataTypes.FLOAT, // Alterado para FLOAT para armazenar latitude
+      allowNull: false,
+    },
+    coordlon: {
+      type: DataTypes.FLOAT, // Alterado para FLOAT para armazenar longitude
       allowNull: false,
     },
   },
