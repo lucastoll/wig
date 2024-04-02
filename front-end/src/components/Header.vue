@@ -2,10 +2,14 @@
 import PopupCity from "@/components/PopupCity.vue";
 import PopupLogin from "@/components/PopupLogin.vue";
 import { RouterLink } from "vue-router";
-import { ref } from "vue";
-import {selectCity} from '../store';
-const showPopupCity = ref(false);
-const showPopupLogin = ref(false);
+import { onMounted, ref } from "vue";
+import { cityStore, type City } from "../store";
+import axios from "axios";
+
+const cities = ref<City[]>([]);
+const citiesLoading = ref<boolean>(false);
+const showPopupCity = ref<boolean>(false);
+const showPopupLogin = ref<boolean>(false);
 
 const closePopupLogin = () => {
   showPopupLogin.value = false;
@@ -26,6 +30,17 @@ const openPopupCity = (event: MouseEvent) => {
   showPopupCity.value = true;
   showPopupLogin.value = false;
 };
+
+onMounted(async () => {
+  try {
+    citiesLoading.value = true;
+    const response = await axios.get("http://localhost:3000/cities");
+    citiesLoading.value = false;
+    cities.value = response.data;
+  } catch (error) {
+    console.log("erro");
+  }
+});
 </script>
 
 <template>
@@ -51,8 +66,12 @@ const openPopupCity = (event: MouseEvent) => {
           width="20"
           height="20"
         />
-        <span class="header__menu-city">{{ selectCity }}</span>
-        <PopupCity v-if="showPopupCity" :closePopup="closePopupCity" />
+        <span class="header__menu-city">{{ cityStore.name }}</span>
+        <PopupCity
+          v-if="showPopupCity && !citiesLoading"
+          :cities="cities"
+          :closePopup="closePopupCity"
+        />
       </div>
       <div class="header__menu" @click="openPopupLogin">
         <img

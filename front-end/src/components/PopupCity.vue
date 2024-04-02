@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import { onUnmounted, ref, onMounted, computed } from "vue";
-import axios from 'axios';
-import {selectCity} from '../store';
-
-interface City{
-  name:string
-  id:number
-}
+import { onUnmounted, ref, onMounted, computed, watchEffect } from "vue";
+import axios from "axios";
+import { cityStore, type City } from "../store";
 
 const props = defineProps<{
   closePopup: () => void;
+  cities: City[];
 }>();
-
-;
 
 const handleClickOutside = (event: MouseEvent) => {
   if ((event.target as HTMLElement)?.id !== "popUpCity") {
@@ -20,34 +14,35 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
-const cities = ref<City[]>()
-const loading = ref<boolean>(true)
-
-
-onMounted(async() => {
-  try{
-    const response = await axios.get('http://localhost:3000/cities');
-    loading.value = false
-    cities.value=response.data;
-  }
-  catch(error){
-    console.log("erro")
-  }
+onMounted(async () => {
   document.addEventListener("click", handleClickOutside);
 });
 
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
 });
+
+function changeCity() {
+  if (props.cities) {
+    const selectedCity = props.cities.find((city) => city.id === cityStore.id);
+    if (selectedCity) {
+      cityStore.id = selectedCity.id;
+      cityStore.name = selectedCity.name;
+    }
+
+    localStorage.setItem("city", JSON.stringify(selectedCity));
+  }
+}
 </script>
 <template>
   <div class="popup">
     <div id="popUpCity" class="popup-content">
       <span class="changecity">Trocar cidade</span>
-      <select class="cities" v-model="selectCity">
-        <option v-for="city in cities" :key="city.id" :value="city.id">{{ city.name }}</option>
+      <select class="cities" v-model="cityStore.id" @change="changeCity">
+        <option v-for="city in cities" :key="city.id" :value="city.id">
+          {{ city.name }}
+        </option>
       </select>
-      <span>{{selectCity}}</span>
     </div>
   </div>
 </template>
@@ -65,9 +60,8 @@ onUnmounted(() => {
   justify-content: top;
   width: 233px;
   height: 123px;
-  gap:5px;
+  gap: 5px;
   padding-top: 10px;
-  
 }
 
 .popup-content::after {
@@ -81,19 +75,17 @@ onUnmounted(() => {
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
   border-bottom: 10px solid #1597b1;
-  
 }
 .popup-content.right::after {
   left: auto;
   right: 10px;
   transform: none;
-  
 }
 
-.cities{
-width: 201px;
-height: 41px;
-border-radius: 10px;
+.cities {
+  width: 201px;
+  height: 41px;
+  border-radius: 10px;
 }
 @media screen and (min-width: 1024px) {
   .popup {
