@@ -1,6 +1,6 @@
-import { User } from "../models/User";
-import { Category } from "../models/Category";
-import { CustomError } from "../errors/customErrorr";
+import { User } from "../models/user";
+import { Category } from "../models/category";
+import { CustomError } from "../errors/customError";
 import { OAuth2Client } from "google-auth-library";
 import getCoordinates from "../helpers/getCoordinates";
 require("dotenv").config();

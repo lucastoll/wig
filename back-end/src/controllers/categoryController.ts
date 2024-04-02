@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { CategoryService } from "../services/categoryServicee";
+import { CategoryService } from "../services/categoryService";
 
 class CategoryController {
   static async getCategories(req: Request, res: Response, next: NextFunction): Promise<void> {

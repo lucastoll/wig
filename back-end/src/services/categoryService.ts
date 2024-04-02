@@ -1,4 +1,4 @@
-import { Category } from "../models/Category";
+import { Category } from "../models/category";
 
 class CategoryService {
   static async getCategories(): Promise<Category[]> {

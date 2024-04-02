@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CustomError } from "../errors/customErrorr";
+import { CustomError } from "../errors/customError";
 
 export default async function getCoordinates(zipcode: string) {
   const url = `https://nominatim.openstreetmap.org/search?postalcode=${zipcode}&format=json`;

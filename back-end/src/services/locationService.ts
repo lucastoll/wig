@@ -1,6 +1,6 @@
-import { CustomError } from "../errors/customErrorr";
+import { CustomError } from "../errors/customError";
 import getCoordinates from "../helpers/getCoordinates";
-import { Location } from "../models/Location";
+import { Location } from "../models/location";
 import axios from "axios";
 
 class LocationService {

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { LocationService } from "../services/LocationServicee";
+import { LocationService } from "../services/locationService";
 import { ValidationError } from "sequelize";
 
 class LocationController {

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { UserService } from "../services/UserServicee";
+import { UserService } from "../services/userService";
 
 class UserController {
   static async getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
