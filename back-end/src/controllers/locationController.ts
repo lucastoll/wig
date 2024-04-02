@@ -21,7 +21,7 @@ class LocationController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const { address, zipcode, maxCapacity, cityId } = req.body;
+    const { address, zipcode, maxCapacity, cityId, coordlat, coordlon } = req.body;
 
     if (!address || !zipcode || !maxCapacity || !cityId) {
       res.status(400).json({
@@ -36,7 +36,7 @@ class LocationController {
         address,
         zipcode,
         maxCapacity,
-        cityId
+        cityId,
       );
       res.status(201).json(newLocation);
     } catch (error) {

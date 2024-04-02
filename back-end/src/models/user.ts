@@ -12,6 +12,9 @@ class User extends Model implements UserInstance {
   public email!: string;
   public address!: string;
   public zipcode!: number;
+  public Categories!: Category[];
+  public coordlat!: number;
+  public coordlon!: number;
 
   public addCategories!: BelongsToManyAddAssociationsMixin<Category, number>;
 }
@@ -40,6 +43,16 @@ User.init(
     },
     zipcode: {
       type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: false,
+    },
+    coordlat: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+      unique: false,
+    },
+    coordlon: {
+      type: DataTypes.FLOAT,
       allowNull: false,
       unique: false,
     },

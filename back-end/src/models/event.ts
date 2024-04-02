@@ -20,7 +20,8 @@ class Event extends Model implements EventInstance {
   public minAge!: number;
   public description!: string;
   public instagramEmbed!: string;
-  public location!: Location;
+  public Location!: Location;
+  public Categories!: Category[];
 
   public addCategories!: BelongsToManyAddAssociationsMixin<Category, number>;
 }

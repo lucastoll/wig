@@ -2,9 +2,15 @@ import { Request, Response, NextFunction } from "express";
 import { EventService } from "../services/EventService";
 
 class EventController {
-  static async getEvents(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const cityId = typeof req.query.cityId === 'string' ? req.query.cityId : undefined;
-    const cityName = typeof req.query.cityName === 'string' ? req.query.cityName : undefined;
+  static async getEvents(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const cityId =
+      typeof req.query.cityId === "string" ? req.query.cityId : undefined;
+    const cityName =
+      typeof req.query.cityName === "string" ? req.query.cityName : undefined;
 
     if (!cityId && !cityName) {
       res.status(400).json({
@@ -21,9 +27,53 @@ class EventController {
     }
   }
 
-  static async getEventsByDate(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const cityId = typeof req.query.cityId === 'string' ? req.query.cityId : undefined;
-    const cityName = typeof req.query.cityName === 'string' ? req.query.cityName : undefined;
+  static async getEventsRecomended(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const cityId =
+      typeof req.query.cityId === "string" ? req.query.cityId : undefined;
+    const cityName =
+      typeof req.query.cityName === "string" ? req.query.cityName : undefined;
+    const userId =
+      typeof req.query.userId === "string" ? req.query.userId : undefined;
+
+    if (!cityId && !cityName) {
+      res.status(400).json({
+        error: "Você deve fornecer um cityId ou cityName",
+      });
+      return;
+    }
+
+    if (!userId) {
+      res.status(400).json({
+        error: "Você deve fornecer um userId",
+      });
+      return;
+    }
+
+    try {
+      const events = await EventService.getEventsRecomendation(
+        cityId,
+        cityName,
+        userId
+      );
+      res.status(200).json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getEventsByDate(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const cityId =
+      typeof req.query.cityId === "string" ? req.query.cityId : undefined;
+    const cityName =
+      typeof req.query.cityName === "string" ? req.query.cityName : undefined;
 
     if (!cityId && !cityName) {
       res.status(400).json({
@@ -40,7 +90,11 @@ class EventController {
     }
   }
 
-  static async createEvent(req: Request, res: Response, next: NextFunction): Promise<void> {
+  static async createEvent(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     const fields = [
       "name",
       "imageMobile",
