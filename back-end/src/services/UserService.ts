@@ -2,6 +2,7 @@ import { User } from "../models/User";
 import { Category } from "../models/Category";
 import { CustomError } from "../errors/CustomError";
 import { OAuth2Client } from "google-auth-library";
+import getCoordinates from "../helpers/getCoordinates";
 require("dotenv").config();
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -62,12 +63,15 @@ class UserService {
       );
     }
 
+    const { latitude, longitude } = await getCoordinates(zipcode);
+
+
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       throw new CustomError("Usuário já cadastrado", 400);
     }
 
-    const newUser = await User.create({ name, email, address, zipcode });
+    const newUser = await User.create({ name, email, address, zipcode, coordlat: latitude, coordlon: longitude});
 
     await newUser.addCategories(categories);
 

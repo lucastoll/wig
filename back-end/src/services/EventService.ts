@@ -61,7 +61,15 @@ class EventService {
       throw new CustomError("Cidade não encontrada", 404);
     }
 
-    const user = await User.findByPk(userId);
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: Category,
+          as: "Categories",
+        },
+      ],
+    });
+
     if (!user) {
       throw new CustomError("Usuário não encontrado", 404);
     }
@@ -78,14 +86,16 @@ class EventService {
       ],
     });
 
-    const userCoordinates = await EventService.getCoordinates(
-      user.zipcode.toString()
-    );
+    const userCoordinates = {
+      latitude: user.coordlat,
+      longitude: user.coordlon,
+    };
 
     const eventsWithRecommendations = events.map(async (event) => {
-      const eventCoordinates = await EventService.getCoordinates(
-        event.Location.zipcode.toString()
-      );
+      const eventCoordinates = {
+        latitude: event.Location.coordlat,
+        longitude: event.Location.coordlon,
+      };
       const distance = EventService.getDistance(
         userCoordinates,
         eventCoordinates
@@ -94,22 +104,29 @@ class EventService {
       let recommendationPoints = 0;
 
       if (distance <= 1.0) {
-        recommendationPoints += 15;
+        recommendationPoints += 12;
       } else if (distance <= 3.0) {
-        recommendationPoints += 10;
+        recommendationPoints += 8;
       } else if (distance <= 5.0) {
-        recommendationPoints += 5;
+        recommendationPoints += 4;
       }
 
-      userCategories.forEach(userCategoryId => {
-        if (eventCategories.includes(userCategoryId)) {
-            recommendationPoints += 4;
+      user.Categories.forEach((userCategory) => {
+        if (
+          event.Categories.some(
+            (eventCategory) => eventCategory.id === userCategory.id
+          )
+        ) {
+          recommendationPoints += 5;
+          console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
         }
-    });
+      });
 
       console.log(
-        `A distância entre o usuário e o evento ${event.name} é de ${distance} km. Pontos de recomendação: ${recommendationPoints}`
+        `A distância entre o usuário e o evento ${event.name} é de ${distance} km.`
       );
+
+      console.log(`O evento ${event.name} recebeu ${recommendationPoints} pontos.\n\n`)
 
       return {
         ...event.get({ plain: true }),

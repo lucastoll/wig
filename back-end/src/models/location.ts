@@ -31,11 +31,11 @@ Location.init(
       allowNull: false,
     },
     coordlat: {
-      type: DataTypes.FLOAT, // Alterado para FLOAT para armazenar latitude
+      type: DataTypes.FLOAT,
       allowNull: false,
     },
     coordlon: {
-      type: DataTypes.FLOAT, // Alterado para FLOAT para armazenar longitude
+      type: DataTypes.FLOAT, 
       allowNull: false,
     },
   },
