@@ -6,6 +6,7 @@ import { CustomError } from "../errors/CustomError";
 import { City } from "../models/City";
 import axios from "axios";
 import * as geolib from "geolib";
+import { Op } from "sequelize";
 
 type EventData = Event &
   Partial<Location> & {
@@ -41,6 +42,40 @@ class EventService {
           include: [{ model: City }],
         },
       ],
+    });
+
+    return events;
+  }
+  static async getEventsByDate(
+    cityId: string | undefined,
+    cityName: string | undefined
+  ): Promise<Event[]> {
+    let city;
+    if (cityId) {
+      city = await City.findByPk(String(cityId));
+    } else if (cityName) {
+      city = await City.findOne({ where: { name: String(cityName) } });
+    }
+
+    if (!city) {
+      throw new CustomError("Cidade não encontrada", 404);
+    }
+
+    const events = await Event.findAll({
+      include: [
+        { model: Category },
+        { model: User, as: "organizer" },
+        {
+          model: Location,
+          where: { cityId: city.id },
+          include: [{ model: City }],
+        },
+      ],
+      where: {
+        finalDate: { [Op.gte]: new Date() },  
+      },
+      order: [["initialDate", "ASC"]],
+      limit: 10,
     });
 
     return events;
@@ -140,28 +175,6 @@ class EventService {
     );
 
     return resolvedEvents;
-  }
-
-  static async getCoordinates(zipcode: string) {
-    const url = `https://nominatim.openstreetmap.org/search?postalcode=${zipcode}&format=json`;
-
-    try {
-      const response = await axios.get(url);
-      const data = response.data;
-
-      if (data && data.length > 0) {
-        return {
-          latitude: data[0].lat,
-          longitude: data[0].lon,
-        };
-      } else {
-        console.log("Nenhum resultado encontrado para o CEP especificado.");
-        return null;
-      }
-    } catch (error) {
-      console.error("Erro ao processar a solicitação:", error);
-      return null;
-    }
   }
 
   static getDistance(coord1: any, coord2: any) {
