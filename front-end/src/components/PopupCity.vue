@@ -49,7 +49,7 @@ function changeCity() {
 <style scoped>
 .popup {
   position: absolute;
-  bottom: -143px;
+  bottom: -120px;
   background: #1597b1;
   border-radius: 5px;
 }
@@ -59,7 +59,7 @@ function changeCity() {
   align-items: center;
   justify-content: top;
   width: 233px;
-  height: 123px;
+  height: 100px;
   gap: 5px;
   padding-top: 10px;
 }
@@ -89,7 +89,7 @@ function changeCity() {
 }
 @media screen and (min-width: 1024px) {
   .popup {
-    bottom: -150px;
+    bottom: -130px;
     right: 0;
   }
 

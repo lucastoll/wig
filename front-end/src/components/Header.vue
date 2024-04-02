@@ -97,6 +97,7 @@ onMounted(async () => {
   width: 100%;
   height: 49px;
   position: fixed;
+  z-index: 99;
 }
 
 .header__wrapper {

@@ -5,8 +5,8 @@ import Header from "./components/Header.vue";
 import PopupRegister from "./components/PopupRegister.vue";
 import { onMounted } from "vue";
 import type { CallbackTypes } from "vue3-google-login";
-import { logout } from "@/helpers/logout.ts";
-import { login } from "@/helpers/login.ts";
+import { logout } from "@/helpers/logout";
+import { login } from "@/helpers/login";
 import { userStore } from "./store";
 
 onMounted(() => {

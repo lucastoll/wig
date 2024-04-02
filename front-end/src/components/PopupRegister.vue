@@ -80,7 +80,7 @@ const submit = async () => {
       const postResponse = await axios.post("http://localhost:3000/user", {
         name: userStore.name,
         email: userStore.email,
-        zipcode: cep.value,
+        zipcode: cep.value.replace("-", ""),
         address,
         categoryIds: selectedCategories.value,
         googleToken: localStorage.getItem("credential"),

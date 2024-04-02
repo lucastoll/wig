@@ -31,7 +31,7 @@ onUnmounted(() => {
 <style scoped>
 .popup {
   position: absolute;
-  bottom: -92px;
+  bottom: -120px;
   right: -9px;
   background: #1597b1;
   border-radius: 5px;
@@ -39,7 +39,7 @@ onUnmounted(() => {
 .popup-content {
   width: fit-content;
   min-width: 233px;
-  height: 72px;
+  height: 100px;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -68,7 +68,7 @@ onUnmounted(() => {
 
 @media screen and (min-width: 1024px) {
   .popup {
-    bottom: -100px;
+    bottom: -130px;
     right: 0;
   }
 }

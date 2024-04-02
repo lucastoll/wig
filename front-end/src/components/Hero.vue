@@ -7,63 +7,73 @@
         class="main-image"
       />
       <div class="details">
-        <ig smrc="@/assets/Calendario.png" alt="Calendar Icon" />
+        <img src="@/assets/Calendar.svg" alt="Calendar Icon" />
         <div class="event-date">
           <span>{{ formatDate(events[0].finalDate) }}</span>
         </div>
-        <p>{{ events[0].name }}</p>
+        <p class="event-title">{{ events[0].name }}</p>
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import axios from "axios";
 
-export default {
-  data() {
-    return {
-      events: [],
-      windowWidth: window.innerWidth,
-    };
-  },
-  computed: {
-    imageSrc() {
-      return this.windowWidth < 768
-        ? this.events[0].imageMobile
-        : this.events[0].imageDesktop;
-    },
-  },
-  mounted() {
-    this.fetchEvents();
-    window.addEventListener("resize", this.handleResize);
-  },
-  beforeDestroy() {
-    window.removeEventListener("resize", this.handleResize);
-  },
-  methods: {
-    handleResize() {
-      this.windowWidth = window.innerWidth;
-    },
-    async fetchEvents() {
-      try {
-        const response = await axios.get(
-          "http://localhost:3000/events?cityId=1"
-        );
-        this.events = response.data;
-        console.log(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar eventos:", error);
-      }
-    },
-    formatDate(dateString) {
-      const eventDate = new Date(dateString);
-      return eventDate.toLocaleDateString("pt-BR");
-    },
-  },
-};
-</script>
+interface Events {
+  id: number;
+  name: string;
+  imageDesktop: string;
+  imageMobile: string;
+  finalDate: string;
+}
 
+const props = defineProps<{
+  endpoint: string;
+}>();
+
+watch(props, () => {
+  fetchEvents();
+});
+
+const events = ref<Events[]>([]);
+const windowWidth = ref(window.innerWidth);
+
+const imageSrc = computed(() => {
+  return windowWidth.value < 768
+    ? events.value[0]?.imageMobile
+    : events.value[0]?.imageDesktop;
+});
+
+const handleResize = () => {
+  windowWidth.value = window.innerWidth;
+};
+
+const fetchEvents = async () => {
+  try {
+    const response = await axios.get(props.endpoint);
+    events.value = response.data;
+    console.log(response.data);
+  } catch (error) {
+    console.error("Erro ao buscar eventos:", error);
+  }
+};
+
+const formatDate = (dateString: string) => {
+  const eventDate = new Date(dateString);
+  return eventDate.toLocaleDateString("pt-BR");
+};
+
+onMounted(() => {
+  fetchEvents();
+  window.addEventListener("resize", handleResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", handleResize);
+});
+</script>
 <style scoped>
 .main-event {
   position: relative;
@@ -81,10 +91,13 @@ export default {
   position: absolute;
   width: 100%;
   bottom: 6px;
-  padding-left: 16px;
+  padding: 0 16px;
   color: white;
   z-index: 2;
   max-width: 1280px;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 
 .details img {
@@ -110,9 +123,16 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  box-shadow: 7px -50px 60px 0px #000000 inset;
+  box-shadow: 5px -71px 100px 0px #000000 inset;
 
   z-index: 0;
+}
+
+.event-title {
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 @media (min-width: 1024px) {

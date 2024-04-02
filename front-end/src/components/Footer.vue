@@ -20,19 +20,14 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      mensagem: "",
-      buttonText: "Fale Conosco",
-    };
-  },
-  methods: {
-    faleConosco() {
-      console.log("Botão 'Fale Conosco' clicado!");
-    },
-  },
+<script setup lang="ts">
+import { ref } from "vue";
+
+const mensagem = ref("");
+const buttonText = ref("Fale Conosco");
+
+const faleConosco = () => {
+  console.log("Botão 'Fale Conosco' clicado!");
 };
 </script>
 
