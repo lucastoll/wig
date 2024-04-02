@@ -1,5 +1,5 @@
-import { CustomError } from "../errors/CustomError";
-import { City } from "../models/City";
+import { CustomError } from "../errors/customError";
+import { City } from "../models/city";
 
 class CityService {
   static async getAllCities(): Promise<City[]> {

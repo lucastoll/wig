@@ -1,5 +1,7 @@
-import { CustomError } from "../errors/CustomError";
-import { Location } from "../models/Location";
+import { CustomError } from "../errors/customError";
+import getCoordinates from "../helpers/getCoordinates";
+import { Location } from "../models/location";
+import axios from "axios";
 
 class LocationService {
   static async getAllLocations(): Promise<Location[]> {
@@ -15,6 +17,8 @@ class LocationService {
     maxCapacity: number,
     cityId: number
   ): Promise<Location> {
+    const { latitude, longitude } = await getCoordinates(zipcode);
+
     const existingLocation = await Location.findOne({
       where: { address, zipcode, cityId },
     });
@@ -31,9 +35,14 @@ class LocationService {
       zipcode,
       maxCapacity,
       cityId,
+      coordlat: latitude,
+      coordlon: longitude,
     });
 
     return newLocation;
+  }
+  catch() {
+    throw new CustomError("Erro ao criar localização", 500);
   }
 }
 

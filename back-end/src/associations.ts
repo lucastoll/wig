@@ -1,8 +1,8 @@
-import { City } from "./models/City";
-import { User } from "./models/User";
-import { Category } from "./models/Category";
-import { Event } from "./models/Event";
-import { Location } from "./models/Location";
+import { City } from "./models/city";
+import { User } from "./models/user";
+import { Category } from "./models/category";
+import { Event } from "./models/event";
+import { Location } from "./models/location";
 
 // User - Category
 User.belongsToMany(Category, { through: "UserCategory" });

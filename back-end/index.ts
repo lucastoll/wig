@@ -1,12 +1,12 @@
 require("dotenv").config();
+import cors from "cors";
 import express from "express";
 import routes from "./src/routes";
 import db from "./src/db";
 import "./src/associations";
-import { errorHandler } from "./src/middleware/ErrorHandler";
-import cors from "cors";
-const app = express();
+import { errorHandler } from "./src/middleware/errorHandler";
 
+const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(routes);

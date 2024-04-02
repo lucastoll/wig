@@ -48,6 +48,8 @@ import { RouterLink } from "vue-router";
   bottom: 0;
   width: 100%;
   height: 49px;
+  z-index: 2;
+  border-top: 2px solid black;
 }
 nav {
   display: flex;
