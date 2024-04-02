@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { CityService } from "../services/CityService";
+import { CityService } from "../services/CityServicee";
 
 class CityController {
   static async getAllCities(req: Request, res: Response, next: NextFunction): Promise<void> {

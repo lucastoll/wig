@@ -2,7 +2,7 @@ import { Event } from "../models/Event";
 import { User } from "../models/User";
 import { Location } from "../models/Location";
 import { Category } from "../models/Category";
-import { CustomError } from "../errors/CustomError";
+import { CustomError } from "../errors/customErrorr";
 import { City } from "../models/City";
 import axios from "axios";
 import * as geolib from "geolib";
@@ -72,7 +72,7 @@ class EventService {
         },
       ],
       where: {
-        finalDate: { [Op.gte]: new Date() },  
+        finalDate: { [Op.gte]: new Date() },
       },
       order: [["initialDate", "ASC"]],
       limit: 10,
@@ -161,7 +161,9 @@ class EventService {
         `A distância entre o usuário e o evento ${event.name} é de ${distance} km.`
       );
 
-      console.log(`O evento ${event.name} recebeu ${recommendationPoints} pontos.\n\n`)
+      console.log(
+        `O evento ${event.name} recebeu ${recommendationPoints} pontos.\n\n`
+      );
 
       return {
         ...event.get({ plain: true }),

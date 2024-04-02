@@ -1,4 +1,4 @@
-import { CustomError } from "../errors/CustomError";
+import { CustomError } from "../errors/customErrorr";
 import getCoordinates from "../helpers/getCoordinates";
 import { Location } from "../models/Location";
 import axios from "axios";

@@ -4,7 +4,7 @@ import express from "express";
 import routes from "./src/routes";
 import db from "./src/db";
 import "./src/associations";
-import { errorHandler } from "./src/middleware/ErrorHandler";
+import { errorHandler } from "./src/middleware/ErrorHandlerr";
 
 const app = express();
 app.use(cors());

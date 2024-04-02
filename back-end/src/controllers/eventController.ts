@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { EventService } from "../services/EventService";
+import { EventService } from "../services/EventServicee";
 
 class EventController {
   static async getEvents(
