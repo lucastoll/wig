@@ -1,25 +1,33 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
+import { RouterView } from "vue-router";
+import NavBar from "./components/NavBar.vue";
+import Header from "./components/Header.vue";
+import PopupRegister from "./components/PopupRegister.vue";
+import { onMounted } from "vue";
+import type { CallbackTypes } from "vue3-google-login";
+import { logout } from "@/helpers/logout";
+import { login } from "@/helpers/login";
+import { userStore } from "./store";
+
+onMounted(() => {
+  const credential = localStorage.getItem("credential");
+  try {
+    credential &&
+      login({
+        credential,
+      } as unknown as CallbackTypes.CredentialPopupResponse);
+  } catch (e) {
+    logout();
+    console.log(e);
+  }
+});
 </script>
 
 <template>
-  <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="@/assets/logo.svg"
-      width="125"
-      height="125"
-    />
-    <div>
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
+  <Header />
+  <NavBar />
   <RouterView />
+  <PopupRegister :isOpen="userStore.registerDone === false" />
 </template>
 
 <style scoped></style>

@@ -1,18 +1,24 @@
-import { Sequelize, DataTypes, Model } from "sequelize";
+import { BelongsToManyAddAssociationsMixin, DataTypes, Model } from "sequelize";
 import db from "../db";
+import { Category } from "./category";
 
-class User extends Model {
+interface UserInstance extends Model {
+  addCategories: BelongsToManyAddAssociationsMixin<Category, number>;
+}
+
+class User extends Model implements UserInstance {
   public id!: number;
-  public nome!: string;
+  public name!: string;
   public email!: string;
+  public address!: string;
+  public zipcode!: number;
+  public Categories!: Category[];
+  public coordlat!: number;
+  public coordlon!: number;
+
+  public addCategories!: BelongsToManyAddAssociationsMixin<Category, number>;
 }
 
-class Order extends Model {
-  public id!: number;
-  public descricao!: string;
-}
-
-// Define os modelos
 User.init(
   {
     id: {
@@ -21,7 +27,7 @@ User.init(
       autoIncrement: true,
       allowNull: false,
     },
-    nome: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -30,6 +36,26 @@ User.init(
       allowNull: false,
       unique: true,
     },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: false,
+    },
+    zipcode: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: false,
+    },
+    coordlat: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+      unique: false,
+    },
+    coordlon: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+      unique: false,
+    },
   },
   {
     sequelize: db,
@@ -37,26 +63,4 @@ User.init(
   }
 );
 
-Order.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false,
-    },
-    descricao: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  },
-  {
-    sequelize: db,
-    modelName: "Order",
-  }
-);
-
-User.belongsToMany(Order, { through: "ClientOrder" });
-Order.belongsToMany(User, { through: "ClientOrder" });
-
-export { User, Order };
+export { User };

@@ -1,77 +1,75 @@
-import { Request, Response } from "express";
-import { User } from "../models/User";
-import { ValidationError } from "sequelize";
+import { Request, Response, NextFunction } from "express";
+import { UserService } from "../services/userService";
 
 class UserController {
-  static async getAllUsers(req: Request, res: Response): Promise<void> {
+  static async getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const users = await User.findAll();
+      const users = await UserService.getAllUsers();
       res.json(users);
     } catch (error) {
-      console.error("Erro ao buscar usuários:", error);
-      res.status(500).json({ error: "Erro ao buscar usuários" });
+      next(error);
     }
   }
 
-  static async createUser(req: Request, res: Response): Promise<void> {
-    const { nome, email } = req.body;
+  static async getUserByEmail(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { email } = req.params;
 
-    if (!nome || !email) {
+    if (!email) {
       res.status(400).json({
-        error: "Todos os campos são obrigatórios: nome, email, senha",
+        error: "O campo email é obrigatório",
       });
+      return;
     }
 
     try {
-      const newUser = await User.create({ nome, email });
+      const user = await UserService.getUserByEmail(email);
+
+      if (!user) {
+        res.status(404).json({ error: "Usuário não encontrado" });
+        return;
+      }
+
+      res.status(200).json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { name, email, address, categoryIds, zipcode, googleToken } = req.body;
+
+    const fields = [
+      "name",
+      "email",
+      "address",
+      "zipcode",
+      "categoryIds",
+      "googleToken"
+    ];
+    
+    for (let field of fields) {
+      if (!req.body[field]) {
+        res.status(400).json({
+          error: `O campo ${field} é obrigatório`,
+        });
+        return;
+      }
+    }
+    
+    if (!Array.isArray(req.body.categoryIds)) {
+      res.status(400).json({
+        error: "O campo categoryIds deve ser um array",
+      });
+      return;
+    }
+
+    try {
+      const newUser = await UserService.createUser(name, email, address, categoryIds, zipcode, googleToken);
       res.status(201).json(newUser);
     } catch (error) {
-      if (error instanceof ValidationError) {
-        console.error("Erro de validação ao criar usuário:", error.errors);
-        res.status(400).json({
-          error: "Erro de validação ao criar usuário",
-          details: error.errors,
-        });
-      } else {
-        console.error("Erro ao criar usuário:", error);
-        res.status(500).json({ error: "Erro ao criar usuário" });
-      }
-    }
-  }
-
-  static async updateUser(req: Request, res: Response): Promise<void> {
-    const userId = req.params.id;
-    const { nome, email, senha } = req.body;
-    try {
-      const [updatedRows] = await User.update(
-        { nome, email, senha },
-        { where: { id: userId } }
-      );
-      if (updatedRows > 0) {
-        res.json({ message: "Usuário atualizado com sucesso" });
-      } else {
-        res.status(404).json({ error: "Usuário não encontrado" });
-      }
-    } catch (error) {
-      console.error("Erro ao atualizar usuário:", error);
-      res.status(500).json({ error: "Erro ao atualizar usuário" });
-    }
-  }
-
-  static async deleteUser(req: Request, res: Response): Promise<void> {
-    const userId = req.params.id;
-    try {
-      const deletedRows = await User.destroy({ where: { id: userId } });
-      if (deletedRows > 0) {
-        res.json({ message: "Usuário deletado com sucesso" });
-      } else {
-        res.status(404).json({ error: "Usuário não encontrado" });
-      }
-    } catch (error) {
-      console.error("Erro ao deletar usuário:", error);
-      res.status(500).json({ error: "Erro ao deletar usuário" });
+      next(error);
     }
   }
 }
 
-export default UserController;
+export { UserController };
