@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
+import { RouterLink } from "vue-router";
 </script>
 
 <template>
@@ -15,11 +15,11 @@ import { RouterLink, RouterView } from "vue-router";
         />
         <span>Home</span>
       </RouterLink>
-      <RouterLink class="routerlogo" to="/about">
+      <RouterLink class="routerlogo" to="/events">
         <img
           alt="Evento logo"
           class="logo"
-          src="@/assets/Vector.svg"
+          src="@/assets/Calendar.svg"
           width="18"
           height="18"
         />

@@ -40,8 +40,24 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import axios from "axios";
+
+interface Category {
+  name: string;
+}
+
+interface Location {
+  address: string;
+}
+
+interface Event {
+  imageMobile: string;
+  finalDate: string;
+  name: string;
+  Categories: Category[];
+  Location: Location;
+}
 
 export default {
   props: {
@@ -56,7 +72,7 @@ export default {
   },
   data() {
     return {
-      events: [],
+      events: [] as Event[],
       showLeftArrow: false,
       showRightArrow: false,
     };
@@ -69,19 +85,24 @@ export default {
   beforeDestroy() {
     window.removeEventListener("resize", this.checkScroll);
   },
+  watch: {
+    endpoint: {
+      handler: "fetchEvents",
+      immediate: true,
+    },
+  },
   methods: {
     async fetchEvents() {
       try {
         const response = await axios.get(this.endpoint);
         this.events = response.data;
-        this.events = [...response.data, ...response.data, ...response.data];
         console.log(response.data);
       } catch (error) {
         console.error("Erro ao buscar eventos:", error);
       }
     },
     checkScroll() {
-      const wrapper = this.$refs.eventsWrapper;
+      const wrapper = this.$refs.eventsWrapper as HTMLElement;
       const scrollWidth = wrapper.scrollWidth;
       const clientWidth = wrapper.clientWidth;
       const scrollLeft = wrapper.scrollLeft;
@@ -91,22 +112,24 @@ export default {
       this.showLeftArrow = !isMobile && scrollLeft > 0;
       this.showRightArrow =
         !isMobile &&
-        wrapper.children[wrapper.children.length - 2]?.offsetLeft +
-          wrapper.children[wrapper.children.length - 2]?.clientWidth >
+        (wrapper.children[wrapper.children.length - 2] as HTMLElement)
+          ?.offsetLeft +
+          (wrapper.children[wrapper.children.length - 2] as HTMLElement)
+            ?.clientWidth >
           clientWidth &&
         scrollLeft < maxScroll;
     },
     scrollLeft() {
-      const wrapper = this.$refs.eventsWrapper;
+      const wrapper = this.$refs.eventsWrapper as HTMLElement;
       wrapper.scrollBy({ left: -150, behavior: "smooth" });
       this.checkScroll();
     },
     scrollRight() {
-      const wrapper = this.$refs.eventsWrapper;
+      const wrapper = this.$refs.eventsWrapper as HTMLElement;
       wrapper.scrollBy({ left: 150, behavior: "smooth" });
       this.checkScroll();
     },
-    formatDate(dateString) {
+    formatDate(dateString: string) {
       const eventDate = new Date(dateString);
       const today = new Date();
       const tomorrow = new Date();
@@ -120,7 +143,7 @@ export default {
         return eventDate.toLocaleDateString("pt-BR");
       }
     },
-    eventDateBackgroundColor(dateString) {
+    eventDateBackgroundColor(dateString: string) {
       const eventDate = new Date(dateString);
       const today = new Date();
       const tomorrow = new Date();

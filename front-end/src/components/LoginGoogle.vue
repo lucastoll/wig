@@ -1,48 +1,46 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
-import { decodeCredential, googleOneTap } from "vue3-google-login";
+import { computed } from "vue";
 import { userStore } from "../store";
+import { login } from "@/helpers/login";
+import { logout } from "@/helpers/logout";
 
-const callback = (response) => {
-  const userData = decodeCredential(response.credential);
-  localStorage.setItem("credential", response.credential);
-  userStore.loggedIn = true;
-  userStore.name = userData.name;
-  userStore.email = userData.email;
-  userStore.profilePicture = userData.picture;
-};
-
-const logout = () => {
-  localStorage.removeItem("credential");
-  userStore.loggedIn = false;
-  userStore.name = "";
-  userStore.email = "";
-  userStore.profilePicture = "";
-};
-
-onMounted(() => {
-  const credential = localStorage.getItem("credential");
-  try {
-    callback({ credential });
-    if (credential) {
-      googleOneTap(credential, callback);
-    }
-  } catch (e) {
-    console.log(e);
-  }
-});
+const name = computed(() => userStore.name?.split(" ")[0] || "Visitante");
 </script>
 
 <template>
   <div>
+    <span class="loginGoogle__name">Olá, {{ name }}</span>
     <div v-if="!userStore.loggedIn">
-      <GoogleLogin :callback="callback" auto-login />
+      <GoogleLogin :callback="login" auto-login />
     </div>
-    <button v-else @click="logout">Logout</button>
-
-    <div v-if="userStore.loggedIn">
-      <p>Name: {{ userStore.name }}</p>
-      <p>Email: {{ userStore.email }}</p>
+    <div class="loginGoogle__logout" v-else>
+      <img
+        alt="Sair da conta"
+        src="@/assets/Leave.svg"
+        width="20"
+        height="20"
+      />
+      <span @click="logout">Sair da conta</span>
     </div>
   </div>
 </template>
+
+<style scoped>
+.loginGoogle__name {
+  display: block;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 8px;
+}
+.loginGoogle__logout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.loginGoogle__logout {
+  color: red;
+  text-decoration: underline;
+}
+</style>
