@@ -25,3 +25,4 @@ cd .\back-end
 npm install
 npm run dev
 ```
+Apos isso, acesse explicitamente o endereço localhost:5173, caso o Vue abra em 127.0.0.1 troque a URL para localhost, isso é necessário pois precisamos colocar a origem do javascript na API de autenticação do google, e o 127.0.0.1 não é um domínio aceito
