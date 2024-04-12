@@ -1,5 +1,8 @@
+<script setup lang="ts">
+import SearchBar from "../components/SearchBar.vue";
+
+</script>
+
 <template>
-  <div class="events">
-    <h1>esta é a pagina de eventos</h1>
-  </div>
+  <SearchBar/>
 </template>
