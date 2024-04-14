@@ -15,7 +15,7 @@ defineProps({
 onMounted(async () => {
   try {
     await axios
-      .get(`${import.meta.env.VITE_BASE_URL}/categories`)
+      .get(`${import.meta.env.VITE_API_URL}/categories`)
       .then((response) => {
         categories.value = response.data;
       });
@@ -76,7 +76,7 @@ const submit = async () => {
         addressResponse.data.uf;
 
       const postResponse = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/user`,
+        `${import.meta.env.VITE_API_URL}/user`,
         {
           name: userStore.name,
           email: userStore.email,
