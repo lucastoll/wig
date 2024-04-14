@@ -41,8 +41,8 @@
 </template>
 
 <script lang="ts">
-import type IEvent from "@/types/IEvent";
 import axios from "axios";
+import type IEvent from "@/types/IEvent";
 
 export default {
   props: {

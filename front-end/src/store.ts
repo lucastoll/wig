@@ -1,20 +1,12 @@
 import { reactive } from "vue";
-import type { City } from "./types/ICity";
-
-export interface IUserStore {
-  id?: string;
-  loggedIn?: boolean;
-  name?: string;
-  email?: string;
-  profilePicture?: string;
-  registerDone?: boolean;
-}
+import type { ICity } from "@/types/ICity";
+import type { IUserStore } from "@/types/IUserStore";
 
 export const userStore: IUserStore = reactive({
   loggedIn: false,
 });
 
-export const cityStore: City = reactive({} as City);
+export const cityStore: ICity = reactive({} as ICity);
 
 const storedCity = localStorage.getItem("city");
 if (storedCity) {
