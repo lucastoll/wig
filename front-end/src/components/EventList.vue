@@ -10,7 +10,12 @@
         >
           <div class="arrow-click-area">&#10094;</div>
         </div>
-        <div class="event-card" v-for="(event, index) in events" :key="index">
+        <div
+          @click="$router.push(`/event/${event.id}`)"
+          class="event-card"
+          v-for="(event, index) in events"
+          :key="index"
+        >
           <img :src="event.imageMobile" alt="Event Image" />
           <div class="event-details">
             <div
@@ -42,6 +47,7 @@
 
 <script lang="ts">
 import axios from "axios";
+import { useRouter } from "vue-router";
 import type IEvent from "@/types/IEvent";
 
 export default {
@@ -66,6 +72,7 @@ export default {
     this.checkScroll();
     this.fetchEvents();
     window.addEventListener("resize", this.checkScroll);
+    const router = useRouter();
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.checkScroll);

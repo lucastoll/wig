@@ -1,6 +1,10 @@
 <template>
   <div id="app">
-    <div v-if="events.length > 0" class="main-event">
+    <div
+      @click="router.push(`event/${events[0].id}`)"
+      v-if="events.length > 0"
+      class="main-event"
+    >
       <img
         :src="imageSrc"
         :alt="'Event Image ' + events[0].name"
@@ -20,7 +24,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
 import type IEvent from "@/types/IEvent";
+
+const router = useRouter();
 
 const props = defineProps<{
   endpoint: string;
