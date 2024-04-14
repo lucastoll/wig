@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div
-      @click="router.push(`event/${events[0].id}`)"
+      @click="goToEvent(events[0])"
       v-if="events.length > 0"
       class="main-event"
     >
@@ -24,10 +24,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import axios from "axios";
-import { useRouter } from "vue-router";
 import type IEvent from "@/types/IEvent";
-
-const router = useRouter();
+import goToEvent from "@/helpers/goToEvent";
 
 const props = defineProps<{
   endpoint: string;

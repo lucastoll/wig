@@ -11,7 +11,7 @@
           <div class="arrow-click-area">&#10094;</div>
         </div>
         <div
-          @click="$router.push(`/event/${event.id}`)"
+          @click="goToEvent(event)"
           class="event-card"
           v-for="(event, index) in events"
           :key="index"
@@ -49,6 +49,7 @@
 import axios from "axios";
 import { useRouter } from "vue-router";
 import type IEvent from "@/types/IEvent";
+import goToEvent from "@/helpers/goToEvent";
 
 export default {
   props: {
@@ -84,6 +85,9 @@ export default {
     },
   },
   methods: {
+    goToEvent(event: IEvent) {
+      goToEvent(event);
+    },
     async fetchEvents() {
       try {
         const response = await axios.get(this.endpoint);

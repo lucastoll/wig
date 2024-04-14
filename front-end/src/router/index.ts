@@ -18,6 +18,16 @@ const router = createRouter({
       name: "event",
       component: () => import("@/views/EventView.vue"),
     },
+    {
+      path: "/locations",
+      name: "locations",
+      component: () => import("@/views/LocationsView.vue"),
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "NotFound",
+      component: () => import("@/views/NotFoundView.vue"),
+    },
   ],
 });
 
