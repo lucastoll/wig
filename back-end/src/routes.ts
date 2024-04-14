@@ -24,5 +24,6 @@ router.get("/events", EventController.getEvents);
 router.get("/events/recommendation", EventController.getEventsRecomended);
 router.get("/events/date", EventController.getEventsByDate);
 router.post("/event", EventController.createEvent);
+router.get("/event/getId/:id", EventController.getEventById);
 
 export default router;

@@ -90,6 +90,28 @@ class EventController {
     }
   }
 
+  static async getEventById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const eventId =
+    typeof req.params.id === "string" ? req.params.id : undefined;
+    if (!eventId) {
+      res.status(400).json({
+        error: "Você deve fornecer um Id",
+      });
+      return;
+    }
+
+    try {
+      const events = await EventService.getEventsById(eventId);
+      res.status(200).json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async createEvent(
     req: Request,
     res: Response,
