@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { onUnmounted, ref, onMounted, computed, watchEffect } from "vue";
-import axios from "axios";
-import { cityStore, type City } from "../store";
+import { onUnmounted, onMounted } from "vue";
+import { cityStore } from "@/store";
+import type { ICity } from "@/types/ICity";
 
 const props = defineProps<{
   closePopup: () => void;
-  cities: City[];
+  cities: ICity[];
 }>();
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -100,3 +100,4 @@ function changeCity() {
   }
 }
 </style>
+@/types/iCity

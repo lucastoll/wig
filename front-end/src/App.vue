@@ -16,9 +16,9 @@ onMounted(() => {
       login({
         credential,
       } as unknown as CallbackTypes.CredentialPopupResponse);
-  } catch (e) {
+  } catch (error) {
     logout();
-    console.log(e);
+    console.log(error);
   }
 });
 </script>

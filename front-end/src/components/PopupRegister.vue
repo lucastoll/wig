@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import { userStore } from "../store";
-import { logout } from "@/helpers/logout";
 import axios from "axios";
-
-interface Category {
-  name: string;
-  id: number;
-}
+import { userStore } from "@/store";
+import { logout } from "@/helpers/logout";
+import type ICategory from "@/types/ICategory";
 
 defineProps({
   isOpen: {
@@ -19,12 +15,12 @@ defineProps({
 onMounted(async () => {
   try {
     await axios
-      .get(`http://${import.meta.env.VITE_BASE_URL}/categories`)
+      .get(`${import.meta.env.VITE_BASE_URL}/categories`)
       .then((response) => {
         categories.value = response.data;
       });
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 });
 
@@ -32,7 +28,7 @@ const stage = ref<number>(1);
 const cep = ref("");
 const cepError = ref(false);
 const hasSubmitError = ref(false);
-const categories = ref<Category[]>([]);
+const categories = ref<ICategory[]>([]);
 const selectedCategories = ref<number[]>([]);
 
 watch(cep, (newCep) => {
@@ -93,8 +89,8 @@ const submit = async () => {
 
       userStore.registerDone = true;
       userStore.id = postResponse.data.id;
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log(error);
     }
   }
 };
@@ -277,3 +273,4 @@ const submit = async () => {
   color: white;
 }
 </style>
+@/types/ICategory

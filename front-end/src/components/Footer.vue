@@ -23,7 +23,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-const mensagem = ref("");
 const buttonText = ref("Fale Conosco");
 
 const faleConosco = () => {

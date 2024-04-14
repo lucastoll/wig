@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import axios from "axios";
+import { onMounted, ref } from "vue";
+import { RouterLink } from "vue-router";
 import PopupCity from "@/components/PopupCity.vue";
 import PopupLogin from "@/components/PopupLogin.vue";
-import { RouterLink } from "vue-router";
-import { onMounted, ref } from "vue";
-import { cityStore, type City } from "../store";
-import axios from "axios";
+import { cityStore } from "@/store";
+import type { ICity } from "@/types/ICity";
 
-const cities = ref<City[]>([]);
+const cities = ref<ICity[]>([]);
 const citiesLoading = ref<boolean>(false);
 const showPopupCity = ref<boolean>(false);
 const showPopupLogin = ref<boolean>(false);
@@ -213,3 +214,4 @@ onMounted(async () => {
   }
 }
 </style>
+@/types/iCity
