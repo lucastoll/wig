@@ -34,11 +34,11 @@ const openPopupCity = (event: MouseEvent) => {
 onMounted(async () => {
   try {
     citiesLoading.value = true;
-    const response = await axios.get("http://localhost:3000/cities");
+    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/cities`);
     citiesLoading.value = false;
     cities.value = response.data;
   } catch (error) {
-    console.log("erro");
+    console.error(error);
   }
 });
 </script>

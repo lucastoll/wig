@@ -54,7 +54,6 @@ const fetchEvents = async () => {
   try {
     const response = await axios.get(props.endpoint);
     events.value = response.data;
-    console.log(response.data);
   } catch (error) {
     console.error("Erro ao buscar eventos:", error);
   }

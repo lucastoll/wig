@@ -18,9 +18,11 @@ defineProps({
 
 onMounted(async () => {
   try {
-    await axios.get("http://localhost:3000/categories").then((response) => {
-      categories.value = response.data;
-    });
+    await axios
+      .get(`http://${import.meta.env.VITE_BASE_URL}/categories`)
+      .then((response) => {
+        categories.value = response.data;
+      });
   } catch (e) {
     console.log(e);
   }
@@ -77,14 +79,17 @@ const submit = async () => {
         ", " +
         addressResponse.data.uf;
 
-      const postResponse = await axios.post("http://localhost:3000/user", {
-        name: userStore.name,
-        email: userStore.email,
-        zipcode: cep.value.replace("-", ""),
-        address,
-        categoryIds: selectedCategories.value,
-        googleToken: localStorage.getItem("credential"),
-      });
+      const postResponse = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/user`,
+        {
+          name: userStore.name,
+          email: userStore.email,
+          zipcode: cep.value.replace("-", ""),
+          address,
+          categoryIds: selectedCategories.value,
+          googleToken: localStorage.getItem("credential"),
+        }
+      );
 
       userStore.registerDone = true;
       userStore.id = postResponse.data.id;

@@ -6,17 +6,19 @@ import EventList from "../components/EventList.vue";
 import { cityStore, userStore } from "@/store";
 
 const heroEndpoint = computed(
-  () => `http://localhost:3000/events?cityId=${cityStore.id}`
+  () => `${import.meta.env.VITE_BASE_URL}/events?cityId=${cityStore.id}`
 );
 const eventListEndpoint = computed(() => {
   if (userStore.loggedIn === false && cityStore.id !== null) {
-    return `http://localhost:3000/events?cityId=${cityStore.id}`;
+    return `${import.meta.env.VITE_BASE_URL}/events?cityId=${cityStore.id}`;
   } else {
-    return `http://localhost:3000/events/recommendation?cityId=${cityStore.id}&userId=${userStore.id}`;
+    return `${import.meta.env.VITE_BASE_URL}/events/recommendation?cityId=${
+      cityStore.id
+    }&userId=${userStore.id}`;
   }
 });
 const upcomingEventsEndpoint = computed(
-  () => `http://localhost:3000/events/date?cityId=${cityStore.id}`
+  () => `${import.meta.env.VITE_BASE_URL}/events/date?cityId=${cityStore.id}`
 );
 </script>
 
