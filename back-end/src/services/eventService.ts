@@ -5,7 +5,6 @@ import { Category } from "../models/category";
 import { CustomError } from "../errors/customError";
 import { City } from "../models/city";
 import axios from "axios";
-import * as geolib from "geolib";
 import { Op } from "sequelize";
 
 type EventData = Event &
