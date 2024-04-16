@@ -19,6 +19,13 @@
         <img v-if="selectedFilters.includes(index)" :src="option.image" alt="Selected filter" class="selected-filter-image" />
       </div>
     </div>
+    <p v-if="searchQuery" class="search-results">
+      Resultados de busca para: <b>{{ searchQuery }}</b>
+    </p>
+    <div v-if="searchResults.length === 0 && searchQuery !== ''" class="no-results">
+      <img src="@/assets/NothingFound.png" alt="No results found" class="no-results-image"/>
+      <p class="no-results-text">Oops! Parece que nenhum evento foi encontrado.</p>
+    </div>
   </div>
 </template>
 
@@ -30,6 +37,7 @@ export default {
   data() {
     return {
       searchQuery: '',
+      searchResults: [],
       showFilters: false,
       selectedFilters: [],
       filterOptions: [
@@ -41,8 +49,9 @@ export default {
   },
   methods: {
     debouncedSearch: debounce(function () {
-      // Implemente aqui a lógica para atualizar a requisição após 4 segundos sem digitar
-      console.log('Atualizando requisição...');
+      // Realize a busca aqui, mas não atualize os resultados de busca diretamente
+      // Em vez disso, mantenha o texto da consulta mesmo se não houver resultados
+      this.searchResults = this.performSearch();
     }, 4000),
     toggleFilters() {
       this.showFilters = !this.showFilters;
@@ -54,25 +63,30 @@ export default {
       } else {
         this.selectedFilters.splice(filterIndex, 1);
       }
+    },
+    performSearch() {
+      // Aqui você deve implementar a lógica para realizar a busca
+      // Retorne os resultados da busca (ou uma lista vazia se não houver resultados)
+      // Por enquanto, estou retornando uma lista vazia como exemplo
+      return [];
     }
   },
 };
 </script>
-
 
 <style scoped>
 .arrow {
   content: "";
   position: absolute;
   left: auto;
-  right: 51px;
+  right: 13px;
   transform: none;
   width: 0;
   height: 0;
-  top: 102px;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid #000000;
+  margin-top: -138px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #000000;
 }
 
 
@@ -81,6 +95,7 @@ export default {
   margin-top: 10px;
   justify-content: center;
   flex-direction: column;
+  align-self: center;
 }
 
 .search-bar {
@@ -118,21 +133,52 @@ margin-top: 5px;
 .title-filter {
   color: black;
   align-self: flex-start;
+  font-family: Inter;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 16px;
+  text-align: left;
+  margin-top: 5px;
 }
 
 .filter-options {
+  z-index: 20;
+  position: absolute;
   width: fit-content;
-  min-width: 233px;
+  min-width: 200px;
+  top: 110px;
   height: 130px;
   padding: 10px;
-  margin-right: 50px;
+  margin-right: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-self: flex-end;
   align-items: flex-start;
   border: 1px solid #000000;
+  background-color: white;
   border-radius: 4px;
+}
+
+@media screen and (min-width: 1024px) {
+  .filter-options {
+    z-index: 20;
+    position: absolute;
+    width: fit-content;
+    min-width: 233px;
+    top: 140px;
+    height: 130px;
+    padding: 10px;
+    margin-right: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: flex-end;
+    align-items: flex-start;
+    border: 1px solid #000000;
+    background-color: white;
+    border-radius: 4px;
+  }  
 }
 
 .filter-option {
@@ -142,6 +188,11 @@ margin-top: 5px;
   align-self: flex-start;
   color: black;
   position: relative;
+  font-family: Inter;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 14px;
+  margin-top: 8px;
 }
 
 .selected-filter-image {
@@ -153,4 +204,37 @@ margin-top: 5px;
   top: 50%;
   transform: translateY(-50%);
 }
+
+.search-results {
+  color: black;
+  align-self: left;
+  margin-left: 42px;
+  font-family: Inter;
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: 10px;
+}
+
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.no-results-image {
+  width: 80%;
+  height: auto;
+}
+
+.no-results-text {
+  margin-top: 10px;
+  text-align: center;
+  font-family: Inter;
+  font-size: 18px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: black;
+}
+
 </style>
