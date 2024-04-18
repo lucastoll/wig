@@ -42,22 +42,7 @@
 
 <script lang="ts">
 import axios from "axios";
-
-interface Category {
-  name: string;
-}
-
-interface Location {
-  address: string;
-}
-
-interface Event {
-  imageMobile: string;
-  finalDate: string;
-  name: string;
-  Categories: Category[];
-  Location: Location;
-}
+import type IEvent from "@/types/IEvent";
 
 export default {
   props: {
@@ -72,7 +57,7 @@ export default {
   },
   data() {
     return {
-      events: [] as Event[],
+      events: [] as IEvent[],
       showLeftArrow: false,
       showRightArrow: false,
     };
@@ -96,7 +81,6 @@ export default {
       try {
         const response = await axios.get(this.endpoint);
         this.events = response.data;
-        console.log(response.data);
       } catch (error) {
         console.error("Erro ao buscar eventos:", error);
       }

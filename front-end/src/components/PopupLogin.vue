@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onUnmounted } from "vue";
 import { onMounted } from "vue";
-import LoginGoogle from "./LoginGoogle.vue";
+import LoginGoogle from "@/components/LoginGoogle.vue";
 
 const props = defineProps<{
   closePopup: () => void;

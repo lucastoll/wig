@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { userStore } from "../store";
+import { userStore } from "@/store";
 import { login } from "@/helpers/login";
 import { logout } from "@/helpers/logout";
 

@@ -20,14 +20,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import axios from "axios";
-
-interface Events {
-  id: number;
-  name: string;
-  imageDesktop: string;
-  imageMobile: string;
-  finalDate: string;
-}
+import type IEvent from "@/types/IEvent";
 
 const props = defineProps<{
   endpoint: string;
@@ -37,7 +30,7 @@ watch(props, () => {
   fetchEvents();
 });
 
-const events = ref<Events[]>([]);
+const events = ref<IEvent[]>([]);
 const windowWidth = ref(window.innerWidth);
 
 const imageSrc = computed(() => {
@@ -54,7 +47,6 @@ const fetchEvents = async () => {
   try {
     const response = await axios.get(props.endpoint);
     events.value = response.data;
-    console.log(response.data);
   } catch (error) {
     console.error("Erro ao buscar eventos:", error);
   }
@@ -143,3 +135,4 @@ onBeforeUnmount(() => {
   }
 }
 </style>
+@/types/IEvent
