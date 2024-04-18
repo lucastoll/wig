@@ -81,6 +81,24 @@ class EventService {
     return events;
   }
 
+  static async getEventsById(eventId: string): Promise<Event | null> {
+    try {
+      const event = await Event.findByPk(eventId, {
+        include: [
+          { model: Category },
+          { model: User, as: "organizer" },
+          { model: Location },
+        ],
+      });
+
+      return event;
+    } catch (error) {
+      console.error("Erro ao buscar evento por ID:", error);
+      throw new Error("Erro ao buscar evento por ID");
+    }
+  }
+
+
   static async getEventsRecomendation(
     cityId: string | undefined,
     cityName: string | undefined,
