@@ -84,8 +84,6 @@ class EventController {
       return;
     }
 
-    console.log('searchBar Controller:', searchBar)
-
     try {
       const events = await EventService.getEventsByDate(cityId, cityName, searchBar);
       res.status(200).json(events);
@@ -121,8 +119,6 @@ class EventController {
       });
       return;
     }
-
-    console.log('search bar Controller:', searchBar)
 
     try {
       const events = await EventService.getEventsByDistance(
@@ -164,8 +160,6 @@ class EventController {
       });
       return;
     }
-
-    console.log('search bar Controller:', searchBar)
 
     try {
       const events = await EventService.getEventsByCategories(

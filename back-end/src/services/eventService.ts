@@ -45,12 +45,11 @@ class EventService {
 
     return events;
   }
-  
+
   static async getEventsByDate(
     cityId: string | undefined,
     cityName: string | undefined,
     searchBar: string | undefined
-
   ): Promise<Event[]> {
     let city;
     if (cityId) {
@@ -62,8 +61,6 @@ class EventService {
     if (!city) {
       throw new CustomError("Cidade não encontrada", 404);
     }
-
-    console.log('searchBar Services:', searchBar)
 
     let eventsQuery: any = {
       include: [
@@ -85,9 +82,7 @@ class EventService {
     if (searchBar) {
       eventsQuery.where = {
         ...eventsQuery.where,
-        [Op.or]: [
-          literal(`LOWER(name) LIKE LOWER('%${searchBar}%')`),
-        ]
+        [Op.or]: [literal(`LOWER(name) LIKE LOWER('%${searchBar}%')`)],
       };
     }
 
@@ -112,7 +107,6 @@ class EventService {
       throw new Error("Erro ao buscar evento por ID");
     }
   }
-
 
   static async getEventsRecomendation(
     cityId: string | undefined,
@@ -164,10 +158,7 @@ class EventService {
         latitude: event.Location.coordlat,
         longitude: event.Location.coordlon,
       };
-      const distance = getDistance(
-        userCoordinates,
-        eventCoordinates
-      );
+      const distance = getDistance(userCoordinates, eventCoordinates);
       let recommendationPoints = 0;
 
       if (distance <= 1.0) {
@@ -201,7 +192,7 @@ class EventService {
 
     return resolvedEvents;
   }
-  
+
   static async getEventsByCategories(
     cityId: string | undefined,
     cityName: string | undefined,
@@ -245,7 +236,7 @@ class EventService {
 
     if (searchBar) {
       eventsQuery.where = {
-        name: { [Op.like]: `%${searchBar}%` } // Search for events with name containing the searchBar content
+        name: { [Op.like]: `%${searchBar}%` },
       };
     }
 
@@ -257,9 +248,7 @@ class EventService {
         longitude: event.Location.coordlon,
       };
 
-
       let recommendationPoints = 0;
-
 
       user.Categories.forEach((userCategory) => {
         if (
@@ -335,31 +324,23 @@ class EventService {
       latitude: user.coordlat,
       longitude: user.coordlon,
     };
-  
+
     const eventsWithRecommendations = events.map(async (event) => {
       const eventCoordinates = {
         latitude: event.Location.coordlat,
         longitude: event.Location.coordlon,
       };
-  
-      const distance = EventService.getDistance(
-        userCoordinates,
-        eventCoordinates
-      );
-  
+
+      const distance = getDistance(userCoordinates, eventCoordinates);
+
       return {
         event: event.get({ plain: true }),
         distance,
       };
     });
-  
-    // Aguarde todas as promessas mapeadas para resolução
+
     const resolvedEvents = await Promise.all(eventsWithRecommendations);
-  
-    // Ordenar os eventos com base na distância em ordem crescente
     resolvedEvents.sort((a, b) => a.distance - b.distance);
-  
-    // Retornar apenas os eventos ordenados
     return resolvedEvents.map((event) => event.event);
   }
 
