@@ -17,9 +17,12 @@
                                 v-for="(category, catIndex) in event.Categories"
                                 :key="catIndex"
                                 class="event-category"
-                            >
+                                :style="{ borderColor: isUserCategory(category) ? 'green' : '#505050' }"
+                                >
                                 {{ category.name }}
                             </div>
+
+
                         </div>
                         <div class="event-location">{{ event?.Location?.address }}</div>
                     </div>
@@ -80,6 +83,7 @@ export default {
             try {
                 const response = await axios.get(this.endpoint);
                 this.events = response.data;
+                console.log(this.user);
             } catch (error) {
                 console.error("Erro ao buscar eventos:", error);
             }
@@ -105,17 +109,22 @@ export default {
             tomorrow.setDate(tomorrow.getDate() + 1);
             const isDesktop = window.innerWidth >= 1024;
 
-            if (
+            if (isDesktop) {
+                return "white";
+            } else if (
                 eventDate.toDateString() === today.toDateString() ||
                 eventDate.toDateString() === tomorrow.toDateString()
             ) {
                 return "green";
-            } else if (isDesktop) {
-                return "white";
             } else {
                 return "#505050";
             }
         },
+        isUserCategory(category) {
+            const userCategories = this.user.Categories.map(cat => cat.name);
+            return userCategories.includes(category.name);
+        },
+
     },
 };
 </script>
