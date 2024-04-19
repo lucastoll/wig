@@ -4,7 +4,7 @@ import { Location } from "../models/location";
 import { Category } from "../models/category";
 import { CustomError } from "../errors/customError";
 import { City } from "../models/city";
-import { Op } from "sequelize";
+import { Op, literal } from "sequelize";
 import getDistance from "../helpers/getDistance";
 
 type EventData = Event &
@@ -45,10 +45,12 @@ class EventService {
 
     return events;
   }
-
+  
   static async getEventsByDate(
     cityId: string | undefined,
-    cityName: string | undefined
+    cityName: string | undefined,
+    searchBar: string | undefined
+
   ): Promise<Event[]> {
     let city;
     if (cityId) {
@@ -61,7 +63,9 @@ class EventService {
       throw new CustomError("Cidade não encontrada", 404);
     }
 
-    const events = await Event.findAll({
+    console.log('searchBar Services:', searchBar)
+
+    let eventsQuery: any = {
       include: [
         { model: Category },
         { model: User, as: "organizer" },
@@ -76,7 +80,18 @@ class EventService {
       },
       order: [["initialDate", "ASC"]],
       limit: 10,
-    });
+    };
+
+    if (searchBar) {
+      eventsQuery.where = {
+        ...eventsQuery.where,
+        [Op.or]: [
+          literal(`LOWER(name) LIKE LOWER('%${searchBar}%')`),
+        ]
+      };
+    }
+
+    const events = await Event.findAll(eventsQuery);
 
     return events;
   }
@@ -185,6 +200,167 @@ class EventService {
     );
 
     return resolvedEvents;
+  }
+  
+  static async getEventsByCategories(
+    cityId: string | undefined,
+    cityName: string | undefined,
+    userId: string | undefined,
+    searchBar: string | undefined
+  ): Promise<Event[]> {
+    let city;
+    if (cityId) {
+      city = await City.findByPk(String(cityId));
+    } else if (cityName) {
+      city = await City.findOne({ where: { name: String(cityName) } });
+    }
+    if (!city) {
+      throw new CustomError("Cidade não encontrada", 404);
+    }
+
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: Category,
+          as: "Categories",
+        },
+      ],
+    });
+
+    if (!user) {
+      throw new CustomError("Usuário não encontrado", 404);
+    }
+
+    let eventsQuery: any = {
+      include: [
+        { model: Category },
+        { model: User, as: "organizer" },
+        {
+          model: Location,
+          where: { cityId: city.id },
+          include: [{ model: City }],
+        },
+      ],
+    };
+
+    if (searchBar) {
+      eventsQuery.where = {
+        name: { [Op.like]: `%${searchBar}%` } // Search for events with name containing the searchBar content
+      };
+    }
+
+    const events = await Event.findAll(eventsQuery);
+
+    const eventsWithRecommendations = events.map(async (event) => {
+      const eventCoordinates = {
+        latitude: event.Location.coordlat,
+        longitude: event.Location.coordlon,
+      };
+
+
+      let recommendationPoints = 0;
+
+
+      user.Categories.forEach((userCategory) => {
+        if (
+          event.Categories.some(
+            (eventCategory) => eventCategory.id === userCategory.id
+          )
+        ) {
+          recommendationPoints += 5;
+          console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
+        }
+      });
+
+      console.log(
+        `O evento ${event.name} recebeu ${recommendationPoints} pontos.\n\n`
+      );
+
+      return {
+        ...event.get({ plain: true }),
+        recommendationPoints,
+      };
+    });
+
+    const resolvedEvents = await Promise.all(eventsWithRecommendations);
+    resolvedEvents.sort(
+      (a, b) => b.recommendationPoints - a.recommendationPoints
+    );
+
+    return resolvedEvents;
+  }
+
+  static async getEventsByDistance(
+    cityId: string | undefined,
+    cityName: string | undefined,
+    userId: string | undefined,
+    searchBar: string | undefined
+  ): Promise<Event[]> {
+    let city;
+    if (cityId) {
+      city = await City.findByPk(String(cityId));
+    } else if (cityName) {
+      city = await City.findOne({ where: { name: String(cityName) } });
+    }
+    if (!city) {
+      throw new CustomError("Cidade não encontrada", 404);
+    }
+
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: Category,
+          as: "Categories",
+        },
+      ],
+    });
+
+    if (!user) {
+      throw new CustomError("Usuário não encontrado", 404);
+    }
+
+    const events = await Event.findAll({
+      include: [
+        { model: Category },
+        { model: User, as: "organizer" },
+        {
+          model: Location,
+          where: { cityId: city.id },
+          include: [{ model: City }],
+        },
+      ],
+    });
+
+    const userCoordinates = {
+      latitude: user.coordlat,
+      longitude: user.coordlon,
+    };
+  
+    const eventsWithRecommendations = events.map(async (event) => {
+      const eventCoordinates = {
+        latitude: event.Location.coordlat,
+        longitude: event.Location.coordlon,
+      };
+  
+      const distance = EventService.getDistance(
+        userCoordinates,
+        eventCoordinates
+      );
+  
+      return {
+        event: event.get({ plain: true }),
+        distance,
+      };
+    });
+  
+    // Aguarde todas as promessas mapeadas para resolução
+    const resolvedEvents = await Promise.all(eventsWithRecommendations);
+  
+    // Ordenar os eventos com base na distância em ordem crescente
+    resolvedEvents.sort((a, b) => a.distance - b.distance);
+  
+    // Retornar apenas os eventos ordenados
+    return resolvedEvents.map((event) => event.event);
   }
 
   static async createEvent(eventData: EventData): Promise<Event> {
