@@ -19,6 +19,7 @@ export const login: CallbackTypes.CredentialCallback = async (response) => {
     );
     userStore.id = backEndUser.data.id;
     userStore.registerDone = true;
+    userStore.Categories = backEndUser.data.Categories;
   } catch (error: any) {
     if (error.response && error.response.status === 404) {
       userStore.registerDone = false;

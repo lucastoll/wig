@@ -4,6 +4,7 @@ import type { IUserStore } from "@/types/IUserStore";
 
 export const userStore: IUserStore = reactive({
   loggedIn: false,
+  Categories: [],
 });
 
 export const cityStore: ICity = reactive({} as ICity);
