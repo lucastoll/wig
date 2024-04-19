@@ -4,7 +4,7 @@ import { Location } from "../models/location";
 import { Category } from "../models/category";
 import { CustomError } from "../errors/customError";
 import { City } from "../models/city";
-import { Op, literal } from "sequelize";
+import { FindOptions, Op, WhereOptions, literal } from "sequelize";
 import getDistance from "../helpers/getDistance";
 
 type EventData = Event &
@@ -14,6 +14,12 @@ type EventData = Event &
     organizerId: number;
     locationId?: number;
   };
+
+interface WhereClause {
+  [Op.or]?: WhereOptions[];
+  name?: string | WhereOptions;
+  finalDate: { [Op.gte]: Date };
+}
 
 class EventService {
   static async getEvents(
@@ -62,7 +68,7 @@ class EventService {
       throw new CustomError("Cidade não encontrada", 404);
     }
 
-    let eventsQuery: any = {
+    let eventsQuery: FindOptions = {
       include: [
         { model: Category },
         { model: User, as: "organizer" },
@@ -103,7 +109,6 @@ class EventService {
 
       return event;
     } catch (error) {
-      console.error("Erro ao buscar evento por ID:", error);
       throw new Error("Erro ao buscar evento por ID");
     }
   }
