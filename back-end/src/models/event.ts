@@ -67,10 +67,22 @@ Event.init(
       allowNull: false,
     },
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT("long"),
       allowNull: false,
     },
     instagramEmbed: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    startTime: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    endTime: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    ticketUrl: {
       type: DataTypes.STRING,
       allowNull: true,
     },
