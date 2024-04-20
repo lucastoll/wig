@@ -3,12 +3,13 @@
         <div class="event-list-container">
             <div class="events-wrapper">
                 <div class="event-card" v-for="(event, index) in events" :key="index">
-                    <img :src="event.imageMobile" alt="Event Image" />
+                    <img class="event-image" :src="event.imageMobile" alt="Event Image" />
                     <div class="event-details">
                         <div
                             class="event-date"
                             :style="{ backgroundColor: eventDateBackgroundColor(event.finalDate) }"
                         >
+                            <img src="@/assets/Calendar.png" alt="Calendar Icon" />
                             {{ formatDate(event.finalDate) }}
                         </div>
                         <div class="event-name">{{ event?.name }}</div>
@@ -24,7 +25,9 @@
 
 
                         </div>
-                        <div class="event-location">{{ event?.Location?.address }}</div>
+                        <div class="event-location">
+                            <img src="@/assets/Location.png" alt="Calendar Icon" />
+                            {{ event?.Location?.address }}</div>
                     </div>
                 </div>
             </div>
@@ -170,7 +173,7 @@ export default {
     line-height: 20px;
 }
 
-.event-card img {
+.event-image{
     width: 100%;
     height: 120px;
     object-fit: cover;
@@ -224,6 +227,19 @@ export default {
     text-overflow: ellipsis;
 }
 @media screen and (min-width: 1024px) {
+    .event-date img{
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+        margin-left: 10px;
+    }
+
+    .event-location img{
+        width: 15px;
+        height: 15px;
+        margin-right: 5px;
+    }
+
     .event-card {
         display: flex;
         flex-direction: row;
@@ -231,13 +247,14 @@ export default {
         background-color: white;
         margin-left: 40px;
         margin-right: 40px;
+        border: none
     }
 
     .event-details {
         color: black;
     }
 
-    .event-card img {
+    .event-image {
         width: 150px;
         height: 100%;
     }
@@ -257,9 +274,9 @@ export default {
 
     .event-date {
         order: 2;
+        width: calc(100% + 10px);
         margin-top: 10px;
         text-align: left;
-        padding-left: 10px;
     }
 
     .event-location {
