@@ -8,4 +8,5 @@ export interface IUserStore {
     profilePicture?: string;
     registerDone?: boolean;
     Categories: ICategory[];
+    loading?: boolean;
 }

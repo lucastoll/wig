@@ -3,6 +3,7 @@ import type { ICity } from "@/types/ICity";
 import type { IUserStore } from "@/types/IUserStore";
 
 export const userStore: IUserStore = reactive({
+  loading: true,
   loggedIn: false,
   Categories: [],
 });

@@ -1,7 +1,7 @@
 <template>
   <div class="event-list">
     <div class="event-list-container">
-      <div class="events-wrapper">
+      <div v-if="events.length > 0" class="events-wrapper">
         <div class="event-card" v-for="(event, index) in events" :key="index">
           <div class="event-image-wrapper">
             <img
@@ -14,7 +14,7 @@
             <div
               class="event-date"
               :style="{
-                backgroundColor: eventDateBackgroundColor(event.finalDate),
+                backgroundColor: eventDateBackgroundColor(event.initialDate),
               }"
             >
               <img
@@ -22,7 +22,7 @@
                 src="@/assets/Calendar.png"
                 alt="Calendar Icon"
               />
-              {{ formatDate(event.finalDate) }}
+              {{ formatDate(event.initialDate) }}
             </div>
             <div class="event-name">{{ event?.name }}</div>
             <div class="event-categories">
@@ -43,6 +43,16 @@
             </div>
           </div>
         </div>
+      </div>
+      <div v-else-if="loading === false" class="no-results">
+        <img
+          src="@/assets/NothingFound.png"
+          alt="No results found"
+          class="no-results-image"
+        />
+        <p class="no-results-text">
+          Oops! Parece que nenhum evento foi encontrado.
+        </p>
       </div>
     </div>
   </div>
@@ -67,6 +77,7 @@ export default {
   },
   data() {
     return {
+      loading: false as boolean,
       user: userStore,
       events: [] as IEvent[],
     };
@@ -83,11 +94,15 @@ export default {
   methods: {
     async fetchEvents() {
       try {
+        this.loading = true;
         const response = await axios.get(this.endpoint);
         this.events = response.data;
+        console.log(this.events);
         console.log(this.user);
       } catch (error) {
         console.error("Erro ao buscar eventos:", error);
+      } finally {
+        this.loading = false;
       }
     },
     formatDate(dateString: string) {
@@ -182,7 +197,7 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
-  margin: 0 32px;
+  margin: 0 10px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -232,6 +247,28 @@ export default {
   border-color: #ffffff;
 }
 
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.no-results-image {
+  width: 80%;
+  height: auto;
+}
+
+.no-results-text {
+  margin-top: 10px;
+  text-align: center;
+  font-family: Inter;
+  font-size: 18px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: black;
+}
+
 @media screen and (min-width: 500px) and (max-width: 1023px) {
   .event-image {
     height: auto;
@@ -258,6 +295,7 @@ export default {
   .event-details {
     color: black;
     gap: 16px;
+    margin: 0 32px;
   }
 
   .event-image-wrapper {
