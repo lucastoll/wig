@@ -4,7 +4,7 @@ import { Location } from "../models/location";
 import { Category } from "../models/category";
 import { CustomError } from "../errors/customError";
 import { City } from "../models/city";
-import { Op } from "sequelize";
+import { FindOptions, Op, WhereOptions, literal } from "sequelize";
 import getDistance from "../helpers/getDistance";
 
 type EventData = Event &
@@ -14,6 +14,12 @@ type EventData = Event &
     organizerId: number;
     locationId?: number;
   };
+
+interface WhereClause {
+  [Op.or]?: WhereOptions[];
+  name?: string | WhereOptions;
+  finalDate: { [Op.gte]: Date };
+}
 
 class EventService {
   static async getEvents(
@@ -48,7 +54,8 @@ class EventService {
 
   static async getEventsByDate(
     cityId: string | undefined,
-    cityName: string | undefined
+    cityName: string | undefined,
+    searchBar: string | undefined
   ): Promise<Event[]> {
     let city;
     if (cityId) {
@@ -61,7 +68,7 @@ class EventService {
       throw new CustomError("Cidade não encontrada", 404);
     }
 
-    const events = await Event.findAll({
+    let eventsQuery: FindOptions = {
       include: [
         { model: Category },
         { model: User, as: "organizer" },
@@ -76,7 +83,16 @@ class EventService {
       },
       order: [["initialDate", "ASC"]],
       limit: 10,
-    });
+    };
+
+    if (searchBar) {
+      eventsQuery.where = {
+        ...eventsQuery.where,
+        [Op.or]: [literal(`LOWER(name) LIKE LOWER('%${searchBar}%')`)],
+      };
+    }
+
+    const events = await Event.findAll(eventsQuery);
 
     return events;
   }
@@ -93,11 +109,9 @@ class EventService {
 
       return event;
     } catch (error) {
-      console.error("Erro ao buscar evento por ID:", error);
       throw new Error("Erro ao buscar evento por ID");
     }
   }
-
 
   static async getEventsRecomendation(
     cityId: string | undefined,
@@ -149,10 +163,7 @@ class EventService {
         latitude: event.Location.coordlat,
         longitude: event.Location.coordlon,
       };
-      const distance = getDistance(
-        userCoordinates,
-        eventCoordinates
-      );
+      const distance = getDistance(userCoordinates, eventCoordinates);
       let recommendationPoints = 0;
 
       if (distance <= 1.0) {
@@ -170,6 +181,7 @@ class EventService {
           )
         ) {
           recommendationPoints += 5;
+          console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
         }
       });
 
@@ -185,6 +197,160 @@ class EventService {
     );
 
     return resolvedEvents;
+  }
+
+  static async getEventsByCategories(
+    cityId: string | undefined,
+    cityName: string | undefined,
+    userId: string | undefined,
+    searchBar: string | undefined
+  ): Promise<Event[]> {
+    let city;
+    if (cityId) {
+      city = await City.findByPk(String(cityId));
+    } else if (cityName) {
+      city = await City.findOne({ where: { name: String(cityName) } });
+    }
+    if (!city) {
+      throw new CustomError("Cidade não encontrada", 404);
+    }
+
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: Category,
+          as: "Categories",
+        },
+      ],
+    });
+
+    if (!user) {
+      throw new CustomError("Usuário não encontrado", 404);
+    }
+
+    let eventsQuery: FindOptions = {
+      include: [
+        { model: Category },
+        { model: User, as: "organizer" },
+        {
+          model: Location,
+          where: { cityId: city.id },
+          include: [{ model: City }],
+        },
+      ],
+      limit: 10,
+    };
+
+    if (searchBar) {
+      eventsQuery.where = {
+        ...eventsQuery.where,
+        [Op.or]: [literal(`LOWER(name) LIKE LOWER('%${searchBar}%')`)],
+      };
+    }
+
+    const events = await Event.findAll(eventsQuery);
+
+    const eventsWithRecommendations = events.map(async (event) => {
+      let recommendationPoints = 0;
+
+      user.Categories.forEach((userCategory) => {
+        if (
+          event.Categories.some(
+            (eventCategory) => eventCategory.id === userCategory.id
+          )
+        ) {
+          recommendationPoints += 5;
+          console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
+        }
+      });
+
+      return {
+        ...event.get({ plain: true }),
+        recommendationPoints,
+      };
+    });
+
+    const resolvedEvents = await Promise.all(eventsWithRecommendations);
+    resolvedEvents.sort(
+      (a, b) => b.recommendationPoints - a.recommendationPoints
+    );
+
+    return resolvedEvents;
+  }
+
+  static async getEventsByDistance(
+    cityId: string | undefined,
+    cityName: string | undefined,
+    userId: string | undefined,
+    searchBar: string | undefined
+  ): Promise<Event[]> {
+    let city;
+    if (cityId) {
+      city = await City.findByPk(String(cityId));
+    } else if (cityName) {
+      city = await City.findOne({ where: { name: String(cityName) } });
+    }
+    if (!city) {
+      throw new CustomError("Cidade não encontrada", 404);
+    }
+
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: Category,
+          as: "Categories",
+        },
+      ],
+    });
+
+    if (!user) {
+      throw new CustomError("Usuário não encontrado", 404);
+    }
+
+    let eventsQuery: FindOptions = {
+      include: [
+        { model: Category },
+        { model: User, as: "organizer" },
+        {
+          model: Location,
+          where: { cityId: city.id },
+          include: [{ model: City }],
+        },
+      ],
+      limit: 10,
+    };
+
+    if (searchBar) {
+      eventsQuery.where = {
+        ...eventsQuery.where,
+        [Op.or]: [literal(`LOWER(name) LIKE LOWER('%${searchBar}%')`)],
+      };
+    }
+
+    const events = await Event.findAll(eventsQuery);
+
+    const userCoordinates = {
+      latitude: user.coordlat,
+      longitude: user.coordlon,
+    };
+
+    const eventsWithRecommendations = events.map(async (event) => {
+      const eventCoordinates = {
+        latitude: event.Location.coordlat,
+        longitude: event.Location.coordlon,
+      };
+
+      const distance = getDistance(userCoordinates, eventCoordinates);
+
+      return {
+        event: event.get({ plain: true }),
+        distance,
+      };
+    });
+
+    const resolvedEvents = await Promise.all(eventsWithRecommendations);
+    resolvedEvents.sort((a, b) => a.distance - b.distance);
+    return resolvedEvents.map((event) => event.event);
   }
 
   static async createEvent(eventData: EventData): Promise<Event> {

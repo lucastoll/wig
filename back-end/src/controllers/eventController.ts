@@ -64,7 +64,7 @@ class EventController {
       next(error);
     }
   }
-
+  
   static async getEventsByDate(
     req: Request,
     res: Response,
@@ -74,6 +74,8 @@ class EventController {
       typeof req.query.cityId === "string" ? req.query.cityId : undefined;
     const cityName =
       typeof req.query.cityName === "string" ? req.query.cityName : undefined;
+    const searchBar = 
+      typeof req.query.searchBar === "string" ? req.query.searchBar : undefined;
 
     if (!cityId && !cityName) {
       res.status(400).json({
@@ -83,7 +85,89 @@ class EventController {
     }
 
     try {
-      const events = await EventService.getEventsByDate(cityId, cityName);
+      const events = await EventService.getEventsByDate(cityId, cityName, searchBar);
+      res.status(200).json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getEventsByDistance(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const cityId =
+      typeof req.query.cityId === "string" ? req.query.cityId : undefined;
+    const cityName =
+      typeof req.query.cityName === "string" ? req.query.cityName : undefined;
+    const userId =
+      typeof req.query.userId === "string" ? req.query.userId : undefined;
+    const searchBar = 
+      typeof req.query.searchBar === "string" ? req.query.searchBar : undefined;  
+
+    if (!cityId && !cityName) {
+      res.status(400).json({
+        error: "Você deve fornecer um cityId ou cityName",
+      });
+      return;
+    }
+
+    if (!userId) {
+      res.status(400).json({
+        error: "Você deve fornecer um userId",
+      });
+      return;
+    }
+
+    try {
+      const events = await EventService.getEventsByDistance(
+        cityId,
+        cityName,
+        userId,
+        searchBar
+      );
+      res.status(200).json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getEventsByCategories(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const cityId =
+      typeof req.query.cityId === "string" ? req.query.cityId : undefined;
+    const cityName =
+      typeof req.query.cityName === "string" ? req.query.cityName : undefined;
+    const userId =
+      typeof req.query.userId === "string" ? req.query.userId : undefined;
+    const searchBar = 
+      typeof req.query.searchBar === "string" ? req.query.searchBar : undefined;  
+
+    if (!cityId && !cityName) {
+      res.status(400).json({
+        error: "Você deve fornecer um cityId ou cityName",
+      });
+      return;
+    }
+
+    if (!userId) {
+      res.status(400).json({
+        error: "Você deve fornecer um userId",
+      });
+      return;
+    }
+
+    try {
+      const events = await EventService.getEventsByCategories(
+        cityId,
+        cityName,
+        userId,
+        searchBar
+      );
       res.status(200).json(events);
     } catch (error) {
       next(error);
