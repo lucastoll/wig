@@ -181,6 +181,7 @@ class EventService {
           )
         ) {
           recommendationPoints += 5;
+          console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
         }
       });
 
@@ -227,7 +228,7 @@ class EventService {
       throw new CustomError("Usuário não encontrado", 404);
     }
 
-    let eventsQuery: any = {
+    let eventsQuery: FindOptions = {
       include: [
         { model: Category },
         { model: User, as: "organizer" },
@@ -237,22 +238,19 @@ class EventService {
           include: [{ model: City }],
         },
       ],
+      limit: 10,
     };
 
     if (searchBar) {
       eventsQuery.where = {
-        name: { [Op.like]: `%${searchBar}%` },
+        ...eventsQuery.where,
+        [Op.or]: [literal(`LOWER(name) LIKE LOWER('%${searchBar}%')`)],
       };
     }
 
     const events = await Event.findAll(eventsQuery);
 
     const eventsWithRecommendations = events.map(async (event) => {
-      const eventCoordinates = {
-        latitude: event.Location.coordlat,
-        longitude: event.Location.coordlon,
-      };
-
       let recommendationPoints = 0;
 
       user.Categories.forEach((userCategory) => {
@@ -265,10 +263,6 @@ class EventService {
           console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
         }
       });
-
-      console.log(
-        `O evento ${event.name} recebeu ${recommendationPoints} pontos.\n\n`
-      );
 
       return {
         ...event.get({ plain: true }),
@@ -313,7 +307,7 @@ class EventService {
       throw new CustomError("Usuário não encontrado", 404);
     }
 
-    const events = await Event.findAll({
+    let eventsQuery: FindOptions = {
       include: [
         { model: Category },
         { model: User, as: "organizer" },
@@ -323,7 +317,17 @@ class EventService {
           include: [{ model: City }],
         },
       ],
-    });
+      limit: 10,
+    };
+
+    if (searchBar) {
+      eventsQuery.where = {
+        ...eventsQuery.where,
+        [Op.or]: [literal(`LOWER(name) LIKE LOWER('%${searchBar}%')`)],
+      };
+    }
+
+    const events = await Event.findAll(eventsQuery);
 
     const userCoordinates = {
       latitude: user.coordlat,
