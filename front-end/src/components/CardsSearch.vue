@@ -1,286 +1,326 @@
 <template>
-    <div class="event-list">
-        <div class="event-list-container">
-            <div class="events-wrapper">
-                <div class="event-card" v-for="(event, index) in events" :key="index">
-                    <img class="event-image" :src="event.imageMobile" alt="Event Image" />
-                    <div class="event-details">
-                        <div
-                            class="event-date"
-                            :style="{ backgroundColor: eventDateBackgroundColor(event.finalDate) }"
-                        >
-                            <img src="@/assets/Calendar.png" alt="Calendar Icon" />
-                            {{ formatDate(event.finalDate) }}
-                        </div>
-                        <div class="event-name">{{ event?.name }}</div>
-                        <div class="event-categories">
-                            <div
-                                v-for="(category, catIndex) in event.Categories"
-                                :key="catIndex"
-                                class="event-category"
-                                :style="{ borderColor: isUserCategory(category) ? 'green' : '#505050' }"
-                                >
-                                {{ category.name }}
-                            </div>
-
-
-                        </div>
-                        <div class="event-location">
-                            <img src="@/assets/Location.png" alt="Calendar Icon" />
-                            {{ event?.Location?.address }}</div>
-                    </div>
-                </div>
+  <div class="event-list">
+    <div class="event-list-container">
+      <div class="events-wrapper">
+        <div class="event-card" v-for="(event, index) in events" :key="index">
+          <div class="event-image-wrapper">
+            <img
+              class="event-image"
+              :src="event.imageMobile"
+              alt="Event Image"
+            />
+          </div>
+          <div class="event-details">
+            <div
+              class="event-date"
+              :style="{
+                backgroundColor: eventDateBackgroundColor(event.finalDate),
+              }"
+            >
+              <img
+                class="event-calendar-icon"
+                src="@/assets/Calendar.png"
+                alt="Calendar Icon"
+              />
+              {{ formatDate(event.finalDate) }}
             </div>
+            <div class="event-name">{{ event?.name }}</div>
+            <div class="event-categories">
+              <div
+                v-for="(category, catIndex) in event.Categories"
+                :key="catIndex"
+                :class="{
+                  'event-category': true,
+                  'user-category': isUserCategory(category),
+                }"
+              >
+                {{ category.name }}
+              </div>
+            </div>
+            <div class="event-location">
+              <img src="@/assets/Location.png" alt="Calendar Icon" />
+              {{ event?.Location?.address }}
+            </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script lang="ts">
 import axios from "axios";
 import { userStore } from "@/store";
-
-interface Category {
-    name: string;
-}
-
-interface Location {
-    address: string;
-}
-
-interface Event {
-    imageMobile: string;
-    finalDate: string;
-    name: string;
-    Categories: Category[];
-    Location: Location;
-}
+import type IEvent from "@/types/IEvent";
+import type ICategory from "@/types/ICategory";
 
 export default {
-    props: {
-        endpoint: {
-            type: String,
-            required: true,
-        },
-        title: {
-            type: String,
-            required: true,
-        },
+  props: {
+    endpoint: {
+      type: String,
+      required: true,
     },
-    data() {
-        return {
-            user: userStore,
-            events: [] as Event[],
-        };
+    title: {
+      type: String,
+      required: true,
     },
-    mounted() {
-        this.fetchEvents();
+  },
+  data() {
+    return {
+      user: userStore,
+      events: [] as IEvent[],
+    };
+  },
+  mounted() {
+    this.fetchEvents();
+  },
+  watch: {
+    endpoint: {
+      handler: "fetchEvents",
+      immediate: true,
     },
-    watch: {
-        endpoint: {
-            handler: "fetchEvents",
-            immediate: true,
-        },
+  },
+  methods: {
+    async fetchEvents() {
+      try {
+        const response = await axios.get(this.endpoint);
+        this.events = response.data;
+        console.log(this.user);
+      } catch (error) {
+        console.error("Erro ao buscar eventos:", error);
+      }
     },
-    methods: {
-        async fetchEvents() {
-            try {
-                const response = await axios.get(this.endpoint);
-                this.events = response.data;
-                console.log(this.user);
-            } catch (error) {
-                console.error("Erro ao buscar eventos:", error);
-            }
-        },
-        formatDate(dateString: string) {
-            const eventDate = new Date(dateString);
-            const today = new Date();
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
+    formatDate(dateString: string) {
+      const eventDate = new Date(dateString);
+      const today = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
 
-            if (eventDate.toDateString() === today.toDateString()) {
-                return "Hoje";
-            } else if (eventDate.toDateString() === tomorrow.toDateString()) {
-                return "Amanhã";
-            } else {
-                return eventDate.toLocaleDateString("pt-BR");
-            }
-        },
-        eventDateBackgroundColor(dateString: string) {
-            const eventDate = new Date(dateString);
-            const today = new Date();
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const isDesktop = window.innerWidth >= 1024;
-
-            if (isDesktop) {
-                return "white";
-            } else if (
-                eventDate.toDateString() === today.toDateString() ||
-                eventDate.toDateString() === tomorrow.toDateString()
-            ) {
-                return "green";
-            } else {
-                return "#505050";
-            }
-        },
-        isUserCategory(category) {
-            const userCategories = this.user.Categories.map(cat => cat.name);
-            return userCategories.includes(category.name);
-        },
-
+      if (eventDate.toDateString() === today.toDateString()) {
+        return "Hoje";
+      } else if (eventDate.toDateString() === tomorrow.toDateString()) {
+        return "Amanhã";
+      } else {
+        return eventDate.toLocaleDateString("pt-BR");
+      }
     },
+    eventDateBackgroundColor(dateString: string) {
+      const eventDate = new Date(dateString);
+      const today = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      if (
+        eventDate.toDateString() === today.toDateString() ||
+        eventDate.toDateString() === tomorrow.toDateString()
+      ) {
+        return "green";
+      } else {
+        return "#505050";
+      }
+    },
+    isUserCategory(category: ICategory) {
+      const userCategories = this.user.Categories.map((cat) => cat.name);
+      return userCategories.includes(category.name);
+    },
+  },
 };
 </script>
 
 <style scoped>
 .event-list {
-    margin-top: 20px;
-    padding-bottom: 20px;
-    display: flex;
-    justify-content: center;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: center;
 }
 
 .event-list-container {
-    width: 100%;
-    max-width: 1280px;
+  width: 100%;
+  max-width: 1280px;
 }
 
 .events-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .event-card {
-    margin: 16px;
-    width: calc(100% - 80px);
-    height: auto;
-    border-radius: 10px;
-    overflow: hidden;
-    border: solid black 1px;
-    background-color: #1597b1;
-    display: flex;
-    flex-direction: column;
+  margin: 16px;
+  width: calc(100% - 80px);
+  height: auto;
+  border-radius: 10px;
+  overflow: hidden;
+  border: solid black 1.5px;
+  background-color: #1597b1;
+  display: flex;
+  flex-direction: column;
 }
 
 .event-name {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: 700;
-    line-height: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 700;
+  line-height: 20px;
 }
 
-.event-image{
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    margin-bottom: -7px;
+.event-image {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  object-fit: cover;
+  margin-bottom: -7px;
 }
 
 .event-details {
-    color: white;
-    border-radius: 10px;
-    width: 100%;
-    height: 100%;
-    position: relative;
-    margin-left: 10px;
-    margin-right: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+  color: white;
+  border-radius: 10px;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  margin: 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .event-date {
-    width: calc(100% + 20px);
-    margin-top: -10px;
-    margin-left: -10px;
-    font-weight: bold;
-    font-size: 12px;
-    text-align: center;
-    margin-top: 0%;
+  width: 100%;
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 0%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  left: -10px;
 }
 
 .event-categories {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .event-category {
-    font-size: 12px;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    border: solid black 1px;
+  font-size: 12px;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: solid black 1.5px;
 }
 
 .event-location {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+.event-calendar-icon {
+  display: none;
+}
+
+.user-category {
+  border-color: #ffffff;
+}
+
+@media screen and (min-width: 500px) and (max-width: 1023px) {
+  .event-image {
+    height: auto;
+    max-height: none;
+  }
+}
+
 @media screen and (min-width: 1024px) {
-    .event-date img{
-        width: 20px;
-        height: 20px;
-        margin-right: 5px;
-        margin-left: 10px;
-    }
+  .event-location img {
+    height: 25px;
+  }
 
-    .event-location img{
-        width: 15px;
-        height: 15px;
-        margin-right: 5px;
-    }
+  .event-card {
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    background-color: white;
+    margin-left: 40px;
+    margin-right: 40px;
+    border: none;
+    margin: 6px;
+  }
 
-    .event-card {
-        display: flex;
-        flex-direction: row;
-        align-self: center;
-        background-color: white;
-        margin-left: 40px;
-        margin-right: 40px;
-        border: none
-    }
+  .event-details {
+    color: black;
+    gap: 16px;
+  }
 
-    .event-details {
-        color: black;
-    }
+  .event-image-wrapper {
+    border-radius: 8px;
+  }
 
-    .event-image {
-        width: 150px;
-        height: 100%;
-    }
+  .event-image {
+    min-width: 335px;
+    width: 335px;
+    height: auto;
+    max-height: 280px;
+    object-fit: cover;
+    border-radius: 8px 8px 8px 8px;
+    box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.25);
+    margin-bottom: 10px;
+  }
 
-    .event-categories {
-        order: 0;
-        margin-top: 10px;
-    }
+  .event-categories {
+    order: 0;
+    margin-top: 10px;
+  }
 
-    .event-category {
-        color: black;
-    }
+  .event-category {
+    color: black;
+    font-size: 16px;
+  }
 
-    .event-name {
-        order: 1;
-    }
+  .event-name {
+    order: 1;
+    font-size: 32px;
+    font-weight: bold;
+    line-height: normal;
+  }
 
-    .event-date {
-        order: 2;
-        width: calc(100% + 10px);
-        margin-top: 10px;
-        text-align: left;
-    }
+  .event-date {
+    order: 2;
+    width: 100%;
+    margin-top: 10px;
+    text-align: left;
+    display: flex;
+    justify-content: flex-start;
+    background-color: transparent !important;
+    left: 0px;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: normal;
+  }
 
-    .event-location {
-        order: 3;
-    }
+  .event-location {
+    order: 3;
+    gap: 8px;
+    display: flex;
+    font-size: 18px;
+  }
+
+  .event-calendar-icon {
+    display: flex;
+    width: 32px;
+    height: 32px;
+  }
+
+  .user-category {
+    border-color: #1597b1;
+  }
 }
 </style>

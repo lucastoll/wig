@@ -376,6 +376,7 @@ const toggleFilter = (index: number) => {
   border-radius: 8px;
   border: solid #e3e5e5 1px;
   background-color: white;
+  max-width: calc(1280px - 64px);
 }
 
 .search-input {
