@@ -53,6 +53,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <div class="father">
   <div class="events">
     <img :src="event.imageMobile" alt="imgMobile" class="imgEventMobile" />
   </div>
@@ -86,19 +87,54 @@ onMounted(async () => {
     >
     <span v-else>{{ event.Location?.address }}</span>
   </div>
+  <div class="maps">
   <iframe
     :src="mapUrl"
-    width="600"
-    height="450"
+    width="100%"
+    height="100%"
     frameborder="0"
     style="border: 0"
     allowfullscreen="true"
     aria-hidden="false"
     tabindex="0"
   ></iframe>
+</div>
+<div class="ticket">
+    <img alt="Logo site" src="@/assets/ticket.svg" width="20" height="25" />
+    <span>R$:{{ event.finalPrice }}</span>
+  </div>
+</div>
 </template>
 
 <style>
+
+.ticket{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+  padding-left: 16px;
+  color: black;
+  font-size: medium;
+ 
+}
+
+.maps{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid black;
+  border-radius: 10px;
+  width: 90%;
+  align-self: center;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.father{
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 200px;
+}
 .location {
   display: flex;
   flex-direction: row;
@@ -154,6 +190,7 @@ onMounted(async () => {
 .sectiontitle {
   display: flex;
   flex-direction: row;
+  justify-content: center;
   align-items: center;
   width: 100%;
 }
