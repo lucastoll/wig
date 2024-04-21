@@ -7,6 +7,7 @@ export default interface IEvent {
   imageDesktop: string;
   initialDate: string;
   finalDate: string;
+  finalPrice: number;
   name: string;
   Categories: ICategory[];
   Location: ILocation;
