@@ -49,8 +49,8 @@ onMounted(async () => {
   </div>
   <div class="sectiontitle">
     <div class="data">
-      <img alt="Logo site" src="@/assets/Iconecalendario.svg" width="20" height="20" />
-      <span class="day">{{ data}}</span>
+      <img alt="Icone calendario" src="@/assets/Iconecalendario.svg" width="25" height="25" />
+      <span class="day">{{data}}</span>
     </div>
     <div class="title">
       <h1 class="nameEvent">{{ event.name }}</h1>
@@ -60,12 +60,28 @@ onMounted(async () => {
         <span  v-if="index === event.Categories.length - 1"> {{ item.name }}</span>
         <span v-else>{{item.name}},</span>
     </div>
-          </div>
+    </div>
     </div>
   </div>
+  <div class="location">
+    <img alt="Logo site" src="@/assets/Location.svg" width="20" height="25"/>
+    <span>{{ event.Location.address }}</span>
+    </div>
+
+
 </template>
 
 <style>
+.location{
+  display:flex;
+  flex-direction: row;
+  gap:10px;
+  align-items: center;
+  padding-left: 16px;
+  color:black;
+  font-size: medium;
+  padding-top: 20px;
+}
 .events{
 display:flex;
 flex-direction: column;
@@ -82,18 +98,21 @@ align-items: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 15px;
+  padding-top: 31px;
+  gap:7px;
 }
 .day{
   color:black;
-  font-size: 8px;
+  font-size: 10px;
+  padding-left: 3px;
+
 }
 .title{
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: left;
   padding-top: 8px;
-  padding-left: 10px;
+  padding-left: 25px;
 }
 .categories{
   color:black;
@@ -105,10 +124,13 @@ align-items: center;
   color:black;
   font-weight: 700;
   width:70%;
+  align-self: center;
 }
 .sectiontitle{
   display:flex;
   flex-direction: row;
+  align-items: center;
+  width: 100%;
 }
 .imgEventMobile{
   width: 100%;
