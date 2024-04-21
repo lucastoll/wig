@@ -8,7 +8,13 @@ export default interface IEvent {
   initialDate: string;
   finalDate: string;
   finalPrice: number;
+  description: string;
+  initialPrice: number;
+  startTime: number;
+  endTime: number;
   name: string;
   Categories: ICategory[];
   Location: ILocation;
+  instagramEmbed: string;
+  minAge: number;
 }
