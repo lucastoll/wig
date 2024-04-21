@@ -365,4 +365,17 @@ onMounted(async () => {
 .description img {
   width: 100%;
 }
+
+.description figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+@media screen and (min-width: 1024px){
+  .description img{
+    max-width: 600px;
+  }
+}
 </style>
