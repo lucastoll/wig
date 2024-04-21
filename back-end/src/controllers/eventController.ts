@@ -180,7 +180,7 @@ class EventController {
     next: NextFunction
   ): Promise<void> {
     const eventId =
-    typeof req.params.id === "string" ? req.params.id : undefined;
+      typeof req.params.id === "string" ? req.params.id : undefined;
     if (!eventId) {
       res.status(400).json({
         error: "Você deve fornecer um Id",
@@ -214,6 +214,8 @@ class EventController {
       "description",
       "instagramEmbed",
       "categoryIds",
+      "startTime",
+      "endTime",
     ];
 
     for (let field of fields) {

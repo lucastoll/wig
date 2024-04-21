@@ -22,6 +22,9 @@ class Event extends Model implements EventInstance {
   public instagramEmbed!: string;
   public Location!: Location;
   public Categories!: Category[];
+  public startTime!: string;
+  public endTime!: string;
+  public ticketUrl!: string;
 
   public addCategories!: BelongsToManyAddAssociationsMixin<Category, number>;
 }

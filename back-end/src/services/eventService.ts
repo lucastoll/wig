@@ -372,6 +372,9 @@ class EventService {
       maxCapacity,
       cityId,
       categoryIds,
+      startTime,
+      endTime,
+      ticketUrl,
     } = eventData;
 
     const organizer = await User.findByPk(organizerId);
@@ -438,6 +441,9 @@ class EventService {
       instagramEmbed,
       organizerId,
       locationId: location.id,
+      startTime,
+      endTime,
+      ticketUrl,
     });
     await newEvent.addCategories(categories);
 

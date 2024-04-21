@@ -14,7 +14,8 @@ class LocationService {
     address: string,
     zipcode: string,
     maxCapacity: number,
-    cityId: number
+    cityId: number,
+    name: string
   ): Promise<Location> {
     const { latitude, longitude } = await getCoordinates(zipcode);
 
@@ -34,6 +35,7 @@ class LocationService {
       zipcode,
       maxCapacity,
       cityId,
+      name,
       coordlat: latitude,
       coordlon: longitude,
     });
