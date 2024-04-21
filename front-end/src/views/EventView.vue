@@ -18,7 +18,14 @@ function formatDate(dateString: string) {
 }
 
 const mapUrl = computed(() => {
-  const encodedAddress = encodeURIComponent(event.value.Location.address);
+  if (!event.value.Location) return;
+
+  const locationName = event.value.Location.name
+    ? `${event.value.Location.name}, `
+    : "";
+  const address = `${locationName}${event.value.Location.address}`;
+  const encodedAddress = encodeURIComponent(address);
+
   return `https://www.google.com/maps?q=${encodedAddress}&output=embed`;
 });
 
@@ -74,7 +81,10 @@ onMounted(async () => {
   </div>
   <div class="location">
     <img alt="Logo site" src="@/assets/Location.svg" width="20" height="25" />
-    <span>{{ event.Location.address }}</span>
+    <span v-if="event.Location?.name"
+      >{{ event.Location?.name }} - {{ event.Location.address }}</span
+    >
+    <span v-else>{{ event.Location?.address }}</span>
   </div>
   <iframe
     :src="mapUrl"
