@@ -5,6 +5,7 @@ export default interface IEvent {
   id: number;
   imageMobile: string;
   imageDesktop: string;
+  initialDate: string;
   finalDate: string;
   name: string;
   Categories: ICategory[];

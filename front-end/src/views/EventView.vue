@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import type IEvent from "@/types/IEvent";
 import { eventStore, cityStore } from "@/store";
@@ -10,13 +10,17 @@ const route = useRoute();
 const router = useRouter();
 const data = ref<string>();
 
-function formatDate(dateString:string) {
-      console.log(dateString  )
-      const eventDate = new Date(dateString);
-      console.log(eventDate.toLocaleDateString("pt-BR"))
-        return eventDate.toLocaleDateString("pt-BR");
-      }
-    
+function formatDate(dateString: string) {
+  console.log(dateString);
+  const eventDate = new Date(dateString);
+  console.log(eventDate.toLocaleDateString("pt-BR"));
+  return eventDate.toLocaleDateString("pt-BR");
+}
+
+const mapUrl = computed(() => {
+  const encodedAddress = encodeURIComponent(event.value.Location.address);
+  return `https://www.google.com/maps?q=${encodedAddress}&output=embed`;
+});
 
 onMounted(async () => {
   if (!event.value.id) {
@@ -36,103 +40,114 @@ onMounted(async () => {
       router.push({ name: "NotFound" });
     }
   }
-  console.log("eventoooooooooooo",event.value);
+  console.log("eventoooooooooooo", event.value);
   data.value = formatDate(event.value.initialDate);
-
 });
-
 </script>
 
 <template>
   <div class="events">
-    <img :src="event.imageMobile" alt="imgMobile" class="imgEventMobile">
+    <img :src="event.imageMobile" alt="imgMobile" class="imgEventMobile" />
   </div>
   <div class="sectiontitle">
     <div class="data">
-      <img alt="Icone calendario" src="@/assets/Iconecalendario.svg" width="25" height="25" />
-      <span class="day">{{data}}</span>
+      <img
+        alt="Icone calendario"
+        src="@/assets/Iconecalendario.svg"
+        width="25"
+        height="25"
+      />
+      <span class="day">{{ data }}</span>
     </div>
     <div class="title">
       <h1 class="nameEvent">{{ event.name }}</h1>
-      <div class="row"  >
+      <div class="row">
         <span>categoria:</span>
         <div v-for="(item, index) in event.Categories" :key="index">
-        <span  v-if="index === event.Categories.length - 1"> {{ item.name }}</span>
-        <span v-else>{{item.name}},</span>
-    </div>
-    </div>
+          <span v-if="index === event.Categories.length - 1">
+            {{ item.name }}</span
+          >
+          <span v-else>{{ item.name }},</span>
+        </div>
+      </div>
     </div>
   </div>
   <div class="location">
-    <img alt="Logo site" src="@/assets/Location.svg" width="20" height="25"/>
+    <img alt="Logo site" src="@/assets/Location.svg" width="20" height="25" />
     <span>{{ event.Location.address }}</span>
-    </div>
-
-
+  </div>
+  <iframe
+    :src="mapUrl"
+    width="600"
+    height="450"
+    frameborder="0"
+    style="border: 0"
+    allowfullscreen="true"
+    aria-hidden="false"
+    tabindex="0"
+  ></iframe>
 </template>
 
 <style>
-.location{
-  display:flex;
+.location {
+  display: flex;
   flex-direction: row;
-  gap:10px;
+  gap: 10px;
   align-items: center;
   padding-left: 16px;
-  color:black;
+  color: black;
   font-size: medium;
   padding-top: 20px;
 }
-.events{
-display:flex;
-flex-direction: column;
-align-items: center;
+.events {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-.row{
-  display:flex;
+.row {
+  display: flex;
   flex-direction: row;
-  gap:3px;
+  gap: 3px;
   font-size: small;
-  color:black
+  color: black;
 }
-.data{
+.data {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-top: 31px;
-  gap:7px;
+  gap: 7px;
 }
-.day{
-  color:black;
+.day {
+  color: black;
   font-size: 10px;
   padding-left: 3px;
-
 }
-.title{
+.title {
   display: flex;
   flex-direction: column;
   align-items: left;
   padding-top: 8px;
   padding-left: 25px;
 }
-.categories{
-  color:black;
+.categories {
+  color: black;
   font-size: small;
-  
 }
-.nameEvent{
+.nameEvent {
   font-size: medium;
-  color:black;
+  color: black;
   font-weight: 700;
-  width:70%;
+  width: 70%;
   align-self: center;
 }
-.sectiontitle{
-  display:flex;
+.sectiontitle {
+  display: flex;
   flex-direction: row;
   align-items: center;
   width: 100%;
 }
-.imgEventMobile{
+.imgEventMobile {
   width: 100%;
   height: 341px;
 }
