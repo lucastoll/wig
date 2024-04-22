@@ -6,7 +6,13 @@ import { eventStore, cityStore } from "@/store";
 import { MdPreview } from "md-editor-v3";
 import axios from "axios";
 
-import CalendarIcon from "@/assets/ticket.svg";
+import Livre from "@/assets/Livre.svg";
+import Menor18 from "@/assets/eighteen.png";
+import Menor16 from "@/assets/sixteen.png";
+import Menor14 from "@/assets/fourteen.png";
+import Menor12 from "@/assets/twelve.png";
+import Menor10 from "@/assets/ten.png";
+
 
 const event = ref<IEvent>(eventStore);
 const route = useRoute();
@@ -18,6 +24,12 @@ function formatDate(dateString: string) {
   console.log(eventDate.toLocaleDateString("pt-BR"));
   return eventDate.toLocaleDateString("pt-BR");
 }
+const dateStr = ref(event.value.initialDate);  // substitua isso pela data do seu banco de dados  
+const dayOfWeek = computed(() => {   
+  const date = new Date(dateStr.value);   
+  const dayIndex = date.getDay();    
+  const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+   return days[dayIndex]; });
 
 const mapUrl = computed(() => {
   if (!event.value.Location) return;
@@ -41,23 +53,42 @@ const instagramId = computed(() => {
 
 const ageTextComputed = computed(() => {
   if (event.value.minAge === 0) {
-    return "Livre";
-  } else if (event.value.minAge === 18) {
-    return "18+";
-  } else {
-    return `Idade mínima: ${event.value.minAge}+`;
+    return "Livre para todos os públicos";
+  } else if (event.value.minAge === 10) {
+    return "Não recomendado para menores de 10 anos";
+  } else if(event.value.minAge === 12){
+    return "Não recomendado para menores de 12 anos";
+  }
+    else if(event.value.minAge === 14){
+    return "Não recomendado para menores de 14 anos";
+  }
+    else if(event.value.minAge === 16){
+    return "Não recomendado para menores de 16 anos";
+  }
+    else if(event.value.minAge === 18){
+    return "Não recomendado para menores de 18 anos";
   }
 });
 
 const ageIcon = computed(() => {
   if (event.value.minAge === 0) {
-    return CalendarIcon;
-  } else if (event.value.minAge === 18) {
-    return CalendarIcon;
-  } else {
-    return CalendarIcon;
+    return Livre;
+  } else if (event.value.minAge === 10) {
+    return Menor10;
+  } else if (event.value.minAge === 12) {
+    return Menor12;
   }
-});
+    else if (event.value.minAge === 14) {
+    return Menor14;
+  }
+    else if (event.value.minAge === 16) {
+    return Menor16;
+  }
+    else if (event.value.minAge === 18) {
+    return Menor18;
+  }
+  }
+);
 
 onMounted(async () => {
   if (!event.value.id) {
@@ -132,16 +163,21 @@ onMounted(async () => {
         ></iframe>
       </div>
       <div class="infosWrapper">
-        <div class="location">
-          <img alt="" :src="ageIcon" width="20" height="25" />
-          <span>{{ ageTextComputed }}</span>
-        </div>
+       
         <div class="ticket">
           <img alt="" src="@/assets/ticket.svg" width="32" height="32" />
           <span v-if="event.finalPrice > 0"
-            >R${{ event.initialPrice }} a R${{ event.finalPrice }}</span
+            >R${{ event.initialPrice }},00 a R${{ event.finalPrice }},00</span
           >
           <span v-else>Gratuito</span>
+        </div>
+        <div class="location">
+          <img alt="" src="@/assets/Iconecalendario.svg" width="26" height="26" />
+          <span>{{ dayOfWeek }}, {{ formatDate(event.initialDate) }}, {{ event.startTime }}h às {{ event.endTime }}h</span>
+        </div>
+        <div class="location">
+          <img alt="" :src="ageIcon" width="25" height="25" />
+          <span>{{ ageTextComputed }}</span>
         </div>
       </div>
     </div>
@@ -161,10 +197,24 @@ onMounted(async () => {
         ></iframe>
       </div>
     </div>
+    <div class="footer">
+      <span class="foot">WIG 2024 © - Todos os direitos reservados</span>
+    </div>
   </div>
 </template>
 
 <style scoped>
+
+.foot{
+  font-size: smaller;
+  color: black;
+}
+.footer{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+}
 .ticket {
   align-items: center;
   color: black;
@@ -202,6 +252,7 @@ onMounted(async () => {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    margin-top: 20px;
   }
 
   .maps__infos {
