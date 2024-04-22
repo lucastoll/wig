@@ -123,8 +123,8 @@ onMounted(async () => {
         <img
           alt="Icone calendario"
           src="@/assets/Iconecalendario.svg"
-          width="32"
-          height="32"
+          width="25"
+          height="25"
         />
         <span class="day">{{ formatDate(event.initialDate) }}</span>
         <span>{{ event.startTime }}h as {{ event.endTime }}h</span>
@@ -190,9 +190,9 @@ onMounted(async () => {
         <iframe
           :src="'https://www.instagram.com/p/' + instagramId + '/embed'"
           width="100%"
-          height="500"
+          height="100%"
           frameborder="0"
-          scrolling="no"
+          scrolling="yes"
           allowtransparency="true"
         ></iframe>
       </div>
@@ -366,12 +366,19 @@ onMounted(async () => {
     display: block;
     width: 100%;
   }
+  .instagram_embed {
+  
+  border: 2px solid black;
+  min-height: 764px;
+  max-width: 600px;
+}
 }
 
 .instagram {
   display: flex;
   flex-direction: column;
   margin-top: 16px;
+  align-items: center;
 }
 .instagram h2 {
   font-size: 24px;
@@ -382,6 +389,9 @@ onMounted(async () => {
 }
 .instagram_embed {
   border: 2px solid black;
+  align-self: center;
+  width: 100%;
+  height: 450px;
 }
 </style>
 <style>
