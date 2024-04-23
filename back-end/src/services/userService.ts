@@ -15,7 +15,6 @@ async function verify(token: string) {
     });
     const payload = ticket.getPayload();
     if (!payload) throw new CustomError("Token inválido", 400);
-    const userid = payload["sub"];
     return payload;
   } catch (err) {
     throw new CustomError("Token inválido", 400);

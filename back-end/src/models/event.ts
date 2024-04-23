@@ -22,6 +22,9 @@ class Event extends Model implements EventInstance {
   public instagramEmbed!: string;
   public Location!: Location;
   public Categories!: Category[];
+  public startTime!: string;
+  public endTime!: string;
+  public ticketUrl!: string;
 
   public addCategories!: BelongsToManyAddAssociationsMixin<Category, number>;
 }
@@ -67,10 +70,22 @@ Event.init(
       allowNull: false,
     },
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT("long"),
       allowNull: false,
     },
     instagramEmbed: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    startTime: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    endTime: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    ticketUrl: {
       type: DataTypes.STRING,
       allowNull: true,
     },

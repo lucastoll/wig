@@ -17,14 +17,18 @@ export const login: CallbackTypes.CredentialCallback = async (response) => {
     const backEndUser = await axios.get(
       `http://localhost:3000/user/${userData.email}`
     );
+    userStore.loading = true;
     userStore.id = backEndUser.data.id;
     userStore.registerDone = true;
+    userStore.Categories = backEndUser.data.Categories;
   } catch (error: any) {
     if (error.response && error.response.status === 404) {
       userStore.registerDone = false;
     } else {
       logout();
     }
+  } finally {
+    userStore.loading = false;
   }
 
   userStore.loggedIn = true;

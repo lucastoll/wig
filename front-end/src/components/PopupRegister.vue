@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import { userStore } from "../store";
-import { logout } from "@/helpers/logout";
 import axios from "axios";
-
-interface Category {
-  name: string;
-  id: number;
-}
+import { userStore } from "@/store";
+import { logout } from "@/helpers/logout";
+import type ICategory from "@/types/ICategory";
 
 defineProps({
   isOpen: {
@@ -18,11 +14,13 @@ defineProps({
 
 onMounted(async () => {
   try {
-    await axios.get("http://localhost:3000/categories").then((response) => {
-      categories.value = response.data;
-    });
-  } catch (e) {
-    console.log(e);
+    await axios
+      .get(`${import.meta.env.VITE_API_URL}/categories`)
+      .then((response) => {
+        categories.value = response.data;
+      });
+  } catch (error) {
+    console.log(error);
   }
 });
 
@@ -30,7 +28,7 @@ const stage = ref<number>(1);
 const cep = ref("");
 const cepError = ref(false);
 const hasSubmitError = ref(false);
-const categories = ref<Category[]>([]);
+const categories = ref<ICategory[]>([]);
 const selectedCategories = ref<number[]>([]);
 
 watch(cep, (newCep) => {
@@ -77,19 +75,22 @@ const submit = async () => {
         ", " +
         addressResponse.data.uf;
 
-      const postResponse = await axios.post("http://localhost:3000/user", {
-        name: userStore.name,
-        email: userStore.email,
-        zipcode: cep.value.replace("-", ""),
-        address,
-        categoryIds: selectedCategories.value,
-        googleToken: localStorage.getItem("credential"),
-      });
+      const postResponse = await axios.post(
+        `${import.meta.env.VITE_API_URL}/user`,
+        {
+          name: userStore.name,
+          email: userStore.email,
+          zipcode: cep.value.replace("-", ""),
+          address,
+          categoryIds: selectedCategories.value,
+          googleToken: localStorage.getItem("credential"),
+        }
+      );
 
       userStore.registerDone = true;
       userStore.id = postResponse.data.id;
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log(error);
     }
   }
 };
@@ -272,3 +273,4 @@ const submit = async () => {
   color: white;
 }
 </style>
+@/types/ICategory

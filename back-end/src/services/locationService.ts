@@ -1,7 +1,6 @@
 import { CustomError } from "../errors/customError";
 import getCoordinates from "../helpers/getCoordinates";
 import { Location } from "../models/location";
-import axios from "axios";
 
 class LocationService {
   static async getAllLocations(): Promise<Location[]> {
@@ -15,7 +14,8 @@ class LocationService {
     address: string,
     zipcode: string,
     maxCapacity: number,
-    cityId: number
+    cityId: number,
+    name: string
   ): Promise<Location> {
     const { latitude, longitude } = await getCoordinates(zipcode);
 
@@ -35,6 +35,7 @@ class LocationService {
       zipcode,
       maxCapacity,
       cityId,
+      name,
       coordlat: latitude,
       coordlon: longitude,
     });

@@ -10,7 +10,12 @@
         >
           <div class="arrow-click-area">&#10094;</div>
         </div>
-        <div class="event-card" v-for="(event, index) in events" :key="index">
+        <div
+          @click="goToEvent(event)"
+          class="event-card"
+          v-for="(event, index) in events"
+          :key="index"
+        >
           <img :src="event.imageMobile" alt="Event Image" />
           <div class="event-details">
             <div
@@ -42,22 +47,9 @@
 
 <script lang="ts">
 import axios from "axios";
-
-interface Category {
-  name: string;
-}
-
-interface Location {
-  address: string;
-}
-
-interface Event {
-  imageMobile: string;
-  finalDate: string;
-  name: string;
-  Categories: Category[];
-  Location: Location;
-}
+import { useRouter } from "vue-router";
+import type IEvent from "@/types/IEvent";
+import goToEvent from "@/helpers/goToEvent";
 
 export default {
   props: {
@@ -72,7 +64,7 @@ export default {
   },
   data() {
     return {
-      events: [] as Event[],
+      events: [] as IEvent[],
       showLeftArrow: false,
       showRightArrow: false,
     };
@@ -81,6 +73,7 @@ export default {
     this.checkScroll();
     this.fetchEvents();
     window.addEventListener("resize", this.checkScroll);
+    const router = useRouter();
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.checkScroll);
@@ -92,11 +85,13 @@ export default {
     },
   },
   methods: {
+    goToEvent(event: IEvent) {
+      goToEvent(event);
+    },
     async fetchEvents() {
       try {
         const response = await axios.get(this.endpoint);
         this.events = response.data;
-        console.log(response.data);
       } catch (error) {
         console.error("Erro ao buscar eventos:", error);
       }

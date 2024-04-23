@@ -35,8 +35,12 @@ Location.init(
       allowNull: false,
     },
     coordlon: {
-      type: DataTypes.FLOAT, 
+      type: DataTypes.FLOAT,
       allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {
