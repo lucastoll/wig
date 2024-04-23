@@ -97,8 +97,6 @@ export default {
         this.loading = true;
         const response = await axios.get(this.endpoint);
         this.events = response.data;
-        console.log(this.events);
-        console.log(this.user);
       } catch (error) {
         console.error("Erro ao buscar eventos:", error);
       } finally {

@@ -1,7 +1,7 @@
 <template>
   <div class="search-container">
     <div class="search-bar">
-      <i class="fas fa-search search-icon">
+      <i class="search-icon">
         <img src="@/assets/Search.png" alt="Search icon"
       /></i>
       <input
@@ -11,7 +11,7 @@
         placeholder="Pesquisar..."
         class="search-input"
       />
-      <i class="fas fa-filter filter-icon" @click="toggleFilters"
+      <i class="filter-icon" @click="toggleFilters"
         ><img src="@/assets/Vector.png" alt="Search icon"
       /></i>
     </div>
