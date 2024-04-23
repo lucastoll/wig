@@ -12,10 +12,13 @@ import { userStore } from "@/store";
 onMounted(() => {
   const credential = localStorage.getItem("credential");
   try {
-    credential &&
+    if (credential) {
       login({
         credential,
       } as unknown as CallbackTypes.CredentialPopupResponse);
+    } else {
+      userStore.loading = false;
+    }
   } catch (error) {
     logout();
     console.log(error);
