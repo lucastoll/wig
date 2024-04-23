@@ -15,12 +15,6 @@ type EventData = Event &
     locationId?: number;
   };
 
-interface WhereClause {
-  [Op.or]?: WhereOptions[];
-  name?: string | WhereOptions;
-  finalDate: { [Op.gte]: Date };
-}
-
 class EventService {
   static async getEvents(
     cityId: string | undefined,
@@ -88,7 +82,7 @@ class EventService {
     if (searchBar) {
       eventsQuery.where = {
         ...eventsQuery.where,
-        [Op.or]: [literal(`LOWER(name) LIKE LOWER('%${searchBar}%')`)],
+        [Op.or]: [literal(`LOWER(Event.name) LIKE LOWER('%${searchBar}%')`)],
       };
     }
 
@@ -244,7 +238,7 @@ class EventService {
     if (searchBar) {
       eventsQuery.where = {
         ...eventsQuery.where,
-        [Op.or]: [literal(`LOWER(name) LIKE LOWER('%${searchBar}%')`)],
+        [Op.or]: [literal(`LOWER(Event.name) LIKE LOWER('%${searchBar}%')`)],
       };
     }
 
@@ -323,7 +317,7 @@ class EventService {
     if (searchBar) {
       eventsQuery.where = {
         ...eventsQuery.where,
-        [Op.or]: [literal(`LOWER(name) LIKE LOWER('%${searchBar}%')`)],
+        [Op.or]: [literal(`LOWER(Event.name) LIKE LOWER('%${searchBar}%')`)],
       };
     }
 

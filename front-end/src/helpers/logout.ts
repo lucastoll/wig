@@ -6,6 +6,7 @@ export const logout = () => {
   userStore.name = "";
   userStore.email = "";
   userStore.profilePicture = "";
+  userStore.loading = false;
 
   delete userStore.registerDone;
 };

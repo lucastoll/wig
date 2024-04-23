@@ -4,7 +4,9 @@ import type { IUserStore } from "@/types/IUserStore";
 import type IEvent from "./types/IEvent";
 
 export const userStore: IUserStore = reactive({
+  loading: true,
   loggedIn: false,
+  Categories: [],
 });
 
 export const cityStore: ICity = reactive({} as ICity);
