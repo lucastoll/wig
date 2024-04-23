@@ -1,6 +1,10 @@
 <template>
   <div id="app">
-    <div v-if="events.length > 0" class="main-event">
+    <div
+      @click="goToEvent(events[0])"
+      v-if="events.length > 0"
+      class="main-event"
+    >
       <img
         :src="imageSrc"
         :alt="'Event Image ' + events[0].name"
@@ -21,6 +25,7 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import axios from "axios";
 import type IEvent from "@/types/IEvent";
+import goToEvent from "@/helpers/goToEvent";
 
 const props = defineProps<{
   endpoint: string;

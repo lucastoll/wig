@@ -1,6 +1,7 @@
 import { reactive } from "vue";
 import type { ICity } from "@/types/ICity";
 import type { IUserStore } from "@/types/IUserStore";
+import type IEvent from "./types/IEvent";
 
 export const userStore: IUserStore = reactive({
   loading: true,
@@ -9,6 +10,8 @@ export const userStore: IUserStore = reactive({
 });
 
 export const cityStore: ICity = reactive({} as ICity);
+
+export const eventStore: IEvent = reactive({} as IEvent);
 
 const storedCity = localStorage.getItem("city");
 if (storedCity) {
