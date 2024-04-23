@@ -13,7 +13,6 @@ import Menor14 from "@/assets/fourteen.png";
 import Menor12 from "@/assets/twelve.png";
 import Menor10 from "@/assets/ten.png";
 
-
 const event = ref<IEvent>(eventStore);
 const route = useRoute();
 const router = useRouter();
@@ -24,12 +23,21 @@ function formatDate(dateString: string) {
   console.log(eventDate.toLocaleDateString("pt-BR"));
   return eventDate.toLocaleDateString("pt-BR");
 }
-const dateStr = ref(event.value.initialDate);  // substitua isso pela data do seu banco de dados  
-const dayOfWeek = computed(() => {   
-  const date = new Date(dateStr.value);   
-  const dayIndex = date.getDay();    
-  const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-   return days[dayIndex]; });
+const dateStr = ref(event.value.initialDate); // substitua isso pela data do seu banco de dados
+const dayOfWeek = computed(() => {
+  const date = new Date(dateStr.value);
+  const dayIndex = date.getDay();
+  const days = [
+    "Domingo",
+    "Segunda-feira",
+    "Terça-feira",
+    "Quarta-feira",
+    "Quinta-feira",
+    "Sexta-feira",
+    "Sábado",
+  ];
+  return days[dayIndex];
+});
 
 const mapUrl = computed(() => {
   if (!event.value.Location) return;
@@ -56,16 +64,13 @@ const ageTextComputed = computed(() => {
     return "Livre para todos os públicos";
   } else if (event.value.minAge === 10) {
     return "Não recomendado para menores de 10 anos";
-  } else if(event.value.minAge === 12){
+  } else if (event.value.minAge === 12) {
     return "Não recomendado para menores de 12 anos";
-  }
-    else if(event.value.minAge === 14){
+  } else if (event.value.minAge === 14) {
     return "Não recomendado para menores de 14 anos";
-  }
-    else if(event.value.minAge === 16){
+  } else if (event.value.minAge === 16) {
     return "Não recomendado para menores de 16 anos";
-  }
-    else if(event.value.minAge === 18){
+  } else if (event.value.minAge === 18) {
     return "Não recomendado para menores de 18 anos";
   }
 });
@@ -77,18 +82,14 @@ const ageIcon = computed(() => {
     return Menor10;
   } else if (event.value.minAge === 12) {
     return Menor12;
-  }
-    else if (event.value.minAge === 14) {
+  } else if (event.value.minAge === 14) {
     return Menor14;
-  }
-    else if (event.value.minAge === 16) {
+  } else if (event.value.minAge === 16) {
     return Menor16;
-  }
-    else if (event.value.minAge === 18) {
+  } else if (event.value.minAge === 18) {
     return Menor18;
   }
-  }
-);
+});
 
 onMounted(async () => {
   if (!event.value.id) {
@@ -117,18 +118,9 @@ onMounted(async () => {
     <img :src="event.imageMobile" alt="imgMobile" class="imgEventMobile" />
     <img :src="event.imageDesktop" alt="imgDesktop" class="imgEventDesktop" />
   </div>
-  <div v-if="event.initialDate" class="father">
+  <div v-if="event.initialDate" class="grandFather">
+  <div  class="father">
     <div class="sectiontitle">
-      <div class="data">
-        <img
-          alt="Icone calendario"
-          src="@/assets/Iconecalendario.svg"
-          width="25"
-          height="25"
-        />
-        <span class="day">{{ formatDate(event.initialDate) }}</span>
-        <span>{{ event.startTime }}h as {{ event.endTime }}h</span>
-      </div>
       <div class="title">
         <h1 class="nameEvent">{{ event.name }}</h1>
         <div class="row">
@@ -163,7 +155,6 @@ onMounted(async () => {
         ></iframe>
       </div>
       <div class="infosWrapper">
-       
         <div class="ticket">
           <img alt="" src="@/assets/ticket.svg" width="32" height="32" />
           <span v-if="event.finalPrice > 0"
@@ -172,8 +163,16 @@ onMounted(async () => {
           <span v-else>Gratuito</span>
         </div>
         <div class="location">
-          <img alt="" src="@/assets/Iconecalendario.svg" width="26" height="26" />
-          <span>{{ dayOfWeek }}, {{ formatDate(event.initialDate) }}, {{ event.startTime }}h às {{ event.endTime }}h</span>
+          <img
+            alt=""
+            src="@/assets/Iconecalendario.svg"
+            width="26"
+            height="26"
+          />
+          <span
+            >{{ dayOfWeek }}, {{ formatDate(event.initialDate) }},
+            {{ event.startTime }}h às {{ event.endTime }}h</span
+          >
         </div>
         <div class="location">
           <img alt="" :src="ageIcon" width="25" height="25" />
@@ -201,15 +200,15 @@ onMounted(async () => {
       <span class="foot">WIG 2024 © - Todos os direitos reservados</span>
     </div>
   </div>
+</div>
 </template>
 
 <style scoped>
-
-.foot{
+.foot {
   font-size: smaller;
   color: black;
 }
-.footer{
+.footer {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -243,27 +242,10 @@ onMounted(async () => {
   gap: 16px;
 }
 
-@media screen and (min-width: 1024px) {
-  .maps {
-    width: 600px;
-  }
-
-  .infosWrapper {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-
-  .maps__infos {
-    flex-direction: column-reverse;
-  }
-}
-
 .father {
   display: flex;
   flex-direction: column;
-  padding: 16px 16px 200px;
+  padding: 16px 16px 50px;
 }
 .location {
   display: flex;
@@ -310,6 +292,7 @@ onMounted(async () => {
     display: flex;
   }
 
+
   .nameEvent {
     width: 75% !important;
   }
@@ -339,7 +322,6 @@ onMounted(async () => {
   color: black;
   font-weight: 700;
   width: 100%;
-  align-self: center;
   font-size: 20px;
   line-height: 28px;
 }
@@ -357,23 +339,6 @@ onMounted(async () => {
 .imgEventDesktop {
   display: none;
 }
-
-@media screen and (min-width: 1024px) {
-  .imgEventMobile {
-    display: none;
-  }
-  .imgEventDesktop {
-    display: block;
-    width: 100%;
-  }
-  .instagram_embed {
-  
-  border: 2px solid black;
-  min-height: 764px;
-  max-width: 600px;
-}
-}
-
 .instagram {
   display: flex;
   flex-direction: column;
@@ -392,6 +357,63 @@ onMounted(async () => {
   align-self: center;
   width: 100%;
   height: 450px;
+}
+
+@media screen and (min-width: 1024px) {
+  .imgEventMobile {
+    display: none;
+  }
+
+  .sectiontitle{
+    justify-content: start;
+  }
+.title{
+  align-items: start;
+  width: 100%;
+}
+.nameEvent{
+  padding-right: 475px;
+}
+.row{
+  justify-content: flex-start;
+}
+  .grandFather{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .father{
+    display: flex;
+    flex-direction: column;
+    max-width: 1280px;
+  }
+  .imgEventDesktop {
+    display: block;
+    width: 100%;
+  }
+  .instagram_embed {
+    border: 2px solid black;
+    min-height: 764px;
+    max-width: 600px;
+  }
+  .maps {
+    width: 600px;
+  }
+
+  .infosWrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  .maps__infos {
+    flex-direction: column-reverse;
+  }
+
+  .father {
+    padding-bottom: 0px;
+  }
 }
 </style>
 <style>
@@ -434,8 +456,8 @@ onMounted(async () => {
   justify-content: center;
 }
 
-@media screen and (min-width: 1024px){
-  .description img{
+@media screen and (min-width: 1024px) {
+  .description img {
     max-width: 600px;
   }
 }
