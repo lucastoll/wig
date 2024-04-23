@@ -2,7 +2,12 @@
   <div class="event-list">
     <div class="event-list-container">
       <div v-if="events.length > 0" class="events-wrapper">
-        <div class="event-card" v-for="(event, index) in events" :key="index">
+        <div
+          class="event-card"
+          v-for="(event, index) in events"
+          @click="goToEvent(event)"
+          :key="index"
+        >
           <div class="event-image-wrapper">
             <img
               class="event-image"
@@ -63,6 +68,7 @@ import axios from "axios";
 import { userStore } from "@/store";
 import type IEvent from "@/types/IEvent";
 import type ICategory from "@/types/ICategory";
+import goToEvent from "@/helpers/goToEvent";
 
 export default {
   props: {
@@ -92,6 +98,7 @@ export default {
     },
   },
   methods: {
+    goToEvent,
     async fetchEvents() {
       try {
         this.loading = true;

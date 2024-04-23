@@ -18,12 +18,10 @@ const route = useRoute();
 const router = useRouter();
 
 function formatDate(dateString: string) {
-  console.log(dateString);
   const eventDate = new Date(dateString);
-  console.log(eventDate.toLocaleDateString("pt-BR"));
   return eventDate.toLocaleDateString("pt-BR");
 }
-const dateStr = ref(event.value.initialDate); // substitua isso pela data do seu banco de dados
+const dateStr = ref(event.value.initialDate);
 const dayOfWeek = computed(() => {
   const date = new Date(dateStr.value);
   const dayIndex = date.getDay();
@@ -55,7 +53,6 @@ const instagramId = computed(() => {
   const url = event.value.instagramEmbed;
   const parts = url.split("/");
   const id = parts[4];
-  console.log(id);
   return id;
 });
 
@@ -98,7 +95,6 @@ onMounted(async () => {
         `${import.meta.env.VITE_API_URL}/events?cityId=${cityStore.id}`
       );
       if (response.status === 200) {
-        console.log(response);
         event.value = response.data.filter(
           (event: IEvent) => event.id === Number(route.params.id)
         )[0];
@@ -109,7 +105,6 @@ onMounted(async () => {
       router.push({ name: "NotFound" });
     }
   }
-  console.log("eventoooooooooooo", event.value);
 });
 </script>
 
