@@ -9,4 +9,5 @@ export interface IUserStore {
     registerDone?: boolean;
     Categories: ICategory[];
     loading?: boolean;
+    administrator: boolean | undefined;
 }
