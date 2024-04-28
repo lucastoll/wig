@@ -5,6 +5,7 @@ import { LocationController } from "./controllers/locationController";
 import { CategoryController } from "./controllers/categoryController";
 import { EventController } from "./controllers/eventController";
 import { verifyGoogleToken } from "./middleware/verifyGoogleToken";
+import { SustainabilityQuestionController } from "./controllers/sustainabilityQuestionController";
 
 const router = express.Router();
 
@@ -37,6 +38,11 @@ router.get(
   "/events/analysis",
   verifyGoogleToken,
   EventController.getAnalysisEvents
+);
+router.get(
+  "/event/:eventId/sustainabilityQuestions",
+  verifyGoogleToken,
+  SustainabilityQuestionController.getEventSustainabilityQuestions
 );
 
 export default router;

@@ -9,6 +9,7 @@ interface EventInstance extends Model {
 }
 
 class Event extends Model implements EventInstance {
+  public id!: string;
   public name!: string;
   public imageMobile!: string;
   public imageDesktop!: string;

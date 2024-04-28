@@ -193,7 +193,7 @@ class EventController {
     }
 
     try {
-      const events = await EventService.getEventsById(eventId);
+      const events = await EventService.getEventById(eventId);
       if (!events) {
         res.status(404).json({ error: "Evento não encontrado" });
         return;
