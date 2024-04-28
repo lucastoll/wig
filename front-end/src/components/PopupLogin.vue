@@ -35,6 +35,7 @@ onUnmounted(() => {
   right: -9px;
   background: #1597b1;
   border-radius: 5px;
+  z-index: 1;
 }
 .popup-content {
   width: fit-content;
