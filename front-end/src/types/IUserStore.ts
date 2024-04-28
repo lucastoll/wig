@@ -1,13 +1,14 @@
 import type ICategory from "./ICategory";
 
 export interface IUserStore {
-    id?: string;
-    loggedIn?: boolean;
-    name?: string;
-    email?: string;
-    profilePicture?: string;
-    registerDone?: boolean;
-    Categories: ICategory[];
-    loading?: boolean;
-    administrator: boolean | undefined;
+  id?: string;
+  loggedIn?: boolean;
+  name?: string;
+  email?: string;
+  profilePicture?: string;
+  registerDone?: boolean;
+  Categories: ICategory[];
+  loading?: boolean;
+  administrator: boolean | undefined;
+  googleToken?: string;
 }

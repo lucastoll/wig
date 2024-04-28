@@ -17,4 +17,5 @@ export default interface IEvent {
   Location: ILocation;
   instagramEmbed: string;
   minAge: number;
+  status: string;
 }

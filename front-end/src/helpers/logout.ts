@@ -9,6 +9,4 @@ export const logout = () => {
   userStore.loading = false;
 
   delete userStore.registerDone;
-
-  console.log(userStore)
 };

@@ -29,17 +29,17 @@ router.get("/events/recommendation", EventController.getEventsRecomended);
 router.get("/events/date", EventController.getEventsByDate);
 router.post("/event", EventController.createEvent);
 router.get("/event/getId/:id", EventController.getEventById);
-router.get(
+router.post(
   "/events/organizer/:userId",
   verifyGoogleToken,
   EventController.getOrganizerEvents
 );
-router.get(
+router.post(
   "/events/analysis",
   verifyGoogleToken,
   EventController.getAnalysisEvents
 );
-router.get(
+router.post(
   "/event/:eventId/sustainabilityQuestions",
   verifyGoogleToken,
   SustainabilityQuestionController.getEventSustainabilityQuestions

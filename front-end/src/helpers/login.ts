@@ -30,16 +30,16 @@ export const login: CallbackTypes.CredentialCallback = async (response) => {
     userStore.name = userData.name;
     userStore.email = userData.email;
     userStore.profilePicture = userData.picture;
+    userStore.googleToken = response.credential;
   } catch (error: any) {
-    console.log(error);
     if (error.response && error.response.status === 404) {
       userStore.registerDone = false;
       userStore.loggedIn = true;
       userStore.name = userData.name;
       userStore.email = userData.email;
       userStore.profilePicture = userData.picture;
+      userStore.googleToken = response.credential;
     } else {
-      console.log("logout");
       logout();
     }
   } finally {

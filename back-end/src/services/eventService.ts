@@ -459,7 +459,6 @@ class EventService {
     email: string
   ): Promise<Event[]> {
     const user = await User.findByPk(userId);
-    console.log(userId);
     if (!user) {
       throw new CustomError("Usuário não encontrado", 404);
     }
