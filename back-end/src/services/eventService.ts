@@ -488,7 +488,7 @@ class EventService {
     }
 
     const events = await Event.findAll({
-      where: { status: "em analise" },
+      where: { status: "em análise" },
       include: [
         { model: Category },
         { model: User, as: "organizer" },
