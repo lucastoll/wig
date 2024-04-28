@@ -1,16 +1,32 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { userStore } from "@/store";
 import { login } from "@/helpers/login";
 import { logout } from "@/helpers/logout";
 
-const name = computed(() => userStore.name?.split(" ")[0] || "Visitante");
+const name = ref(userStore.name?.split(" ")[0] || "Visitante");
+const loggedIn = ref(userStore.loggedIn ?? undefined);
+
+const updateValues = ([newLoggedIn, newName]: [
+  boolean | undefined,
+  string | undefined
+]) => {
+  console.log(newLoggedIn, newName)
+  loggedIn.value = newLoggedIn;
+  name.value = newName?.split(" ")[0] || "Visitante";
+};
+
+onMounted(() => {
+  updateValues([userStore.loggedIn, userStore.name]);
+});
+
+watch([() => userStore.loggedIn, () => userStore.name], updateValues);
 </script>
 
 <template>
   <div>
     <span class="loginGoogle__name">Olá, {{ name }}</span>
-    <div v-if="!userStore.loggedIn">
+    <div v-if="!loggedIn">
       <GoogleLogin :callback="login" auto-login />
     </div>
     <div class="loginGoogle__logout" v-else>
@@ -24,7 +40,6 @@ const name = computed(() => userStore.name?.split(" ")[0] || "Visitante");
     </div>
   </div>
 </template>
-
 <style scoped>
 .loginGoogle__name {
   display: block;
