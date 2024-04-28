@@ -444,7 +444,10 @@ class EventService {
     return newEvent;
   }
 
-  static async getUserEvents(userId: string, email: string): Promise<Event[]> {
+  static async getOrganizerEvents(
+    userId: string,
+    email: string
+  ): Promise<Event[]> {
     const user = await User.findByPk(userId);
     if (!user) {
       throw new CustomError("Usuário não encontrado", 404);
@@ -456,6 +459,27 @@ class EventService {
 
     const events = await Event.findAll({
       where: { organizerId: userId },
+      include: [
+        { model: Category },
+        { model: User, as: "organizer" },
+        { model: Location },
+      ],
+    });
+
+    return events;
+  }
+
+  static async getAnalysisEvents(email: string): Promise<Event[]> {
+    const user = await User.findOne({ where: { email } });
+
+    console.log(user)
+    if(user?.administrator === false) {
+      console.log(user.administrator)
+      throw new CustomError("Usuário não autorizado", 401);
+    }
+
+    const events = await Event.findAll({
+      where: { status: "em analise" },
       include: [
         { model: Category },
         { model: User, as: "organizer" },

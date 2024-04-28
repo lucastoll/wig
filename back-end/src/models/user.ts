@@ -15,7 +15,7 @@ class User extends Model implements UserInstance {
   public Categories!: Category[];
   public coordlat!: number;
   public coordlon!: number;
-  public administator!: boolean;
+  public administrator!: boolean;
 
   public addCategories!: BelongsToManyAddAssociationsMixin<Category, number>;
 }

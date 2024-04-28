@@ -28,7 +28,15 @@ router.get("/events/recommendation", EventController.getEventsRecomended);
 router.get("/events/date", EventController.getEventsByDate);
 router.post("/event", EventController.createEvent);
 router.get("/event/getId/:id", EventController.getEventById);
-router.get("/events/user/:userId", verifyGoogleToken, EventController.getUserEvents);
-
+router.get(
+  "/events/organizer/:userId",
+  verifyGoogleToken,
+  EventController.getOrganizerEvents
+);
+router.get(
+  "/events/analysis",
+  verifyGoogleToken,
+  EventController.getAnalysisEvents
+);
 
 export default router;

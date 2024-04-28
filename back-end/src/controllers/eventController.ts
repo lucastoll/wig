@@ -194,6 +194,10 @@ class EventController {
 
     try {
       const events = await EventService.getEventsById(eventId);
+      if (!events) {
+        res.status(404).json({ error: "Evento não encontrado" });
+        return;
+      }
       res.status(200).json(events);
     } catch (error) {
       next(error);
@@ -239,14 +243,14 @@ class EventController {
     }
   }
 
-  static async getUserEvents(
+  static async getOrganizerEvents(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     const userId =
       typeof req.params.userId === "string" ? req.params.userId : undefined;
-    const email = req.body.email
+    const email = req.body.email;
 
     if (!userId) {
       res.status(400).json({
@@ -256,7 +260,22 @@ class EventController {
     }
 
     try {
-      const events = await EventService.getUserEvents(userId, email);
+      const events = await EventService.getOrganizerEvents(userId, email);
+      res.status(200).json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getAnalysisEvents(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const email = req.body.email;
+
+    try {
+      const events = await EventService.getAnalysisEvents(email);
       res.status(200).json(events);
     } catch (error) {
       next(error);
