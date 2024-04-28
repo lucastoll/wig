@@ -443,6 +443,28 @@ class EventService {
 
     return newEvent;
   }
+
+  static async getUserEvents(userId: string, email: string): Promise<Event[]> {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new CustomError("Usuário não encontrado", 404);
+    }
+
+    if (user.email !== email) {
+      throw new CustomError("Usuário não autorizado", 401);
+    }
+
+    const events = await Event.findAll({
+      where: { organizerId: userId },
+      include: [
+        { model: Category },
+        { model: User, as: "organizer" },
+        { model: Location },
+      ],
+    });
+
+    return events;
+  }
 }
 
 export { EventService };
