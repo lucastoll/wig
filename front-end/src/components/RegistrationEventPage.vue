@@ -48,6 +48,23 @@
       </div>
     </div>
   </div>
+  <div class="title"><p>Ingressos</p></div>
+  <div class="bottonPrice">
+    <button 
+      class="optionButton" 
+      :class="{ 'selected': isYesSelected }" 
+      @click="selectYes"
+    >
+      Sim
+    </button>
+    <button 
+      class="optionButton" 
+      :class="{ 'selected': !isYesSelected }" 
+      @click="selectNo"
+    >
+      Não
+    </button>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -201,6 +218,33 @@ body {
   margin-right: 10px;
   width: 25px;
   height: 25px;
+}
+
+.bottonPrice {
+  display: flex;
+  justify-content: space-between;
+}
+
+.optionButton {
+  flex: 1;
+  height: 60px;
+  background-color: #ccc;
+  color: black;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.optionButton.selected {
+  background-color: white;
+}
+
+/* Estilo para ocupar a largura da página */
+@media (max-width: 1280px) {
+  .optionButton {
+    width: 100%;
+  }
 }
 
 </style>
