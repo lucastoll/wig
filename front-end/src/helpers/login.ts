@@ -14,6 +14,10 @@ export const login: CallbackTypes.CredentialCallback = async (response) => {
   localStorage.setItem("credential", response.credential);
 
   try {
+    await axios.get(
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${response.credential}`
+    );
+
     const backEndUser = await axios.get(
       `http://localhost:3000/user/${userData.email}`
     );
@@ -22,18 +26,23 @@ export const login: CallbackTypes.CredentialCallback = async (response) => {
     userStore.registerDone = true;
     userStore.administrator = backEndUser.data.administrator;
     userStore.Categories = backEndUser.data.Categories;
+    userStore.loggedIn = true;
+    userStore.name = userData.name;
+    userStore.email = userData.email;
+    userStore.profilePicture = userData.picture;
+    userStore.googleToken = response.credential;
   } catch (error: any) {
     if (error.response && error.response.status === 404) {
       userStore.registerDone = false;
+      userStore.loggedIn = true;
+      userStore.name = userData.name;
+      userStore.email = userData.email;
+      userStore.profilePicture = userData.picture;
+      userStore.googleToken = response.credential;
     } else {
       logout();
     }
   } finally {
     userStore.loading = false;
   }
-
-  userStore.loggedIn = true;
-  userStore.name = userData.name;
-  userStore.email = userData.email;
-  userStore.profilePicture = userData.picture;
 };

@@ -15,7 +15,7 @@ onMounted(() => {
     if (credential) {
       login({
         credential,
-      } as unknown as CallbackTypes.CredentialPopupResponse);
+      } as CallbackTypes.CredentialPopupResponse);
     } else {
       userStore.loading = false;
     }
@@ -32,5 +32,3 @@ onMounted(() => {
   <RouterView />
   <PopupRegister :isOpen="userStore.registerDone === false" />
 </template>
-
-<style scoped></style>
