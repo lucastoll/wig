@@ -16,9 +16,8 @@
     <div class="citiesSelect">
       <div class="subtitle"><p>* Cidade</p></div>
       <select class="cities" v-model="cityStore.id" @change="changeCity">
-        <option v-for="city in cities" :key="city.id" :value="city.id">
-          {{ city.name }}
-        </option>
+        <option value="" disabled selected hidden>Selecione a cidade</option>
+        <<option v-for="city in cities" :key="city.id" :value="city.id">{{ city.name }}</option>
       </select>
     </div>
     <div class="address">
@@ -42,29 +41,60 @@
         <input class="inputTextDate" type="text" id="inicialDate" v-model="inicialDate" placeholder="Digite a data inicial">
         <img class="calendarImg" src="@/assets/Calendar.png"/>
       </div>
+    </div>
+    <div class="finalDate">
+      <div class="subtitle"><p>* Data Final</p></div>
       <div class="dateInput">
-        <input class="inputTextDate" type="text" id="inicialFinal" v-model="inicialFinal" placeholder="Digite a data final">
+        <input class="inputTextDate" type="text" id="FinalDate" v-model="FinalDate" placeholder="Digite a data final">
         <img class="calendarImg" src="@/assets/Calendar.png"/>
       </div>
     </div>
   </div>
   <div class="title"><p>Ingressos</p></div>
-  <div class="bottonPrice">
-    <button 
-      class="optionButton" 
-      :class="{ 'selected': isYesSelected }" 
-      @click="selectYes"
-    >
-      Sim
-    </button>
-    <button 
-      class="optionButton" 
-      :class="{ 'selected': !isYesSelected }" 
-      @click="selectNo"
-    >
-      Não
-    </button>
+  <div class="prices">
+    <div class="subtitle"><p>* O evento é gratuito?</p></div>
+    <div class="buttonPrice">
+        <button 
+          class="optionButton" 
+          :class="{ 'selected': isYesSelected }" 
+          @click="selectYes"
+          :disabled="isYesSelected"
+        >
+          Sim
+        </button>
+        <button 
+          class="optionButton" 
+          :class="{ 'selected': !isYesSelected }" 
+          @click="selectNo"
+          :disabled="!isYesSelected"
+        >
+          Não
+        </button>
+    </div>
+    <div class="priceDefinition">
+      <div class="priceInicial">
+        <div class="subtitle"><p>* Preço Inicial (BRL)</p></div>
+        <div class="priceInput">
+          <input class="inputTextPrice" type="text" id="inicialPrice" v-model="inicialPrice" placeholder="Digite o preço inicial">
+          <img class="priceImg" src="@/assets/Price.png"/>
+        </div>
+      </div>
+      <div class="priceFinal">
+        <div class="subtitle"><p>* Preço Final (BRL)</p></div>
+        <div class="priceInput">
+          <input class="inputTextPrice" type="text" id="finalPrice" v-model="finalPrice" placeholder="Digite o preço final">
+          <img class="priceImg" src="@/assets/Price.png"/>
+        </div>
+      </div>
+      <div class="linkBuy">
+        <div class="subtitle"><p>* Link para compra do ingresso</p></div>
+        <div class="priceInput">
+          <input class="inputTextPrice" type="text" id="linkBuy" v-model="linkBuy" placeholder="Ex: https://minhaimagem.png">
+        </div>
+      </div>
+    </div>
   </div>
+  
 </template>
 
 <script setup lang="ts">
@@ -73,7 +103,6 @@ import { MdEditor, MdPreview } from "md-editor-v3";
 import MarkdownIt from "markdown-it";
 import { cityStore } from "@/store";
 import type { ICity } from "@/types/ICity";
-
 import "md-editor-v3/lib/style.css";
 
 const md = new MarkdownIt();
@@ -81,6 +110,8 @@ const md = new MarkdownIt();
 const text = ref("# Hello Editor");
 
 const result = computed(() => md.render(text.value));
+
+const isYesSelected = ref(true);
 
 watch(text, (newVal) => {
   console.log(newVal);
@@ -92,10 +123,18 @@ function changeCity() {
     if (selectedCity) {
       cityStore.id = selectedCity.id;
       cityStore.name = selectedCity.name;
-    }
+    }  
 
     localStorage.setItem("city", JSON.stringify(selectedCity));
   }
+}
+
+function selectYes() {
+  isYesSelected.value = true;
+}
+
+function selectNo() {
+  isYesSelected.value = false;
 }
 
 </script>
@@ -149,11 +188,13 @@ body {
   height: 48px;
   gap: 0px;
   border-radius: 8px;
+  border: solid 1px black;
   opacity: 0px;
   margin-left: 10px;
   padding: 10px;
 }
 
+.inputTextPrice,
 .inputTextDate{
   width: 300px;
   height: 48px;
@@ -164,14 +205,20 @@ body {
   border: none;
 }
 
+.inputTextAddress:focus,
+.inputTextPrice:focus,
 .inputTextDate:focus{
-  border: none;
   outline: none;
 }
 
+.priceInput,
 .dateInput{
   border-radius: 8px;
   border: solid 1px black;
+}
+
+.priceInput{
+  margin-left: 10px;
 }
 
 .dontFindLocate{
@@ -202,8 +249,9 @@ body {
   display: flex;
 }
 
+.priceDefinition,
 .dateInfos{
-  display: inline-block;
+  display: inline-flex;
 }
 
 .dateInput{
@@ -211,6 +259,7 @@ body {
   margin-left: 10px;
 }
 
+.priceImg,
 .calendarImg{
   align-self: center;
   justify-content: center;
@@ -223,24 +272,34 @@ body {
 .bottonPrice {
   display: flex;
   justify-content: space-between;
+  background-color: #ccc;
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: solid black 1px;
 }
 
 .optionButton {
-  flex: 1;
-  height: 60px;
+  width: 50%;
+  height: 40px;
   background-color: #ccc;
   color: black;
   font-size: 18px;
   font-weight: bold;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
 }
 
 .optionButton.selected {
   background-color: white;
+  color: black;
 }
 
-/* Estilo para ocupar a largura da página */
+.optionButton:disabled {
+  opacity: 0.6;
+}
+
 @media (max-width: 1280px) {
   .optionButton {
     width: 100%;
