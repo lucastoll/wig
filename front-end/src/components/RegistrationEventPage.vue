@@ -88,13 +88,65 @@
       </div>
       <div class="linkBuy">
         <div class="subtitle"><p>* Link para compra do ingresso</p></div>
-        <div class="priceInput">
-          <input class="inputTextPrice" type="text" id="linkBuy" v-model="linkBuy" placeholder="Ex: https://minhaimagem.png">
-        </div>
+        <input class="inputTextPriceLink" type="text" id="linkBuy" v-model="linkBuy" placeholder="Ex: https://minhaimagem.png">
       </div>
     </div>
   </div>
-  
+  <div class="title"><p>Imagens de divulgação</p></div>
+  <div class="divulgation">
+    <div class="mobileLink">
+      <div class="subtitle"><p>* Link da imagem Mobile</p></div>
+      <input class="inputTextLinkDivulgation" type="text" id="linkMobile" v-model="linkMobile" placeholder="Ex: https://minhaimagem.png">
+    </div>
+    <div class="desktopLink">
+      <div class="subtitle"><p>* Link da imagem Desktop</p></div>
+      <input class="inputTextLinkDivulgation" type="text" id="linkDesktop" v-model="linkDesktop" placeholder="Ex: https://minhaimagem.png">
+    </div>
+  </div>
+  <div class="title"><p>Sustentabilidade</p></div>
+  <div class="sustainability">
+    <div class="renewableEnergy">
+      <div class="subtitle"><p>O evento utilizará uma fonte de energia renovável (solar, eólica, hídrica...)?</p></div>
+      <input class="inputTextLinkSustainability" type="text" id="renewableEnergy" v-model="renewableEnergy" placeholder="Responda com detalhes">
+    </div>
+    <div class="wasteManagement">
+      <div class="subtitle"><p>O evento possui um plano de gestão de resíduos que inclui coleta seletiva e reciclagem?</p></div>
+      <input class="inputTextLinkSustainability" type="text" id="wasteManagement" v-model="wasteManagement" placeholder="Responda com detalhes">
+    </div>
+  </div>
+  <div class="sustainability">
+    <div class="visibleBins">
+      <div class="subtitle"><p>São disponibilizadas lixeiras para coleta seletiva em locais visíveis?</p></div>
+      <input class="inputTextLinkSustainability" type="text" id="visibleBins" v-model="visibleBins" placeholder="Responda com detalhes">
+    </div>
+    <div class="reduceWaste">
+      <div class="subtitle"><p>Existe alguma estratégia no evento para reduzir o desperdício de alimentos e materiais descartáveis?</p></div>
+      <input class="inputTextLinkSustainability" type="text" id="reduceWaste" v-model="reduceWaste" placeholder="Responda com detalhes">
+    </div>
+  </div>
+  <div class="sustainability">
+    <div class="publicTransportation">
+      <div class="subtitle"><p>É possível chegar facilmente ao local do evento por meio de transporte público?</p></div>
+      <input class="inputTextLinkSustainability" type="text" id="publicTransportation" v-model="publicTransportation" placeholder="Responda com detalhes">
+    </div>
+    <div class="sustainableTransportIncentive">
+      <div class="subtitle"><p>Há incentivos para que os participantes utilizem meios de transporte sustentáveis?</p></div>
+      <input class="inputTextLinkSustainability" type="text" id="sustainableTransportIncentive" v-model="sustainableTransportIncentive" placeholder="Responda com detalhes">
+    </div>
+  </div>
+  <div class="sustainability">
+    <div class="socialEnvironmental">
+      <div class="subtitle"><p>O evento beneficia alguma causa social ou ambiental?</p></div>
+      <input class="inputTextLinkSustainability" type="text" id="socialEnvironmental" v-model="socialEnvironmental" placeholder="Responda com detalhes">
+    </div>
+    <div class="monitorImpact">
+      <div class="subtitle"><p>  O evento monitora e avalia seu impacto ambiental?</p></div>
+      <input class="inputTextLinkSustainability" type="text" id="monitorImpact" v-model="monitorImpact" placeholder="Responda com detalhes">
+    </div>
+  </div>
+  <div class="submit-button-container">
+    <button class="submit-button">Enviar Evento</button>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -174,7 +226,7 @@ body {
 }
 
 .inputTextName{
-  width: 1280px;
+  width: calc(100% - 20px);
   height: 48px;
   gap: 0px;
   border-radius: 8px;
@@ -183,6 +235,9 @@ body {
   padding: 10px;
 }
 
+.inputTextLinkSustainability,
+.inputTextLinkDivulgation,
+.inputTextPriceLink,
 .inputTextAddress{
   width: 300px;
   height: 48px;
@@ -205,6 +260,9 @@ body {
   border: none;
 }
 
+.inputTextLinkSustainability,
+.inputTextLinkDivulgation,
+.inputTextPriceLink,
 .inputTextAddress:focus,
 .inputTextPrice:focus,
 .inputTextDate:focus{
@@ -215,6 +273,7 @@ body {
 .dateInput{
   border-radius: 8px;
   border: solid 1px black;
+  width: calc(33.3% - 40px);
 }
 
 .priceInput{
@@ -245,10 +304,9 @@ body {
   margin-left: 10px;
 }
 
-.locateInfos{
-  display: flex;
-}
-
+.locateInfos,
+.sustainability,
+.divulgation,
 .priceDefinition,
 .dateInfos{
   display: inline-flex;
@@ -273,14 +331,19 @@ body {
   display: flex;
   justify-content: space-between;
   background-color: #ccc;
-  width: 100%;
+  width: calc(100% - 20px);
   padding: 10px;
   border-radius: 8px;
   border: solid black 1px;
 }
 
+.description{
+  width: calc(100% - 20px);
+  margin-left: 10px;
+}
+
 .optionButton {
-  width: 50%;
+  width: calc(50% - 10px);
   height: 40px;
   background-color: #ccc;
   color: black;
@@ -300,10 +363,37 @@ body {
   opacity: 0.6;
 }
 
+.submit-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.submit-button {
+  width: 200px;
+  height: 50px;
+  border-radius: 25px; /* Bordas circulares (metade da altura) */
+  background-color: #007bff; /* Cor azul para o fundo */
+  color: white; /* Texto branco */
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  outline: none; /* Remove a borda ao clicar */
+}
+
+.submit-button:hover {
+  background-color: #0056b3; /* Altera a cor ao passar o mouse */
+}
+
 @media (max-width: 1280px) {
-  .optionButton {
-    width: 100%;
-  }
+  .locateInfos,
+  .sustainability,
+  .divulgation,
+  .priceDefinition,
+  .dateInfos{
+    display: block;
+}
 }
 
 </style>
