@@ -28,7 +28,7 @@
       <div class="subtitle"><p>* Capacidade máxima de pessoas</p></div>
       <input class="inputTextAddress" type="text" id="capacity" v-model="capacity" placeholder="Ex: 100">
     </div>
-    <div class="CEP">
+    <div class="cep">
       <div class="subtitle"><p>* CEP</p></div>
       <input class="inputTextAddress" type="text" id="cep" v-model="cep" placeholder="Ex: 18023-442">
     </div>
@@ -105,41 +105,41 @@
   </div>
   <div class="title"><p>Sustentabilidade</p></div>
   <div class="sustainability">
-    <div class="renewableEnergy">
+    <div class="sustainabilityQuests">
       <div class="subtitle"><p>O evento utilizará uma fonte de energia renovável (solar, eólica, hídrica...)?</p></div>
       <input class="inputTextLinkSustainability" type="text" id="renewableEnergy" v-model="renewableEnergy" placeholder="Responda com detalhes">
     </div>
-    <div class="wasteManagement">
+    <div class="sustainabilityQuests">
       <div class="subtitle"><p>O evento possui um plano de gestão de resíduos que inclui coleta seletiva e reciclagem?</p></div>
       <input class="inputTextLinkSustainability" type="text" id="wasteManagement" v-model="wasteManagement" placeholder="Responda com detalhes">
     </div>
   </div>
   <div class="sustainability">
-    <div class="visibleBins">
+    <div class="sustainabilityQuests">
       <div class="subtitle"><p>São disponibilizadas lixeiras para coleta seletiva em locais visíveis?</p></div>
       <input class="inputTextLinkSustainability" type="text" id="visibleBins" v-model="visibleBins" placeholder="Responda com detalhes">
     </div>
-    <div class="reduceWaste">
+    <div class="sustainabilityQuests">
       <div class="subtitle"><p>Existe alguma estratégia no evento para reduzir o desperdício de alimentos e materiais descartáveis?</p></div>
       <input class="inputTextLinkSustainability" type="text" id="reduceWaste" v-model="reduceWaste" placeholder="Responda com detalhes">
     </div>
   </div>
   <div class="sustainability">
-    <div class="publicTransportation">
+    <div class="sustainabilityQuests">
       <div class="subtitle"><p>É possível chegar facilmente ao local do evento por meio de transporte público?</p></div>
       <input class="inputTextLinkSustainability" type="text" id="publicTransportation" v-model="publicTransportation" placeholder="Responda com detalhes">
     </div>
-    <div class="sustainableTransportIncentive">
+    <div class="sustainabilityQuests">
       <div class="subtitle"><p>Há incentivos para que os participantes utilizem meios de transporte sustentáveis?</p></div>
       <input class="inputTextLinkSustainability" type="text" id="sustainableTransportIncentive" v-model="sustainableTransportIncentive" placeholder="Responda com detalhes">
     </div>
   </div>
   <div class="sustainability">
-    <div class="socialEnvironmental">
+    <div class="sustainabilityQuests">
       <div class="subtitle"><p>O evento beneficia alguma causa social ou ambiental?</p></div>
       <input class="inputTextLinkSustainability" type="text" id="socialEnvironmental" v-model="socialEnvironmental" placeholder="Responda com detalhes">
     </div>
-    <div class="monitorImpact">
+    <div class="sustainabilityQuests">
       <div class="subtitle"><p>  O evento monitora e avalia seu impacto ambiental?</p></div>
       <input class="inputTextLinkSustainability" type="text" id="monitorImpact" v-model="monitorImpact" placeholder="Responda com detalhes">
     </div>
@@ -168,7 +168,7 @@ const isYesSelected = ref(true);
 watch(text, (newVal) => {
   console.log(newVal);
 });
-
+/*
 function changeCity() {
   if (props.cities) {
     const selectedCity = props.cities.find((city) => city.id === cityStore.id);
@@ -180,7 +180,7 @@ function changeCity() {
     localStorage.setItem("city", JSON.stringify(selectedCity));
   }
 }
-
+*/
 function selectYes() {
   isYesSelected.value = true;
 }
@@ -239,7 +239,7 @@ body {
 .inputTextLinkDivulgation,
 .inputTextPriceLink,
 .inputTextAddress{
-  width: 300px;
+  width: calc(100% - 20px);
   height: 48px;
   gap: 0px;
   border-radius: 8px;
@@ -251,7 +251,7 @@ body {
 
 .inputTextPrice,
 .inputTextDate{
-  width: 300px;
+  width: calc(100% - 50px);
   height: 48px;
   gap: 0px;
   border-radius: 8px;
@@ -259,7 +259,6 @@ body {
   margin-left: 10px;
   border: none;
 }
-
 .inputTextLinkSustainability,
 .inputTextLinkDivulgation,
 .inputTextPriceLink,
@@ -269,14 +268,38 @@ body {
   outline: none;
 }
 
+.monitorImpact{
+  align-items: center;
+}
+
+.sustainabilityQuests,
+.mobileLink,
+.desktopLink,
+.inicialDate,
+.finalDate{
+  width: 50%;
+}
+
+.linkBuy,
+.priceInicial,
+.priceFinal{
+  width: 33.3%;
+}
+
 .priceInput,
 .dateInput{
+  width: calc(100% - 20px);
   border-radius: 8px;
   border: solid 1px black;
-  width: calc(33.3% - 40px);
+}
+
+.dateInput{
+  display: inline-block;
+  margin-left: 10px;
 }
 
 .priceInput{
+  display: inline-block;
   margin-left: 10px;
 }
 
@@ -294,8 +317,15 @@ body {
   text-decoration: underline;
 }
 
+.cep,
+.maximumCapacity,
+.address,
+.citiesSelect{
+  width: 25%;
+}
+
 .cities {
-  width: 327px;
+  width: calc(100% - 20px);
   height: 48px;
   top: 24px;
   gap: 0px;
@@ -309,17 +339,12 @@ body {
 .divulgation,
 .priceDefinition,
 .dateInfos{
-  display: inline-flex;
-}
-
-.dateInput{
-  display: inline-block;
-  margin-left: 10px;
+  display: flex;
+  align-self: center;
 }
 
 .priceImg,
 .calendarImg{
-  align-self: center;
   justify-content: center;
   margin-bottom: -10px;
   margin-right: 10px;
@@ -327,12 +352,13 @@ body {
   height: 25px;
 }
 
-.bottonPrice {
+.buttonPrice {
   display: flex;
   justify-content: space-between;
   background-color: #ccc;
   width: calc(100% - 20px);
   padding: 10px;
+  margin-left: 10px;
   border-radius: 8px;
   border: solid black 1px;
 }
@@ -344,7 +370,7 @@ body {
 
 .optionButton {
   width: calc(50% - 10px);
-  height: 40px;
+  height: 30px;
   background-color: #ccc;
   color: black;
   font-size: 18px;
@@ -370,30 +396,46 @@ body {
 }
 
 .submit-button {
-  width: 200px;
+  width: 300px;
   height: 50px;
-  border-radius: 25px; /* Bordas circulares (metade da altura) */
-  background-color: #007bff; /* Cor azul para o fundo */
-  color: white; /* Texto branco */
+  border-radius: 10px;
+  background-color: #1597B1;
+  color: white;
   font-size: 18px;
   font-weight: bold;
   border: none;
   cursor: pointer;
-  outline: none; /* Remove a borda ao clicar */
+  outline: none;
 }
 
 .submit-button:hover {
-  background-color: #0056b3; /* Altera a cor ao passar o mouse */
+  background-color: #1597B1;
+;
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1000px) {
   .locateInfos,
   .sustainability,
   .divulgation,
   .priceDefinition,
   .dateInfos{
     display: block;
-}
+    align-self: center;
+  }
+  .cep,
+  .maximumCapacity,
+  .address,
+  .citiesSelect,
+  .linkBuy,
+  .priceInicial,
+  .priceFinal,
+  .sustainabilityQuests,
+  .mobileLink,
+  .desktopLink,
+  .inicialDate,
+  .finalDate{
+    width: 100%;
+  }
 }
 
 </style>
