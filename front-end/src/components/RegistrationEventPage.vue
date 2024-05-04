@@ -106,7 +106,33 @@
       placeholder="Selecione uma ou mais categorias"
       :custom-label="getCategoryNameById"
     ></multiselect>
-
+    <p class="title">Datas</p>
+    <div class="dateInfos">
+      <div class="inicialDate">
+        <p class="subtitle">* Data inicial</p>
+        <div class="dateInput">
+          <input
+            class="inputTextDate"
+            type="date"
+            id="inicialDate"
+            v-model="form.initialDate"
+            placeholder="Digite a data inicial"
+          />
+        </div>
+      </div>
+      <div class="finalDate">
+        <p class="subtitle">* Data Final</p>
+        <div class="dateInput">
+          <input
+            class="inputTextDate"
+            type="date"
+            id="FinalDate"
+            v-model="form.finalDate"
+            placeholder="Digite a data final"
+          />
+        </div>
+      </div>
+    </div>
     <p class="title">Ingressos</p>
     <div class="prices">
       <p class="subtitle">* O evento é gratuito?</p>
