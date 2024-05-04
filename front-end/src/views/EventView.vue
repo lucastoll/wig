@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import type { IEvent } from "@/types/IEvent";
-import { eventStore, cityStore } from "@/store";
+import type IEvent from "@/types/IEvent";
+import type IQuestion from "@/types/IQuestions";
+import { eventStore, cityStore, userStore } from "@/store";
 import { MdPreview } from "md-editor-v3";
 import axios from "axios";
 
@@ -16,6 +17,7 @@ import Menor10 from "@/assets/ten.png";
 const event = ref<IEvent>(eventStore);
 const route = useRoute();
 const router = useRouter();
+const questions = ref<IQuestion[]>();
 
 function formatDate(dateString: string) {
   const eventDate = new Date(dateString);
@@ -104,7 +106,25 @@ onMounted(async () => {
     } catch (error) {
       router.push({ name: "NotFound" });
     }
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/event/${event.value.id}/sustainabilityQuestions`,{
+         googleToken: userStore.googleToken,
+         email: userStore.email
+        }
+      );
+      if (response.status === 200) {
+        questions.value = response.data
+      } else {
+        throw new Error("Evento não encontrado");
+      }
+    } catch (error) {
+      router.push({ name: "NotFound" });
+    }
+    console.log("CAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", questions.value)
   }
+  
+  console.log("JOSEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",event.value)
 });
 </script>
 
@@ -148,6 +168,11 @@ onMounted(async () => {
           aria-hidden="false"
           tabindex="0"
         ></iframe>
+      </div>
+      <div class="teste" v-if ="userStore.administrator"> cuzao </div>
+      <div class="teste2" v-for="(item, index) in questions" :key="index">
+        {{ item.question }}
+        {{ item.answer }}
       </div>
       <div class="infosWrapper">
         <div class="ticket">
@@ -199,6 +224,9 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.teste2{
+  color: black;
+}
 .foot {
   font-size: smaller;
   color: black;
