@@ -8,30 +8,50 @@
   <div class="description">
     <div class="subtitle"><p>* Descrição do evento</p></div>
     <MdEditor language="en-US" v-model="text" />
-    <MdPreview :editorId="id" :modelValue="text" />
   </div>
   <div class="title"><p>Locais</p></div>
-  <div class="dontFindLocate"><p>Não encontrou o local? Cadastre um.</p></div>
+  <div class="dontFindLocate" @click="showLocalFields">
+    <p>Não encontrou o local? Cadastre um.</p>
+  </div>
   <div class="locateInfos">
-    <div class="citiesSelect">
-      <div class="subtitle"><p>* Cidade</p></div>
-      <select class="cities" v-model="cityStore.id" @change="changeCity">
-        <option value="" disabled selected hidden>Selecione a cidade</option>
-        <<option v-for="city in cities" :key="city.id" :value="city.id">{{ city.name }}</option>
-      </select>
+    <div class="localRegistration" v-if="showLocalSelect">
+      <div class="citiesSelectRegistration">
+        <div class="subtitle"><p>* Cidade</p></div>
+        <select class="cities" v-model="cityStore.id" @change="changeCity">
+          <option value="" disabled selected hidden>Selecione a cidade</option>
+          <option v-for="city in cities" :key="city.id" :value="city.id">{{ city.name }}</option>
+        </select>
+      </div>
+      <div class="address">
+        <div class="subtitle"><p>* Endereço</p></div>
+        <input class="inputTextAddress" type="text" id="address" v-model="address" placeholder="Digite o endereço">
+      </div>
+      <div class="maximumCapacity">
+        <div class="subtitle"><p>* Capacidade máxima de pessoas</p></div>
+        <input class="inputTextAddress" type="text" id="capacity" v-model="capacity" placeholder="Ex: 100">
+      </div>
+      <div class="cep">
+        <div class="subtitle"><p>* CEP</p></div>
+        <input class="inputTextAddress" type="text" id="cep" v-model="cep" placeholder="Ex: 18023-442">
+      </div>
     </div>
-    <div class="address">
-      <div class="subtitle"><p>* Endereço</p></div>
-      <input class="inputTextAddress" type="text" id="address" v-model="address" placeholder="Digite o endereço">
+    <div class="registeredLocation" v-else>
+      <div class="citiesSelect">
+        <div class="subtitle"><p>* Cidade</p></div>
+        <select class="cities" v-model="cityStore.id" @change="changeCity">
+          <option value="" disabled selected hidden>Selecione a cidade</option>
+          <<option v-for="city in cities" :key="city.id" :value="city.id">{{ city.name }}</option>
+        </select>
+      </div>
+      <div class="citiesSelect">
+        <div class="subtitle"><p>* Local</p></div>
+        <select class="cities" v-model="cityStore.id">
+          <option value="" disabled selected hidden>Selecione o local</option>
+          <option v-for="city in city" :key="city.id" :value="city.id">{{ city.name }}</option>
+        </select>
     </div>
-    <div class="maximumCapacity">
-      <div class="subtitle"><p>* Capacidade máxima de pessoas</p></div>
-      <input class="inputTextAddress" type="text" id="capacity" v-model="capacity" placeholder="Ex: 100">
     </div>
-    <div class="cep">
-      <div class="subtitle"><p>* CEP</p></div>
-      <input class="inputTextAddress" type="text" id="cep" v-model="cep" placeholder="Ex: 18023-442">
-    </div>
+    
   </div>
   <div class="title"><p>Datas</p></div>
   <div class="dateInfos">
@@ -189,8 +209,16 @@ function selectNo() {
   isYesSelected.value = false;
 }
 
+const showLocalSelect = ref(false);
+
+function showLocalFields() {
+  console.log("showLocalFields() foi chamado");
+  showLocalSelect.value = !showLocalSelect.value
+  return showLocalSelect;
+}
+
 </script>
-<style>
+<style scoped>
 body {
   color: black;
 }
@@ -212,17 +240,18 @@ body {
   margin-top: 10px;
   margin-bottom: 10px;
   margin-left: 10px;
+  color: black;
 }
 
 .subtitle{
-  font-family: Inter;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 16px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 29.05px;
   text-align: left;
-  margin-bottom: 10px;
+  color: black;
+  font-weight: bold;
   margin-left: 10px;
-  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .inputTextName{
@@ -317,10 +346,24 @@ body {
   text-decoration: underline;
 }
 
+.registeredLocation{
+  width: 100%;
+  display: inline-flex
+}
+
+.localRegistration{
+  width: 100%;
+  display: inline-flex;
+}
+
+.citiesSelect{
+  width: 50%;
+}
+
 .cep,
 .maximumCapacity,
 .address,
-.citiesSelect{
+.citiesSelectRegistration{
   width: 25%;
 }
 
@@ -414,6 +457,8 @@ body {
 }
 
 @media (max-width: 1000px) {
+  .registeredLocation,
+  .localRegistration,
   .locateInfos,
   .sustainability,
   .divulgation,
@@ -422,6 +467,8 @@ body {
     display: block;
     align-self: center;
   }
+  
+  .citiesSelectRegistration,
   .cep,
   .maximumCapacity,
   .address,
