@@ -5,16 +5,16 @@
     <div class="name">
       <p class="subtitle">* Nome do evento</p>
       <input
-        class="inputTextName"
+        :class="{ inputTextName: true, 'error-border': errors.name }"
         type="text"
         id="nome"
-        v-model="nome"
+        v-model="form.name"
         placeholder="Digite o nome"
       />
     </div>
     <div class="description">
       <p class="subtitle">* Descrição do evento</p>
-      <MdEditor language="en-US" v-model="text" />
+      <MdEditor language="en-US" v-model="form.description" />
     </div>
     <p class="title">Locais</p>
     <p class="dontFindLocate" @click="showLocalFields">
@@ -24,7 +24,7 @@
       <div class="localRegistration" v-if="showLocalSelect">
         <div class="citiesSelectRegistration">
           <p class="subtitle">* Cidade</p>
-          <select class="cities" v-model="cityStore.id" @change="changeCity">
+          <select class="cities" v-model="form.cityId" @change="changeCity">
             <option value="" disabled selected hidden>
               Selecione a cidade
             </option>
@@ -39,7 +39,7 @@
             class="inputTextAddress"
             type="text"
             id="address"
-            v-model="address"
+            v-model="form.address"
             placeholder="Digite o endereço"
           />
         </div>
@@ -49,7 +49,7 @@
             class="inputTextAddress"
             type="text"
             id="capacity"
-            v-model="capacity"
+            v-model="form.maxCapacity"
             placeholder="Ex: 100"
           />
         </div>
@@ -59,7 +59,7 @@
             class="inputTextAddress"
             type="text"
             id="cep"
-            v-model="cep"
+            v-model="form.zipcode"
             placeholder="Ex: 18023-442"
           />
         </div>
@@ -67,11 +67,10 @@
       <div class="registeredLocation" v-else>
         <div class="citiesSelect">
           <p class="subtitle">* Cidade</p>
-          <select class="cities" v-model="cityStore.id" @change="changeCity">
+          <select class="cities" v-model="form.cityId" @change="changeCity">
             <option value="" disabled selected hidden>
               Selecione a cidade
             </option>
-            <
             <option v-for="city in cities" :key="city.id" :value="city.id">
               {{ city.name }}
             </option>
@@ -79,12 +78,47 @@
         </div>
         <div class="citiesSelect">
           <p class="subtitle">* Local</p>
-          <select class="cities" v-model="cityStore.id">
+          <select
+            class="cities"
+            v-model="form.locationId"
+            @change="changeLocation"
+          >
             <option value="" disabled selected hidden>Selecione o local</option>
-            <option v-for="city in city" :key="city.id" :value="city.id">
-              {{ city.name }}
+            <option
+              v-for="location in locations"
+              :key="location.id"
+              :value="location.id"
+            >
+              {{ location.name }}
             </option>
           </select>
+        </div>
+      </div>
+    </div>
+    <p class="title">Categorias</p>
+    <div class="dateInfos">
+      <div class="inicialDate">
+        <p class="subtitle">* Data inicial</p>
+        <div class="dateInput">
+          <input
+            class="inputTextDate"
+            type="date"
+            id="inicialDate"
+            v-model="form.initialDate"
+            placeholder="Digite a data inicial"
+          />
+        </div>
+      </div>
+      <div class="finalDate">
+        <p class="subtitle">* Data Final</p>
+        <div class="dateInput">
+          <input
+            class="inputTextDate"
+            type="date"
+            id="FinalDate"
+            v-model="form.finalDate"
+            placeholder="Digite a data final"
+          />
         </div>
       </div>
     </div>
@@ -97,7 +131,7 @@
             class="inputTextDate"
             type="date"
             id="inicialDate"
-            v-model="inicialDate"
+            v-model="form.initialDate"
             placeholder="Digite a data inicial"
           />
         </div>
@@ -109,7 +143,7 @@
             class="inputTextDate"
             type="date"
             id="FinalDate"
-            v-model="FinalDate"
+            v-model="form.finalDate"
             placeholder="Digite a data final"
           />
         </div>
@@ -144,7 +178,7 @@
               class="inputTextPrice"
               type="number"
               id="inicialPrice"
-              v-model="inicialPrice"
+              v-model="form.initialPrice"
               min="1"
               step="1"
               placeholder="Digite o preço inicial"
@@ -161,7 +195,7 @@
               min="1"
               step="1"
               id="finalPrice"
-              v-model="finalPrice"
+              v-model="form.finalPrice"
               placeholder="Digite o preço final"
             />
             <img class="priceImg" src="@/assets/Price.png" />
@@ -173,7 +207,7 @@
             class="inputTextPriceLink"
             type="text"
             id="linkBuy"
-            v-model="linkBuy"
+            v-model="form.ticketUrl"
             placeholder="Ex: https://minhaimagem.png"
           />
         </div>
@@ -187,7 +221,7 @@
           class="inputTextLinkDivulgation"
           type="text"
           id="linkMobile"
-          v-model="linkMobile"
+          v-model="form.imageMobile"
           placeholder="Ex: https://minhaimagem.png"
         />
       </div>
@@ -197,7 +231,7 @@
           class="inputTextLinkDivulgation"
           type="text"
           id="linkDesktop"
-          v-model="linkDesktop"
+          v-model="form.imageDesktop"
           placeholder="Ex: https://minhaimagem.png"
         />
       </div>
@@ -215,7 +249,7 @@
           class="inputTextLinkSustainability"
           type="text"
           id="renewableEnergy"
-          v-model="renewableEnergy"
+          v-model="form.renewableEnergy"
           placeholder="Responda com detalhes"
         />
       </div>
@@ -230,7 +264,7 @@
           class="inputTextLinkSustainability"
           type="text"
           id="wasteManagement"
-          v-model="wasteManagement"
+          v-model="form.wasteManagement"
           placeholder="Responda com detalhes"
         />
       </div>
@@ -247,7 +281,7 @@
           class="inputTextLinkSustainability"
           type="text"
           id="visibleBins"
-          v-model="visibleBins"
+          v-model="form.visibleBins"
           placeholder="Responda com detalhes"
         />
       </div>
@@ -262,7 +296,7 @@
           class="inputTextLinkSustainability"
           type="text"
           id="reduceWaste"
-          v-model="reduceWaste"
+          v-model="form.reduceWaste"
           placeholder="Responda com detalhes"
         />
       </div>
@@ -279,7 +313,7 @@
           class="inputTextLinkSustainability"
           type="text"
           id="publicTransportation"
-          v-model="publicTransportation"
+          v-model="form.publicTransportation"
           placeholder="Responda com detalhes"
         />
       </div>
@@ -294,7 +328,7 @@
           class="inputTextLinkSustainability"
           type="text"
           id="sustainableTransportIncentive"
-          v-model="sustainableTransportIncentive"
+          v-model="form.sustainableTransportIncentive"
           placeholder="Responda com detalhes"
         />
       </div>
@@ -310,7 +344,7 @@
           class="inputTextLinkSustainability"
           type="text"
           id="socialEnvironmental"
-          v-model="socialEnvironmental"
+          v-model="form.socialEnvironmental"
           placeholder="Responda com detalhes"
         />
       </div>
@@ -324,63 +358,231 @@
           class="inputTextLinkSustainability"
           type="text"
           id="monitorImpact"
-          v-model="monitorImpact"
+          v-model="form.monitorImpact"
           placeholder="Responda com detalhes"
         />
       </div>
     </div>
     <div class="submit-button-container">
-      <button class="submit-button">Enviar Evento</button>
+      <button class="submit-button" @click="submitForm">Enviar Evento</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
+import { onMounted, ref } from "vue";
 import { MdEditor } from "md-editor-v3";
-import MarkdownIt from "markdown-it";
-import { cityStore } from "@/store.ts";
+import { cityStore } from "@/store";
 import "md-editor-v3/lib/style.css";
+import axios from "axios";
+import type { ICity } from "@/types/ICity";
+import type { IEventWithSustainabilityQuestions } from "@/types/IEvent";
+import type ILocation from "@/types/ILocation";
+import { useNotification } from "@kyvg/vue3-notification";
 
-const md = new MarkdownIt();
-
-const text = ref("# Hello Editor");
-
-const result = computed(() => md.render(text.value));
-
+const { notify } = useNotification();
 const isYesSelected = ref(true);
+const cities = ref<ICity[]>([]);
+const locations = ref<ILocation[]>([]);
+const showLocalSelect = ref(false);
 
-watch(text, (newVal) => {
-  console.log(newVal);
+const form = ref<IEventWithSustainabilityQuestions>({
+  name: "",
+  imageMobile: "",
+  imageDesktop: "",
+  initialDate: new Date(),
+  finalDate: new Date(),
+  initialPrice: 0,
+  finalPrice: 0,
+  minAge: 0,
+  locationId: 0,
+  address: "",
+  zipcode: 0,
+  maxCapacity: 0,
+  categoryIds: [],
+  cityId: 0,
+  description: "# Descrição do evento!",
+  startTime: 0,
+  endTime: 0,
+  ticketUrl: "",
+  instagramEmbed: "",
 });
-/*
-function changeCity() {
-  if (props.cities) {
-    const selectedCity = props.cities.find((city) => city.id === cityStore.id);
-    if (selectedCity) {
-      cityStore.id = selectedCity.id;
-      cityStore.name = selectedCity.name;
-    }  
 
-    localStorage.setItem("city", JSON.stringify(selectedCity));
+const errors = ref<Record<string, boolean>>({});
+
+const requiredFields = [
+  "name",
+  "imageMobile",
+  "imageDesktop",
+  "initialDate",
+  "finalDate",
+  "initialPrice",
+  "minAge",
+  "locationId",
+  "categoryIds",
+  "cityId",
+  "description",
+  "startTime",
+  "endTime",
+  "ticketUrl",
+  "categoryIds",
+];
+
+const submitForm = () => {
+  errors.value = {};
+
+  for (const field of requiredFields) {
+    if (!form.value[field as keyof typeof form.value]) {
+      errors.value[field] = true;
+    }
   }
+
+  let requestBody = {
+    ...form.value,
+  };
+
+  requestBody = treatSustentabilityQuestions(requestBody);
+
+  if (Object.keys(errors.value).length === 0) {
+    axios
+      .post("http://localhost:3000/events", requestBody)
+      .then((res) => {
+        if (res.status === 201) {
+          notify({
+            title: "Evento cadastrado com sucesso!",
+            type: "success",
+          });
+        }
+      })
+      .catch((err) => {
+        notify({
+          title: `Erro ao cadastrar evento ${err}`,
+          type: "error",
+        });
+      });
+  } else {
+    notify({
+      title: `Preencha os seguintes campos obrigatorios: ${Object.keys(
+        errors.value
+      ).join(", ")}`,
+      type: "error",
+    });
+  }
+
+  console.log(requestBody);
+  console.error(errors.value);
+};
+
+function treatSustentabilityQuestions(
+  requestBody: IEventWithSustainabilityQuestions
+) {
+  const questionsAndAnswers = [
+    {
+      question:
+        "O evento utilizará uma fonte de energia renovável (solar, eólica, hídrica...)?",
+      answer: form.value.renewableEnergy,
+    },
+    {
+      question:
+        "O evento possui um plano de gestão de resíduos que inclui coleta seletiva e reciclagem?",
+      answer: form.value.wasteManagement,
+    },
+    {
+      question:
+        "São disponibilizadas lixeiras para coleta seletiva em locais visíveis?",
+      answer: form.value.visibleBins,
+    },
+    {
+      question:
+        "Existe alguma estratégia no evento para reduzir o desperdício de alimentos e materiais descartáveis?",
+      answer: form.value.reduceWaste,
+    },
+    {
+      question:
+        "É possível chegar facilmente ao local do evento por meio de transporte público?",
+      answer: form.value.publicTransportation,
+    },
+    {
+      question:
+        "Há incentivos para que os participantes utilizem meios de transporte sustentáveis?",
+      answer: form.value.sustainableTransportIncentive,
+    },
+    {
+      question: "O evento beneficia alguma causa social ou ambiental?",
+      answer: form.value.socialEnvironmental,
+    },
+    {
+      question: "O evento monitora e avalia seu impacto ambiental?",
+      answer: form.value.monitorImpact,
+    },
+  ];
+
+  const sustainabilityQuestions = questionsAndAnswers.filter(
+    (qa) => qa.answer !== undefined
+  );
+
+  if (sustainabilityQuestions.length > 0) {
+    requestBody.questions = sustainabilityQuestions;
+  }
+
+  delete requestBody.renewableEnergy;
+  delete requestBody.wasteManagement;
+  delete requestBody.visibleBins;
+  delete requestBody.reduceWaste;
+  delete requestBody.publicTransportation;
+  delete requestBody.sustainableTransportIncentive;
+  delete requestBody.socialEnvironmental;
+  delete requestBody.monitorImpact;
+
+  return requestBody;
 }
-*/
+
+function changeCity(event: Event) {
+  const selectElement = event.target as HTMLSelectElement;
+  form.value.cityId = Number(selectElement.value);
+}
+
+function changeLocation(event: Event) {
+  const selectElement = event.target as HTMLSelectElement;
+  form.value.locationId = Number(selectElement.value);
+}
+
 function selectYes() {
   isYesSelected.value = true;
+  form.value.initialPrice = 0;
+  form.value.finalPrice = 0;
 }
 
 function selectNo() {
   isYesSelected.value = false;
 }
 
-const showLocalSelect = ref(false);
-
 function showLocalFields() {
   console.log("showLocalFields() foi chamado");
   showLocalSelect.value = !showLocalSelect.value;
-  return showLocalSelect;
+
+  if (!showLocalSelect.value) {
+    requiredFields.push("locationId");
+    requiredFields.splice(requiredFields.indexOf("address"), 1);
+    requiredFields.splice(requiredFields.indexOf("zipcode"), 1);
+    requiredFields.splice(requiredFields.indexOf("maxCapacity"), 1);
+  } else {
+    requiredFields.push("address");
+    requiredFields.push("zipcode");
+    requiredFields.push("maxCapacity");
+    requiredFields.splice(requiredFields.indexOf("locationId"), 1);
+  }
 }
+
+onMounted(async () => {
+  cities.value = await axios
+    .get("http://localhost:3000/cities")
+    .then((res) => res.data);
+
+  locations.value = await axios
+    .get("http://localhost:3000/locations")
+    .then((res) => res.data);
+});
 </script>
 <style scoped>
 body {
@@ -395,6 +597,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .container {
@@ -660,6 +863,10 @@ input[type="number"] {
 
   .sustentabilityQuestion {
     font-size: 13px;
+  }
+
+  .error-border {
+    border: 1px solid red;
   }
 }
 </style>

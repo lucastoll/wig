@@ -31,6 +31,7 @@ onMounted(() => {
   <NavBar />
   <RouterView />
   <PopupRegister :isOpen="userStore.registerDone === false" />
+  <notifications />
 </template>
 
 <style scoped></style>

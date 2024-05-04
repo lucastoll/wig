@@ -81,3 +81,8 @@ body {
   overflow-x: hidden;
   padding-bottom: 28px;
 }
+
+.vue-notification-group{
+  top: 16px !important;
+  right: 16px !important;
+}
