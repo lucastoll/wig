@@ -96,59 +96,17 @@
       </div>
     </div>
     <p class="title">Categorias</p>
-    <div class="dateInfos">
-      <div class="inicialDate">
-        <p class="subtitle">* Data inicial</p>
-        <div class="dateInput">
-          <input
-            class="inputTextDate"
-            type="date"
-            id="inicialDate"
-            v-model="form.initialDate"
-            placeholder="Digite a data inicial"
-          />
-        </div>
-      </div>
-      <div class="finalDate">
-        <p class="subtitle">* Data Final</p>
-        <div class="dateInput">
-          <input
-            class="inputTextDate"
-            type="date"
-            id="FinalDate"
-            v-model="form.finalDate"
-            placeholder="Digite a data final"
-          />
-        </div>
-      </div>
-    </div>
-    <p class="title">Datas</p>
-    <div class="dateInfos">
-      <div class="inicialDate">
-        <p class="subtitle">* Data inicial</p>
-        <div class="dateInput">
-          <input
-            class="inputTextDate"
-            type="date"
-            id="inicialDate"
-            v-model="form.initialDate"
-            placeholder="Digite a data inicial"
-          />
-        </div>
-      </div>
-      <div class="finalDate">
-        <p class="subtitle">* Data Final</p>
-        <div class="dateInput">
-          <input
-            class="inputTextDate"
-            type="date"
-            id="FinalDate"
-            v-model="form.finalDate"
-            placeholder="Digite a data final"
-          />
-        </div>
-      </div>
-    </div>
+    <multiselect
+      v-model="form.categoryIds"
+      :options="categoriesIds"
+      :allow-empty="false"
+      :multiple="true"
+      :close-on-select="false"
+      deleselct-label="Pelomenos uma categoria é obrigatória"
+      placeholder="Selecione uma ou mais categorias"
+      :custom-label="getCategoryNameById"
+    ></multiselect>
+
     <p class="title">Ingressos</p>
     <div class="prices">
       <p class="subtitle">* O evento é gratuito?</p>
@@ -370,20 +328,24 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { MdEditor } from "md-editor-v3";
-import { cityStore } from "@/store";
 import "md-editor-v3/lib/style.css";
 import axios from "axios";
 import type { ICity } from "@/types/ICity";
 import type { IEventWithSustainabilityQuestions } from "@/types/IEvent";
 import type ILocation from "@/types/ILocation";
 import { useNotification } from "@kyvg/vue3-notification";
+import type ICategory from "@/types/ICategory";
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.css";
 
 const { notify } = useNotification();
 const isYesSelected = ref(true);
 const cities = ref<ICity[]>([]);
 const locations = ref<ILocation[]>([]);
+const categories = ref<ICategory[]>([]);
+const categoriesIds = ref<number[]>([]);
 const showLocalSelect = ref(false);
 
 const form = ref<IEventWithSustainabilityQuestions>({
@@ -428,11 +390,21 @@ const requiredFields = [
   "categoryIds",
 ];
 
+function getCategoryNameById(categoryId: number) {
+  const category = categories.value.find(
+    (category) => category.id === categoryId
+  );
+  return category?.name;
+}
+
 const submitForm = () => {
   errors.value = {};
 
   for (const field of requiredFields) {
     if (!form.value[field as keyof typeof form.value]) {
+      errors.value[field] = true;
+    }
+    if (field === "categoryIds" && form.value?.categoryIds?.length === 0) {
       errors.value[field] = true;
     }
   }
@@ -582,6 +554,12 @@ onMounted(async () => {
   locations.value = await axios
     .get("http://localhost:3000/locations")
     .then((res) => res.data);
+
+  categories.value = await axios
+    .get("http://localhost:3000/categories")
+    .then((res) => res.data);
+
+  categoriesIds.value = categories.value.map((category) => category.id);
 });
 </script>
 <style scoped>
@@ -631,7 +609,7 @@ input[type="number"] {
 }
 
 .inputTextName {
-  width: calc(100% - 20px);
+  width: calc(100%);
   height: 48px;
   border-radius: 8px;
   padding: 10px;
@@ -641,7 +619,7 @@ input[type="number"] {
 .inputTextLinkDivulgation,
 .inputTextPriceLink,
 .inputTextAddress {
-  width: calc(100% - 20px);
+  width: calc(100%);
   height: 48px;
   gap: 0px;
   border-radius: 8px;
@@ -687,7 +665,7 @@ input[type="number"] {
 
 .priceInput,
 .dateInput {
-  width: calc(100% - 20px);
+  width: calc(100%);
   border-radius: 8px;
   border: solid 1px black;
   display: flex;
@@ -712,6 +690,7 @@ input[type="number"] {
 .registeredLocation {
   width: 100%;
   display: inline-flex;
+  gap: 16px;
 }
 
 .localRegistration {
@@ -731,12 +710,10 @@ input[type="number"] {
 }
 
 .cities {
-  width: calc(100% - 20px);
+  width: calc(100%);
   height: 48px;
-  top: 24px;
-  gap: 0px;
   border-radius: 8px;
-  opacity: 0px;
+  border: 1px solid black;
 }
 
 .locateInfos,
@@ -746,6 +723,7 @@ input[type="number"] {
 .dateInfos {
   display: flex;
   align-self: center;
+  gap: 16px;
 }
 
 .priceImg {
@@ -758,14 +736,14 @@ input[type="number"] {
   display: flex;
   justify-content: space-between;
   background-color: #ccc;
-  width: calc(100% - 20px);
+  width: calc(100%);
   padding: 10px;
   border-radius: 8px;
   border: solid black 1px;
 }
 
 .description {
-  width: calc(100% - 20px);
+  width: calc(100%);
 }
 
 .optionButton {
@@ -809,7 +787,26 @@ input[type="number"] {
 }
 
 .submit-button:hover {
-  background-color: #1597b1;
+  background: #1597b1;
+}
+
+:deep(.multiselect__tags) {
+  border: 1px solid black !important;
+}
+
+:deep(.multiselect__tag) {
+  background: #1597b1 !important;
+  color: white !important;
+}
+
+:deep(.multiselect__option--highlight) {
+  background: #1597b1 !important;
+  color: white !important;
+}
+
+:deep(.multiselect__option--highlight::after) {
+  background: #1597b1 !important;
+  color: white !important;
 }
 
 @media (max-width: 1000px) {

@@ -11,5 +11,4 @@ app.use(vue3GoogleLogin, {
 });
 app.use(router);
 app.use(Notifications as unknown as Plugin);
-
 app.mount("#app");
