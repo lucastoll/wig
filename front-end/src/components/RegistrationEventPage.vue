@@ -21,10 +21,9 @@
       Não encontrou o local? Cadastre um.
     </p>
     <div class="locateInfos">
-      <div class="localRegistration" v-if="showLocalSelect">
-        <div class="citiesSelectRegistration">
+      <div :class="{citiesSelectRegistration: showLocalSelect, citiesSelect: !showLocalSelect}">
           <p class="subtitle">* Cidade</p>
-          <select class="cities" v-model="form.cityId" @change="changeCity">
+          <select :class="{cities: true, 'error-border': errors.cityId}" v-model="form.cityId" @change="changeCity">
             <option value="" disabled selected hidden>
               Selecione a cidade
             </option>
@@ -33,10 +32,11 @@
             </option>
           </select>
         </div>
+      <div class="localRegistration" v-if="showLocalSelect">
         <div class="address">
           <p class="subtitle">* Endereço</p>
           <input
-            class="inputTextAddress"
+            :class="{inputTextAddress: true, 'error-border': errors.address}"
             type="text"
             id="address"
             v-model="form.address"
@@ -46,7 +46,7 @@
         <div class="maximumCapacity">
           <p class="subtitle">* Capacidade máxima de pessoas</p>
           <input
-            class="inputTextAddress"
+            :class="{inputTextAddress: true, 'error-border': errors.maxCapacity}"
             type="text"
             id="capacity"
             v-model="form.maxCapacity"
@@ -56,7 +56,7 @@
         <div class="cep">
           <p class="subtitle">* CEP</p>
           <input
-            class="inputTextAddress"
+            :class="{inputTextAddress: true, 'error-border': errors.zipcode}"
             type="text"
             id="cep"
             v-model="form.zipcode"
@@ -65,21 +65,10 @@
         </div>
       </div>
       <div class="registeredLocation" v-else>
-        <div class="citiesSelect">
-          <p class="subtitle">* Cidade</p>
-          <select class="cities" v-model="form.cityId" @change="changeCity">
-            <option value="" disabled selected hidden>
-              Selecione a cidade
-            </option>
-            <option v-for="city in cities" :key="city.id" :value="city.id">
-              {{ city.name }}
-            </option>
-          </select>
-        </div>
-        <div class="citiesSelect">
+        <div class="localSelect">
           <p class="subtitle">* Local</p>
           <select
-            class="cities"
+            :class="{cities: true, 'error-border': errors.locationId}"
             v-model="form.locationId"
             @change="changeLocation"
           >
@@ -110,7 +99,7 @@
     <div class="dateInfos">
       <div class="inicialDate">
         <p class="subtitle">* Data inicial</p>
-        <div class="dateInput">
+        <div :class="{dateInput: true, 'error-border': errors.initialDate}">
           <input
             class="inputTextDate"
             type="date"
@@ -122,7 +111,7 @@
       </div>
       <div class="finalDate">
         <p class="subtitle">* Data Final</p>
-        <div class="dateInput">
+        <div :class="{dateInput: true, 'error-border': errors.finalDate}">
           <input
             class="inputTextDate"
             type="date"
@@ -131,6 +120,26 @@
             placeholder="Digite a data final"
           />
         </div>
+      </div>
+      <div class="startTime">
+        <p class="subtitle">* Horario inicial</p>
+        <input
+          :class="{inputTextLinkDivulgation: true, 'error-border': errors.startTime}"
+          type="text"
+          id="linkInstagram"
+          v-model="form.startTime"
+          placeholder="Digite a hora inicial"
+        />
+      </div>
+      <div class="endTime">
+        <p class="subtitle">* Horario final</p>
+        <input
+          :class="{inputTextLinkDivulgation: true, 'error-border': errors.endTime}"
+          type="text"
+          id="linkInstagram"
+          v-model="form.endTime"
+          placeholder="Digite a hora final"
+        />
       </div>
     </div>
     <p class="title">Ingressos</p>
@@ -157,7 +166,7 @@
       <div class="priceDefinition">
         <div class="priceInicial">
           <p class="subtitle">* Preço Inicial (BRL)</p>
-          <div class="priceInput">
+          <div :class="{priceInput: true, 'error-border': errors.initialPrice}">
             <input
               class="inputTextPrice"
               type="number"
@@ -172,7 +181,7 @@
         </div>
         <div class="priceFinal">
           <p class="subtitle">* Preço Final (BRL)</p>
-          <div class="priceInput">
+          <div :class="{priceInput: true, 'error-border': errors.finalPrice}">
             <input
               class="inputTextPrice"
               type="number"
@@ -188,11 +197,21 @@
         <div class="linkBuy">
           <p class="subtitle">* Link para compra do ingresso</p>
           <input
-            class="inputTextPriceLink"
+            :class="{inputTextPriceLink: true, 'error-border': errors.ticketUrl}"
             type="text"
             id="linkBuy"
             v-model="form.ticketUrl"
             placeholder="Ex: https://minhaimagem.png"
+          />
+        </div>
+        <div class="minAge">
+          <p class="subtitle">* Idade minima</p>
+          <input
+            :class="{inputTextPriceLink: true, 'error-border': errors.minAge}"
+            type="text"
+            id="minAge"
+            v-model="form.minAge"
+            placeholder="Digite a idade minima"
           />
         </div>
       </div>
@@ -202,7 +221,7 @@
       <div class="mobileLink">
         <p class="subtitle">* Link da imagem Mobile</p>
         <input
-          class="inputTextLinkDivulgation"
+          :class="{inputTextLinkDivulgation: true, 'error-border': errors.imageMobile}"
           type="text"
           id="linkMobile"
           v-model="form.imageMobile"
@@ -212,10 +231,20 @@
       <div class="desktopLink">
         <p class="subtitle">* Link da imagem Desktop</p>
         <input
-          class="inputTextLinkDivulgation"
+          :class="{inputTextLinkDivulgation: true,'error-border': errors.imageDesktop}"
           type="text"
           id="linkDesktop"
           v-model="form.imageDesktop"
+          placeholder="Ex: https://minhaimagem.png"
+        />
+      </div>
+      <div class="instagramLink">
+        <p class="subtitle">* Link da imagem Instagram</p>
+        <input
+          :class="{inputTextLinkDivulgation: true, 'error-border': errors.instagramEmbed}"
+          type="text"
+          id="linkInstagram"
+          v-model="form.instagramEmbed"
           placeholder="Ex: https://minhaimagem.png"
         />
       </div>
@@ -378,8 +407,8 @@ const form = ref<IEventWithSustainabilityQuestions>({
   name: "",
   imageMobile: "",
   imageDesktop: "",
-  initialDate: new Date(),
-  finalDate: new Date(),
+  initialDate: undefined,
+  finalDate: undefined,
   initialPrice: 0,
   finalPrice: 0,
   minAge: 0,
@@ -405,6 +434,7 @@ const requiredFields = [
   "initialDate",
   "finalDate",
   "initialPrice",
+  "finalPrice",
   "minAge",
   "locationId",
   "categoryIds",
@@ -414,6 +444,7 @@ const requiredFields = [
   "endTime",
   "ticketUrl",
   "categoryIds",
+  "instagramEmbed",
 ];
 
 function getCategoryNameById(categoryId: number) {
@@ -675,18 +706,28 @@ input[type="number"] {
   align-items: center;
 }
 
-.sustainabilityQuests,
-.mobileLink,
-.desktopLink,
-.inicialDate,
-.finalDate {
+.sustainabilityQuests{
   width: 50%;
 }
 
+.inicialDate,
+.finalDate,
+.startTime,
+.endTime {
+  width: 25%;
+}
+
+.mobileLink,
+.desktopLink,
+.instagramLink{
+  width: 33.3%;
+}
+
+.minAge,
 .linkBuy,
 .priceInicial,
 .priceFinal {
-  width: 33.3%;
+  width: 25%;
 }
 
 .priceInput,
@@ -714,25 +755,30 @@ input[type="number"] {
 }
 
 .registeredLocation {
-  width: 100%;
+  width: 50%;
   display: inline-flex;
   gap: 16px;
 }
 
 .localRegistration {
-  width: 100%;
+  width: 75%;
   display: inline-flex;
+  gap: 16px;
 }
 
 .citiesSelect {
   width: 50%;
 }
 
+.localSelect {
+  width: 100%;
+}
+
 .cep,
 .maximumCapacity,
 .address,
 .citiesSelectRegistration {
-  width: 25%;
+  width: 33.3%;
 }
 
 .cities {
@@ -847,6 +893,10 @@ input[type="number"] {
     align-self: center;
   }
 
+  .minAge,
+  .startTime,
+  .endTime,
+  .instagramLink,
   .citiesSelectRegistration,
   .cep,
   .maximumCapacity,
