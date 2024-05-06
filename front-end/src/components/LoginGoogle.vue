@@ -3,8 +3,33 @@ import { computed } from "vue";
 import { userStore } from "@/store";
 import { login } from "@/helpers/login";
 import { logout } from "@/helpers/logout";
+import { useNotification } from "@kyvg/vue3-notification";
 
 const name = computed(() => userStore.name?.split(" ")[0] || "Visitante");
+const { notify } = useNotification();
+
+async function performLogin() {
+  try {
+    const loggedIn = await login(); // Assume login() returns a promise
+    if (userStore.loggedIn) {
+      notify({
+        title: "Login bem-sucedido!",
+        type: "success",
+      });
+    } else {
+      notify({
+        title: "Erro ao fazer login.",
+        type: "error",
+      });
+    }
+  } catch (error) {
+    notify({
+      title: `Erro ao fazer login: ${error.message}`,
+      type: "error",
+    });
+  }
+}
+
 </script>
 
 <template>

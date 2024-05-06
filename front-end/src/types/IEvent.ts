@@ -6,8 +6,8 @@ export interface IEvent {
   name: string;
   imageMobile: string;
   imageDesktop: string;
-  initialDate: Date;
-  finalDate: Date;
+  initialDate: Date | undefined;
+  finalDate: Date | undefined;
   initialPrice: number;
   finalPrice: number;
   minAge: number;
