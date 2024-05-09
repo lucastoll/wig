@@ -9,6 +9,7 @@ interface EventInstance extends Model {
 }
 
 class Event extends Model implements EventInstance {
+  public id!: string;
   public name!: string;
   public imageMobile!: string;
   public imageDesktop!: string;
@@ -25,6 +26,7 @@ class Event extends Model implements EventInstance {
   public startTime!: string;
   public endTime!: string;
   public ticketUrl!: string;
+  public status!: "em análise" | "recusado" | "aprovado";
 
   public addCategories!: BelongsToManyAddAssociationsMixin<Category, number>;
 }
@@ -88,6 +90,11 @@ Event.init(
     ticketUrl: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    status: {
+      type: DataTypes.ENUM("em análise", "recusado", "aprovado"),
+      allowNull: false,
+      defaultValue: "em análise",
     },
   },
   {
