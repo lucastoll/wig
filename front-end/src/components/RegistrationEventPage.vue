@@ -1,9 +1,9 @@
 <template>
   <div class="container">
-    <p class="titleRegistration">Cadastrar Eventos</p>
-    <p class="title">Título e descrição</p>
+    <h1 class="titleRegistration">Cadastrar Eventos</h1>
+    <h2 class="title">Título e descrição</h2>
     <div class="name">
-      <p class="subtitle">* Nome do evento</p>
+      <h3 class="subtitle">* Nome do evento</h3>
       <input
         :class="{ inputTextName: true, 'error-border': errors.name }"
         type="text"
@@ -13,16 +13,16 @@
       />
     </div>
     <div class="description">
-      <p class="subtitle">* Descrição do evento</p>
+      <h3 class="subtitle">* Descrição do evento</h3>
       <MdEditor language="en-US" v-model="form.description" />
     </div>
-    <p class="title">Locais</p>
+    <h2 class="title">Locais</h2>
     <p class="dontFindLocate" @click="showLocalFields">
       Não encontrou o local? Cadastre um.
     </p>
     <div class="locateInfos">
       <div :class="{citiesSelectRegistration: showLocalSelect, citiesSelect: !showLocalSelect}">
-          <p class="subtitle">* Cidade</p>
+          <h3 class="subtitle">* Cidade</h3>
           <select :class="{cities: true, 'error-border': errors.cityId}" v-model="form.cityId" @change="changeCity">
             <option value="" disabled selected hidden>
               Selecione a cidade
@@ -44,7 +44,7 @@
           />
         </div>
         <div class="maximumCapacity">
-          <p class="subtitle">* Capacidade máxima de pessoas</p>
+          <h3 class="subtitle">* Capacidade máxima de pessoas</h3>
           <input
             :class="{inputTextAddress: true, 'error-border': errors.maxCapacity}"
             type="text"
@@ -54,7 +54,7 @@
           />
         </div>
         <div class="cep">
-          <p class="subtitle">* CEP</p>
+          <h3 class="subtitle">* CEP</h3>
           <input
             :class="{inputTextAddress: true, 'error-border': errors.zipcode}"
             type="text"
@@ -66,7 +66,7 @@
       </div>
       <div class="registeredLocation" v-else>
         <div class="localSelect">
-          <p class="subtitle">* Local</p>
+          <h3 class="subtitle">* Local</h3>
           <select
             :class="{cities: true, 'error-border': errors.locationId}"
             v-model="form.locationId"
@@ -84,7 +84,7 @@
         </div>
       </div>
     </div>
-    <p class="title">Categorias</p>
+    <h2 class="title">Categorias</h2>
     <multiselect
       v-model="form.categoryIds"
       :options="categoriesIds"
@@ -95,10 +95,10 @@
       placeholder="Selecione uma ou mais categorias"
       :custom-label="getCategoryNameById"
     ></multiselect>
-    <p class="title">Datas</p>
+    <h2 class="title">Datas</h2>
     <div class="dateInfos">
       <div class="inicialDate">
-        <p class="subtitle">* Data inicial</p>
+        <h3 class="subtitle">* Data inicial</h3>
         <div :class="{dateInput: true, 'error-border': errors.initialDate}">
           <input
             class="inputTextDate"
@@ -110,7 +110,7 @@
         </div>
       </div>
       <div class="finalDate">
-        <p class="subtitle">* Data Final</p>
+        <h3 class="subtitle">* Data Final</h3>
         <div :class="{dateInput: true, 'error-border': errors.finalDate}">
           <input
             class="inputTextDate"
@@ -122,7 +122,7 @@
         </div>
       </div>
       <div class="startTime">
-        <p class="subtitle">* Horario inicial</p>
+        <h3 class="subtitle">* Horario inicial</h3>
         <input
           :class="{inputTextLinkDivulgation: true, 'error-border': errors.startTime}"
           type="text"
@@ -132,7 +132,7 @@
         />
       </div>
       <div class="endTime">
-        <p class="subtitle">* Horario final</p>
+        <h3 class="subtitle">* Horario final</h3>
         <input
           :class="{inputTextLinkDivulgation: true, 'error-border': errors.endTime}"
           type="text"
@@ -142,30 +142,30 @@
         />
       </div>
     </div>
-    <p class="title">Ingressos</p>
+    <h2 class="title">Ingressos</h2>
     <div class="prices">
-      <p class="subtitle">* O evento é gratuito?</p>
+      <h3 class="subtitle">* O evento é gratuito?</h3>
       <div class="buttonPrice">
         <button
           class="optionButton"
-          :class="{ selected: isYesSelected }"
+          :class="{ selected: itIsFree }"
           @click="selectYes"
-          :disabled="isYesSelected"
+          :disabled="itIsFree"
         >
           Sim
         </button>
         <button
           class="optionButton"
-          :class="{ selected: !isYesSelected }"
+          :class="{ selected: !itIsFree }"
           @click="selectNo"
-          :disabled="!isYesSelected"
+          :disabled="!itIsFree"
         >
           Não
         </button>
       </div>
       <div class="priceDefinition">
         <div class="priceInicial">
-          <p class="subtitle">* Preço Inicial (BRL)</p>
+          <h3 class="subtitle">* Preço Inicial (BRL)</h3>
           <div :class="{priceInput: true, 'error-border': errors.initialPrice}">
             <input
               class="inputTextPrice"
@@ -180,7 +180,7 @@
           </div>
         </div>
         <div class="priceFinal">
-          <p class="subtitle">* Preço Final (BRL)</p>
+          <h3 class="subtitle">* Preço Final (BRL)</h3>
           <div :class="{priceInput: true, 'error-border': errors.finalPrice}">
             <input
               class="inputTextPrice"
@@ -195,7 +195,7 @@
           </div>
         </div>
         <div class="linkBuy">
-          <p class="subtitle">* Link para compra do ingresso</p>
+          <h3 class="subtitle">* Link para compra do ingresso</h3>
           <input
             :class="{inputTextPriceLink: true, 'error-border': errors.ticketUrl}"
             type="text"
@@ -205,7 +205,7 @@
           />
         </div>
         <div class="minAge">
-          <p class="subtitle">* Idade minima</p>
+          <h3 class="subtitle">* Idade minima</h3>
           <input
             :class="{inputTextPriceLink: true, 'error-border': errors.minAge}"
             type="text"
@@ -216,10 +216,10 @@
         </div>
       </div>
     </div>
-    <p class="title">Imagens de divulgação</p>
+    <h2 class="title">Imagens de divulgação</h2>
     <div class="divulgation">
       <div class="mobileLink">
-        <p class="subtitle">* Link da imagem Mobile</p>
+        <h3 class="subtitle">* Link da imagem Mobile</h3>
         <input
           :class="{inputTextLinkDivulgation: true, 'error-border': errors.imageMobile}"
           type="text"
@@ -229,7 +229,7 @@
         />
       </div>
       <div class="desktopLink">
-        <p class="subtitle">* Link da imagem Desktop</p>
+        <h3 class="subtitle">* Link da imagem Desktop</h3>
         <input
           :class="{inputTextLinkDivulgation: true,'error-border': errors.imageDesktop}"
           type="text"
@@ -239,7 +239,7 @@
         />
       </div>
       <div class="instagramLink">
-        <p class="subtitle">* Link da imagem Instagram</p>
+        <h3 class="subtitle">* Link da imagem Instagram</h3>
         <input
           :class="{inputTextLinkDivulgation: true, 'error-border': errors.instagramEmbed}"
           type="text"
@@ -249,14 +249,14 @@
         />
       </div>
     </div>
-    <p class="title">Sustentabilidade</p>
+    <h2 class="title">Sustentabilidade</h2>
     <div class="sustainability">
       <div class="sustainabilityQuests">
         <div>
-          <p class="subtitle sustentabilityQuestion">
+          <h3 class="subtitle sustentabilityQuestion">
             O evento utilizará uma fonte de energia renovável (solar, eólica,
             hídrica...)?
-          </p>
+          </h3>
         </div>
         <input
           class="inputTextLinkSustainability"
@@ -268,10 +268,10 @@
       </div>
       <div class="sustainabilityQuests">
         <div>
-          <p class="subtitle sustentabilityQuestion">
+          <h3 class="subtitle sustentabilityQuestion">
             O evento possui um plano de gestão de resíduos que inclui coleta
             seletiva e reciclagem?
-          </p>
+          </h3>
         </div>
         <input
           class="inputTextLinkSustainability"
@@ -285,10 +285,10 @@
     <div class="sustainability">
       <div class="sustainabilityQuests">
         <div>
-          <p class="subtitle sustentabilityQuestion">
+          <h3 class="subtitle sustentabilityQuestion">
             São disponibilizadas lixeiras para coleta seletiva em locais
             visíveis?
-          </p>
+          </h3>
         </div>
         <input
           class="inputTextLinkSustainability"
@@ -300,10 +300,10 @@
       </div>
       <div class="sustainabilityQuests">
         <div>
-          <p class="subtitle sustentabilityQuestion">
+          <h3 class="subtitle sustentabilityQuestion">
             Existe alguma estratégia no evento para reduzir o desperdício de
             alimentos e materiais descartáveis?
-          </p>
+          </h3>
         </div>
         <input
           class="inputTextLinkSustainability"
@@ -317,10 +317,10 @@
     <div class="sustainability">
       <div class="sustainabilityQuests">
         <div>
-          <p class="subtitle sustentabilityQuestion">
+          <h3 class="subtitle sustentabilityQuestion">
             É possível chegar facilmente ao local do evento por meio de
             transporte público?
-          </p>
+          </h3>
         </div>
         <input
           class="inputTextLinkSustainability"
@@ -332,10 +332,10 @@
       </div>
       <div class="sustainabilityQuests">
         <div>
-          <p class="subtitle sustentabilityQuestion">
+          <h3 class="subtitle sustentabilityQuestion">
             Há incentivos para que os participantes utilizem meios de transporte
             sustentáveis?
-          </p>
+          </h3>
         </div>
         <input
           class="inputTextLinkSustainability"
@@ -349,9 +349,9 @@
     <div class="sustainability">
       <div class="sustainabilityQuests">
         <div>
-          <p class="subtitle sustentabilityQuestion">
+          <h3 class="subtitle sustentabilityQuestion">
             O evento beneficia alguma causa social ou ambiental?
-          </p>
+          </h3>
         </div>
         <input
           class="inputTextLinkSustainability"
@@ -363,9 +363,9 @@
       </div>
       <div class="sustainabilityQuests">
         <div>
-          <p class="subtitle sustentabilityQuestion">
+          <h3 class="subtitle sustentabilityQuestion">
             O evento monitora e avalia seu impacto ambiental?
-          </p>
+          </h3>
         </div>
         <input
           class="inputTextLinkSustainability"
@@ -377,31 +377,39 @@
       </div>
     </div>
     <div class="submit-button-container">
-      <button class="submit-button" @click="submitForm">Enviar Evento</button>
+      <button class="submit-button" @click="submitForm" :disabled="loading">
+        {{ loading ? 'Enviando...' : 'Enviar Evento' }}
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
-import { MdEditor } from "md-editor-v3";
-import "md-editor-v3/lib/style.css";
-import axios from "axios";
-import type { ICity } from "@/types/ICity";
-import type { IEventWithSustainabilityQuestions } from "@/types/IEvent";
-import type ILocation from "@/types/ILocation";
-import { useNotification } from "@kyvg/vue3-notification";
-import type ICategory from "@/types/ICategory";
-import Multiselect from "vue-multiselect";
-import "vue-multiselect/dist/vue-multiselect.css";
+import { onMounted, ref } from 'vue';
+import axios from 'axios';
+
+import type { ICity } from '@/types/ICity';
+import type { IEventWithSustainabilityQuestions } from '@/types/IEvent';
+import type ILocation from '@/types/ILocation';
+import type ICategory from '@/types/ICategory';
+
+import { MdEditor } from 'md-editor-v3';
+import Multiselect from 'vue-multiselect';
+
+import 'md-editor-v3/lib/style.css';
+import 'vue-multiselect/dist/vue-multiselect.css';
+
+import { useNotification } from '@kyvg/vue3-notification';
 
 const { notify } = useNotification();
-const isYesSelected = ref(true);
+const itIsFree = ref(true);
 const cities = ref<ICity[]>([]);
 const locations = ref<ILocation[]>([]);
 const categories = ref<ICategory[]>([]);
 const categoriesIds = ref<number[]>([]);
 const showLocalSelect = ref(false);
+const loading = ref(false);
+
 
 const form = ref<IEventWithSustainabilityQuestions>({
   name: "",
@@ -455,7 +463,10 @@ function getCategoryNameById(categoryId: number) {
 }
 
 const submitForm = () => {
+  if (loading.value) return;
+
   errors.value = {};
+  loading.value = true;
 
   for (const field of requiredFields) {
     if (!form.value[field as keyof typeof form.value]) {
@@ -474,13 +485,35 @@ const submitForm = () => {
 
   if (Object.keys(errors.value).length === 0) {
     axios
-      .post("http://localhost:3000/events", requestBody)
+      .post(`${import.meta.env.VITE_API_URL}`, requestBody)
       .then((res) => {
         if (res.status === 201) {
           notify({
             title: "Evento cadastrado com sucesso!",
             type: "success",
           });
+
+          form.value = {
+            name: "",
+            imageMobile: "",
+            imageDesktop: "",
+            initialDate: undefined,
+            finalDate: undefined,
+            initialPrice: 0,
+            finalPrice: 0,
+            minAge: 0,
+            locationId: 0,
+            address: "",
+            zipcode: 0,
+            maxCapacity: 0,
+            categoryIds: [],
+            cityId: 0,
+            description: "# Descrição do evento!",
+            startTime: 0,
+            endTime: 0,
+            ticketUrl: "",
+            instagramEmbed: "",
+          };
         }
       })
       .catch((err) => {
@@ -488,19 +521,21 @@ const submitForm = () => {
           title: `Erro ao cadastrar evento ${err}`,
           type: "error",
         });
+      })
+      .finally(() => {
+        loading.value = false;
       });
   } else {
     notify({
-      title: `Preencha os seguintes campos obrigatorios: ${Object.keys(
+      title: `Preencha os seguintes campos obrigatórios: ${Object.keys(
         errors.value
       ).join(", ")}`,
       type: "error",
     });
+    loading.value = false;
   }
-
-  console.log(requestBody);
-  console.error(errors.value);
 };
+
 
 function treatSustentabilityQuestions(
   requestBody: IEventWithSustainabilityQuestions
@@ -577,17 +612,16 @@ function changeLocation(event: Event) {
 }
 
 function selectYes() {
-  isYesSelected.value = true;
+  itIsFree.value = true;
   form.value.initialPrice = 0;
   form.value.finalPrice = 0;
 }
 
 function selectNo() {
-  isYesSelected.value = false;
+  itIsFree.value = false;
 }
 
 function showLocalFields() {
-  console.log("showLocalFields() foi chamado");
   showLocalSelect.value = !showLocalSelect.value;
 
   if (!showLocalSelect.value) {
@@ -605,24 +639,21 @@ function showLocalFields() {
 
 onMounted(async () => {
   cities.value = await axios
-    .get("http://localhost:3000/cities")
+    .get(`${import.meta.env.VITE_API_URL}/cities`)
     .then((res) => res.data);
 
   locations.value = await axios
-    .get("http://localhost:3000/locations")
+    .get(`${import.meta.env.VITE_API_URL}/locations`)
     .then((res) => res.data);
 
   categories.value = await axios
-    .get("http://localhost:3000/categories")
+    .get(`${import.meta.env.VITE_API_URL}/categories`)
     .then((res) => res.data);
 
   categoriesIds.value = categories.value.map((category) => category.id);
 });
 </script>
 <style scoped>
-body {
-  color: black;
-}
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
@@ -642,7 +673,7 @@ input[type="number"] {
 .titleRegistration {
   font-size: 24px;
   font-weight: 700;
-  line-height: 58.09px;
+  line-height: 58px;
   text-align: center;
   color: black;
   margin-top: 16px;
@@ -651,45 +682,45 @@ input[type="number"] {
 .title {
   font-size: 20px;
   font-weight: 700;
-  line-height: 29.05px;
+  line-height: 29px;
   text-align: center;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
   color: black;
 }
 
 .subtitle {
   font-size: 16px;
-  line-height: 29.05px;
+  line-height: 29px;
   text-align: left;
   color: black;
 }
 
 .inputTextName {
-  width: calc(100%);
+  width: 100%;
   height: 48px;
   border-radius: 8px;
-  padding: 10px;
+  padding: 8px;
 }
 
 .inputTextLinkSustainability,
 .inputTextLinkDivulgation,
 .inputTextPriceLink,
 .inputTextAddress {
-  width: calc(100%);
+  width: 100%;
   height: 48px;
   gap: 0px;
   border-radius: 8px;
   border: solid 1px black;
   opacity: 0px;
-  padding: 10px;
+  padding: 8px;
 }
 
 .inputTextPrice,
 .inputTextDate {
-  width: calc(100%);
+  width: 100%;
   height: 48px;
-  padding: 10px;
+  padding: 8px;
   border-radius: 8px;
   border: none;
 }
@@ -732,7 +763,7 @@ input[type="number"] {
 
 .priceInput,
 .dateInput {
-  width: calc(100%);
+  width: 100%;
   border-radius: 8px;
   border: solid 1px black;
   display: flex;
@@ -750,7 +781,7 @@ input[type="number"] {
   text-align: left;
   text-decoration: underline;
   margin-top: 16px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   color: black;
 }
 
@@ -782,7 +813,7 @@ input[type="number"] {
 }
 
 .cities {
-  width: calc(100%);
+  width: 100%;
   height: 48px;
   border-radius: 8px;
   border: 1px solid black;
@@ -808,7 +839,7 @@ input[type="number"] {
   display: flex;
   justify-content: space-between;
   background-color: #ccc;
-  width: calc(100%);
+  width: 100%;
   padding: 10px;
   border-radius: 8px;
   border: solid black 1px;
@@ -842,7 +873,7 @@ input[type="number"] {
 .submit-button-container {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 .submit-button {
@@ -881,7 +912,34 @@ input[type="number"] {
   color: white !important;
 }
 
-@media (max-width: 1000px) {
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.titleRegistration {
+  font-size: 48px;
+}
+
+.title {
+  font-size: 24px;
+  text-align: left;
+  margin-top: 16px;
+}
+
+.subtitle {
+  font-size: 16px;
+}
+
+.sustentabilityQuestion {
+  font-size: 13px;
+}
+
+.error-border {
+  border: 1px solid red;
+}
+
+@media (max-width: 1023px) {
   .registeredLocation,
   .localRegistration,
   .locateInfos,
@@ -893,6 +951,8 @@ input[type="number"] {
     align-self: center;
   }
 
+  .localRegistration,
+  .registeredLocation,
   .minAge,
   .startTime,
   .endTime,
@@ -911,35 +971,6 @@ input[type="number"] {
   .inicialDate,
   .finalDate {
     width: 100%;
-  }
-}
-
-@media screen and (min-width: 1024px) {
-  .container {
-    max-width: 1240px;
-    margin: 0 auto;
-  }
-
-  .titleRegistration {
-    font-size: 48px;
-  }
-
-  .title {
-    font-size: 24px;
-    text-align: left;
-    margin-top: 16px;
-  }
-
-  .subtitle {
-    font-size: 16px;
-  }
-
-  .sustentabilityQuestion {
-    font-size: 13px;
-  }
-
-  .error-border {
-    border: 1px solid red;
   }
 }
 </style>
