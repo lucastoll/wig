@@ -9,12 +9,10 @@ const selectedFilter = ref("date");
 
 const updateSearch = (newTerm: string) => {
   searchQuery.value = newTerm;
-  console.log(searchQuery.value);
 };
 
 const updateFilter = (newFilter: string) => {
   selectedFilter.value = newFilter;
-  console.log(selectedFilter.value);
 };
 
 const endpoint = computed(() => {
@@ -41,6 +39,7 @@ const endpoint = computed(() => {
   <CardsSearch
     v-if="cityStore && userStore.loading === false"
     :endpoint="endpoint"
+    :authRoute="false"
     title="Eventos recomendados"
   />
 </template>

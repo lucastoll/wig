@@ -7,6 +7,7 @@ export const userStore: IUserStore = reactive({
   loading: true,
   loggedIn: false,
   Categories: [],
+  administrator: undefined
 });
 
 export const cityStore: ICity = reactive({} as ICity);

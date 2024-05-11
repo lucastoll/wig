@@ -14,6 +14,18 @@
               :src="event.imageMobile"
               alt="Event Image"
             />
+            <div
+              :class="{
+                'event-status': true,
+                active: showStatus,
+                desktop: true,
+              }"
+              :style="{
+                backgroundColor: statusBackgroundColor(event.status),
+              }"
+            >
+              {{ event.status.charAt(0).toUpperCase() + event.status.slice(1) }}
+            </div>
           </div>
           <div class="event-details">
             <div
@@ -28,6 +40,17 @@
                 alt="Calendar Icon"
               />
               {{ formatDate(event.initialDate) }}
+            </div>
+            <div
+              :class="{
+                'event-status': true,
+                active: showStatus,
+              }"
+              :style="{
+                backgroundColor: statusBackgroundColor(event.status),
+              }"
+            >
+              {{ event.status.charAt(0).toUpperCase() + event.status.slice(1) }}
             </div>
             <div class="event-name">{{ event?.name }}</div>
             <div class="event-categories">
@@ -80,6 +103,14 @@ export default {
       type: String,
       required: true,
     },
+    authRoute: {
+      type: Boolean,
+      required: true,
+    },
+    showStatus: {
+      type: Boolean,
+      required: false,
+    },
   },
   data() {
     return {
@@ -102,7 +133,16 @@ export default {
     async fetchEvents() {
       try {
         this.loading = true;
-        const response = await axios.get(this.endpoint);
+        let response;
+
+        if (!this.authRoute) {
+          response = await axios.get(this.endpoint);
+        } else {
+          response = await axios.post(this.endpoint, {
+            googleToken: userStore.googleToken,
+            email: userStore.email,
+          });
+        }
         this.events = response.data;
       } catch (error) {
         console.error("Erro ao buscar eventos:", error);
@@ -142,6 +182,18 @@ export default {
     isUserCategory(category: ICategory) {
       const userCategories = this.user.Categories.map((cat) => cat.name);
       return userCategories.includes(category.name);
+    },
+    statusBackgroundColor(status: string) {
+      switch (status) {
+        case "aprovado":
+          return "#41C13E";
+        case "reprovado":
+          return "#C13E3E";
+        case "em análise":
+          return "#C19C3E";
+        default:
+          return "#505050";
+      }
     },
   },
 };
@@ -220,6 +272,33 @@ export default {
   left: -10px;
 }
 
+.event-status {
+  width: 100%;
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 0%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  left: -10px;
+  top: -6px;
+  display: none;
+  color: white;
+}
+
+.event-status.active {
+  display: flex;
+}
+
+.event-status.desktop {
+  display: none;
+  bottom: 15px;
+  position: absolute;
+  top: auto;
+  left: 0px;
+  border-radius: 0 0 8px 8px;
+}
 .event-categories {
   display: flex;
   flex-wrap: wrap;
@@ -282,6 +361,14 @@ export default {
 }
 
 @media screen and (min-width: 1024px) {
+  .event-status, .event-status.active{
+    display: none;
+  }
+
+  .event-status.desktop.active {
+    display: flex;
+  }
+
   .event-location img {
     height: 25px;
   }
@@ -305,6 +392,7 @@ export default {
 
   .event-image-wrapper {
     border-radius: 8px;
+    position: relative;
   }
 
   .event-image {

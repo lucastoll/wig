@@ -96,7 +96,7 @@ const submit = async () => {
 };
 </script>
 <template>
-  <div v-if="isOpen" class="overlay">
+  <div v-if="isOpen" class="overlay" @click.stop>
     <div class="popup">
       <div class="popup__stageOne" v-if="stage === 1">
         <h2 class="popup__stageOne__title">Bem vindo, {{ userStore.name }}</h2>
@@ -167,6 +167,7 @@ const submit = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 3;
 }
 
 .popup {

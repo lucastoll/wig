@@ -15,6 +15,7 @@ class User extends Model implements UserInstance {
   public Categories!: Category[];
   public coordlat!: number;
   public coordlon!: number;
+  public administrator!: boolean;
 
   public addCategories!: BelongsToManyAddAssociationsMixin<Category, number>;
 }
@@ -55,6 +56,12 @@ User.init(
       type: DataTypes.FLOAT,
       allowNull: false,
       unique: false,
+    },
+    administrator: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      unique: false,
+      defaultValue: false,
     },
   },
   {

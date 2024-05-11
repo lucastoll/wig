@@ -33,6 +33,11 @@ const router = createRouter({
       name: "NotFound",
       component: () => import("@/views/NotFoundView.vue"),
     },
+    {
+      path: "/eventsStatus",
+      name: "eventsStatus",
+      component: () => import("@/views/EventsStatusView.vue"),
+    }
   ],
 });
 
