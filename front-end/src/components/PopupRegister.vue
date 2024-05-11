@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
+import { useNotification } from "@kyvg/vue3-notification";
 import axios from "axios";
+
 import { userStore } from "@/store";
 import { logout } from "@/helpers/logout";
 import type ICategory from "@/types/ICategory";
+
+const { notify } = useNotification();
 
 defineProps({
   isOpen: {
@@ -58,6 +62,11 @@ const submit = async () => {
     cepError.value ||
     selectedCategories.value.length === 0
   ) {
+    notify({
+      title:
+        "Selecione ao menos uma categoria e digite um CEP no formato xxxxx-xxx",
+      type: "error",
+    });
     hasSubmitError.value = true;
     return;
   } else {
@@ -89,8 +98,16 @@ const submit = async () => {
 
       userStore.registerDone = true;
       userStore.id = postResponse.data.id;
+      notify({
+        title: "Cadastro realizado com sucesso!",
+        type: "success",
+      });
     } catch (error) {
-      console.log(error);
+      notify({
+        title:
+          "Ocorreu um erro na ação de cadastro, verifique as informações e tente novamente!",
+        type: "error",
+      });
     }
   }
 };

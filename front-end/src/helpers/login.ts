@@ -38,11 +38,11 @@ export const login: CallbackTypes.CredentialCallback = async (response) => {
     userStore.profilePicture = userData.picture;
     userStore.googleToken = response.credential;
   } catch (error: any) {
-    notify({
-      title: "Erro ao realizar o login",
-      type: "error",
-    });
     if (error.response && error.response.status === 404) {
+      notify({
+        title: "Usuário não cadastrado",
+        type: "error",
+      });
       userStore.registerDone = false;
       userStore.loggedIn = true;
       userStore.name = userData.name;
