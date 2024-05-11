@@ -388,11 +388,6 @@
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
 
-import type { ICity } from '@/types/ICity';
-import type { IEventWithSustainabilityQuestions } from '@/types/IEvent';
-import type ILocation from '@/types/ILocation';
-import type ICategory from '@/types/ICategory';
-
 import { MdEditor } from 'md-editor-v3';
 import Multiselect from 'vue-multiselect';
 
@@ -400,6 +395,12 @@ import 'md-editor-v3/lib/style.css';
 import 'vue-multiselect/dist/vue-multiselect.css';
 
 import { useNotification } from '@kyvg/vue3-notification';
+
+import type { ICity } from '@/types/ICity';
+import type { IEventWithSustainabilityQuestions } from '@/types/IEvent';
+import type ILocation from '@/types/ILocation';
+import type ICategory from '@/types/ICategory';
+import { userStore } from '@/store';
 
 const { notify } = useNotification();
 const itIsFree = ref(true);
@@ -413,6 +414,7 @@ const loading = ref(false);
 
 const form = ref<IEventWithSustainabilityQuestions>({
   name: "",
+  organizerId: userStore.id,
   imageMobile: "",
   imageDesktop: "",
   initialDate: undefined,
@@ -453,6 +455,7 @@ const requiredFields = [
   "ticketUrl",
   "categoryIds",
   "instagramEmbed",
+  "organizerId",
 ];
 
 function getCategoryNameById(categoryId: number) {
@@ -485,7 +488,7 @@ const submitForm = () => {
 
   if (Object.keys(errors.value).length === 0) {
     axios
-      .post(`${import.meta.env.VITE_API_URL}`, requestBody)
+      .post(`${import.meta.env.VITE_API_URL}/event`, requestBody)
       .then((res) => {
         if (res.status === 201) {
           notify({

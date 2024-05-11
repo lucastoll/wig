@@ -1,7 +1,7 @@
 <template>
-  <RegistrationEventPage />
+  <p>Aqui é locais!</p>
 </template>
 
 <script setup lang="ts">
-import RegistrationEventPage from "@/components/RegistrationEventPage.vue";
+
 </script>

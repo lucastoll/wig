@@ -22,11 +22,13 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 const buttonText = ref("Cadastre aqui!");
+const router = useRouter();
 
 const cadastreAqui = () => {
-  console.log("Botão 'Cadastre aqui' clicado!");
+  router.push("/registrationEvent");
 };
 </script>
 

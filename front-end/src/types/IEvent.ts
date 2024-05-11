@@ -3,6 +3,7 @@ import type ILocation from "@/types/ILocation";
 
 export interface IEvent {
   id?: number;
+  organizerId?: string;
   name: string;
   imageMobile: string;
   imageDesktop: string;
