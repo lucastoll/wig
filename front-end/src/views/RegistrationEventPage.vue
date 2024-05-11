@@ -21,22 +21,29 @@
       Não encontrou o local? Cadastre um.
     </p>
     <div class="locateInfos">
-      <div :class="{citiesSelectRegistration: showLocalSelect, citiesSelect: !showLocalSelect}">
-          <h3 class="subtitle">* Cidade</h3>
-          <select :class="{cities: true, 'error-border': errors.cityId}" v-model="form.cityId" @change="changeCity">
-            <option value="" disabled selected hidden>
-              Selecione a cidade
-            </option>
-            <option v-for="city in cities" :key="city.id" :value="city.id">
-              {{ city.name }}
-            </option>
-          </select>
-        </div>
+      <div
+        :class="{
+          citiesSelectRegistration: showLocalSelect,
+          citiesSelect: !showLocalSelect,
+        }"
+      >
+        <h3 class="subtitle">* Cidade</h3>
+        <select
+          :class="{ cities: true, 'error-border': errors.cityId }"
+          v-model="form.cityId"
+          @change="changeCity"
+        >
+          <option value="" disabled selected hidden>Selecione a cidade</option>
+          <option v-for="city in cities" :key="city.id" :value="city.id">
+            {{ city.name }}
+          </option>
+        </select>
+      </div>
       <div class="localRegistration" v-if="showLocalSelect">
         <div class="address">
           <p class="subtitle">* Endereço</p>
           <input
-            :class="{inputTextAddress: true, 'error-border': errors.address}"
+            :class="{ inputTextAddress: true, 'error-border': errors.address }"
             type="text"
             id="address"
             v-model="form.address"
@@ -46,7 +53,10 @@
         <div class="maximumCapacity">
           <h3 class="subtitle">* Capacidade máxima de pessoas</h3>
           <input
-            :class="{inputTextAddress: true, 'error-border': errors.maxCapacity}"
+            :class="{
+              inputTextAddress: true,
+              'error-border': errors.maxCapacity,
+            }"
             type="text"
             id="capacity"
             v-model="form.maxCapacity"
@@ -56,7 +66,7 @@
         <div class="cep">
           <h3 class="subtitle">* CEP</h3>
           <input
-            :class="{inputTextAddress: true, 'error-border': errors.zipcode}"
+            :class="{ inputTextAddress: true, 'error-border': errors.zipcode }"
             type="text"
             id="cep"
             v-model="form.zipcode"
@@ -68,7 +78,7 @@
         <div class="localSelect">
           <h3 class="subtitle">* Local</h3>
           <select
-            :class="{cities: true, 'error-border': errors.locationId}"
+            :class="{ cities: true, 'error-border': errors.locationId }"
             v-model="form.locationId"
             @change="changeLocation"
           >
@@ -99,7 +109,7 @@
     <div class="dateInfos">
       <div class="inicialDate">
         <h3 class="subtitle">* Data inicial</h3>
-        <div :class="{dateInput: true, 'error-border': errors.initialDate}">
+        <div :class="{ dateInput: true, 'error-border': errors.initialDate }">
           <input
             class="inputTextDate"
             type="date"
@@ -111,7 +121,7 @@
       </div>
       <div class="finalDate">
         <h3 class="subtitle">* Data Final</h3>
-        <div :class="{dateInput: true, 'error-border': errors.finalDate}">
+        <div :class="{ dateInput: true, 'error-border': errors.finalDate }">
           <input
             class="inputTextDate"
             type="date"
@@ -124,8 +134,13 @@
       <div class="startTime">
         <h3 class="subtitle">* Horario inicial</h3>
         <input
-          :class="{inputTextLinkDivulgation: true, 'error-border': errors.startTime}"
-          type="text"
+          :class="{
+            inputTextLinkDivulgation: true,
+            'error-border': errors.startTime,
+          }"
+          type="number"
+          min="0"
+          :max="form.endTime"
           id="linkInstagram"
           v-model="form.startTime"
           placeholder="Digite a hora inicial"
@@ -134,9 +149,14 @@
       <div class="endTime">
         <h3 class="subtitle">* Horario final</h3>
         <input
-          :class="{inputTextLinkDivulgation: true, 'error-border': errors.endTime}"
-          type="text"
+          :class="{
+            inputTextLinkDivulgation: true,
+            'error-border': errors.endTime,
+          }"
+          type="number"
           id="linkInstagram"
+          :min="form.startTime"
+          max="24"
           v-model="form.endTime"
           placeholder="Digite a hora final"
         />
@@ -166,7 +186,9 @@
       <div class="priceDefinition">
         <div class="priceInicial">
           <h3 class="subtitle">* Preço Inicial (BRL)</h3>
-          <div :class="{priceInput: true, 'error-border': errors.initialPrice}">
+          <div
+            :class="{ priceInput: true, 'error-border': errors.initialPrice }"
+          >
             <input
               class="inputTextPrice"
               type="number"
@@ -181,7 +203,7 @@
         </div>
         <div class="priceFinal">
           <h3 class="subtitle">* Preço Final (BRL)</h3>
-          <div :class="{priceInput: true, 'error-border': errors.finalPrice}">
+          <div :class="{ priceInput: true, 'error-border': errors.finalPrice }">
             <input
               class="inputTextPrice"
               type="number"
@@ -197,7 +219,10 @@
         <div class="linkBuy">
           <h3 class="subtitle">* Link para compra do ingresso</h3>
           <input
-            :class="{inputTextPriceLink: true, 'error-border': errors.ticketUrl}"
+            :class="{
+              inputTextPriceLink: true,
+              'error-border': errors.ticketUrl,
+            }"
             type="text"
             id="linkBuy"
             v-model="form.ticketUrl"
@@ -207,7 +232,7 @@
         <div class="minAge">
           <h3 class="subtitle">* Idade minima</h3>
           <input
-            :class="{inputTextPriceLink: true, 'error-border': errors.minAge}"
+            :class="{ inputTextPriceLink: true, 'error-border': errors.minAge }"
             type="text"
             id="minAge"
             v-model="form.minAge"
@@ -221,7 +246,10 @@
       <div class="mobileLink">
         <h3 class="subtitle">* Link da imagem Mobile</h3>
         <input
-          :class="{inputTextLinkDivulgation: true, 'error-border': errors.imageMobile}"
+          :class="{
+            inputTextLinkDivulgation: true,
+            'error-border': errors.imageMobile,
+          }"
           type="text"
           id="linkMobile"
           v-model="form.imageMobile"
@@ -231,7 +259,10 @@
       <div class="desktopLink">
         <h3 class="subtitle">* Link da imagem Desktop</h3>
         <input
-          :class="{inputTextLinkDivulgation: true,'error-border': errors.imageDesktop}"
+          :class="{
+            inputTextLinkDivulgation: true,
+            'error-border': errors.imageDesktop,
+          }"
           type="text"
           id="linkDesktop"
           v-model="form.imageDesktop"
@@ -241,7 +272,10 @@
       <div class="instagramLink">
         <h3 class="subtitle">* Link da imagem Instagram</h3>
         <input
-          :class="{inputTextLinkDivulgation: true, 'error-border': errors.instagramEmbed}"
+          :class="{
+            inputTextLinkDivulgation: true,
+            'error-border': errors.instagramEmbed,
+          }"
           type="text"
           id="linkInstagram"
           v-model="form.instagramEmbed"
@@ -378,29 +412,29 @@
     </div>
     <div class="submit-button-container">
       <button class="submit-button" @click="submitForm" :disabled="loading">
-        {{ loading ? 'Enviando...' : 'Enviar Evento' }}
+        {{ loading ? "Enviando..." : "Enviar Evento" }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import axios from 'axios';
+import { onMounted, ref, watch } from "vue";
+import axios from "axios";
 
-import { MdEditor } from 'md-editor-v3';
-import Multiselect from 'vue-multiselect';
+import { MdEditor } from "md-editor-v3";
+import Multiselect from "vue-multiselect";
 
-import 'md-editor-v3/lib/style.css';
-import 'vue-multiselect/dist/vue-multiselect.css';
+import "md-editor-v3/lib/style.css";
+import "vue-multiselect/dist/vue-multiselect.css";
 
-import { useNotification } from '@kyvg/vue3-notification';
+import { useNotification } from "@kyvg/vue3-notification";
 
-import type { ICity } from '@/types/ICity';
-import type { IEventWithSustainabilityQuestions } from '@/types/IEvent';
-import type ILocation from '@/types/ILocation';
-import type ICategory from '@/types/ICategory';
-import { userStore } from '@/store';
+import type { ICity } from "@/types/ICity";
+import type { IEventWithSustainabilityQuestions } from "@/types/IEvent";
+import type ILocation from "@/types/ILocation";
+import type ICategory from "@/types/ICategory";
+import { userStore } from "@/store";
 
 const { notify } = useNotification();
 const itIsFree = ref(true);
@@ -411,7 +445,6 @@ const categoriesIds = ref<number[]>([]);
 const showLocalSelect = ref(false);
 const loading = ref(false);
 
-
 const form = ref<IEventWithSustainabilityQuestions>({
   name: "",
   organizerId: userStore.id,
@@ -420,7 +453,7 @@ const form = ref<IEventWithSustainabilityQuestions>({
   initialDate: undefined,
   finalDate: undefined,
   initialPrice: 0,
-  finalPrice: 0,
+  finalPrice: 10,
   minAge: 0,
   locationId: 0,
   address: "",
@@ -430,7 +463,7 @@ const form = ref<IEventWithSustainabilityQuestions>({
   cityId: 0,
   description: "# Descrição do evento!",
   startTime: 0,
-  endTime: 0,
+  endTime: 1,
   ticketUrl: "",
   instagramEmbed: "",
 });
@@ -454,8 +487,6 @@ const requiredFields = [
   "endTime",
   "ticketUrl",
   "categoryIds",
-  "instagramEmbed",
-  "organizerId",
 ];
 
 function getCategoryNameById(categoryId: number) {
@@ -463,6 +494,21 @@ function getCategoryNameById(categoryId: number) {
     (category) => category.id === categoryId
   );
   return category?.name;
+}
+
+function validateNonNegative(
+  field: keyof IEventWithSustainabilityQuestions,
+  fieldName: string
+) {
+  const fieldValue = form.value[field];
+
+  if (typeof fieldValue === "number" && fieldValue < 0) {
+    errors.value[field] = true;
+    notify({
+      title: `${fieldName} não pode ser menor que 0!`,
+      type: "error",
+    });
+  }
 }
 
 const submitForm = () => {
@@ -480,9 +526,36 @@ const submitForm = () => {
     }
   }
 
+  validateNonNegative("initialPrice", "Preço inicial");
+  validateNonNegative("finalPrice", "Preço final");
+  validateNonNegative("startTime", "Hora de início");
+  validateNonNegative("endTime", "Hora de término");
+
+  if (form.value.initialPrice > form.value.finalPrice) {
+    errors.value["initialPrice"] = true;
+    errors.value["finalPrice"] = true;
+    notify({
+      title: `Preço inicial não pode ser maior que o preço final!`,
+      type: "error",
+    });
+  }
+
+  if (form.value.startTime >= form.value.endTime) {
+    errors.value["startTime"] = true;
+    errors.value["endTime"] = true;
+    notify({
+      title: `Horário inicial não pode ser maior ou igual ao horário final!`,
+      type: "error",
+    });
+  }
+
   let requestBody = {
     ...form.value,
   };
+
+  if (requestBody.organizerId === undefined) {
+    requestBody.organizerId = userStore.id;
+  }
 
   requestBody = treatSustentabilityQuestions(requestBody);
 
@@ -538,7 +611,6 @@ const submitForm = () => {
     loading.value = false;
   }
 };
-
 
 function treatSustentabilityQuestions(
   requestBody: IEventWithSustainabilityQuestions
@@ -657,7 +729,6 @@ onMounted(async () => {
 });
 </script>
 <style scoped>
-
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -740,7 +811,7 @@ input[type="number"] {
   align-items: center;
 }
 
-.sustainabilityQuests{
+.sustainabilityQuests {
   width: 50%;
 }
 
@@ -753,7 +824,7 @@ input[type="number"] {
 
 .mobileLink,
 .desktopLink,
-.instagramLink{
+.instagramLink {
   width: 33.3%;
 }
 

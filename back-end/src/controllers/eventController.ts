@@ -220,7 +220,6 @@ class EventController {
       "finalPrice",
       "minAge",
       "description",
-      "instagramEmbed",
       "categoryIds",
       "startTime",
       "endTime",
