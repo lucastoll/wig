@@ -230,15 +230,20 @@
           />
         </div>
         <div class="minAge">
-          <h3 class="subtitle">* Idade minima</h3>
-          <input
+          <h3 class="subtitle">* Idade mínima</h3>
+          <select
             :class="{ inputTextPriceLink: true, 'error-border': errors.minAge }"
-            type="text"
             id="minAge"
             v-model="form.minAge"
-            placeholder="Digite a idade minima"
-          />
-        </div>
+          >
+            <option value="0">Livre</option>
+            <option value="10">10 anos</option>
+            <option value="12">12 anos</option>
+            <option value="14">14 anos</option>
+            <option value="16">16 anos</option>
+            <option value="18">18 anos</option>
+          </select>
+      </div>
       </div>
     </div>
     <h2 class="title">Imagens de divulgação</h2>
