@@ -27,6 +27,7 @@ class Event extends Model implements EventInstance {
   public endTime!: string;
   public ticketUrl!: string;
   public status!: "em análise" | "recusado" | "aprovado";
+  public approvalFeedback!: string;
 
   public addCategories!: BelongsToManyAddAssociationsMixin<Category, number>;
 }
@@ -95,6 +96,10 @@ Event.init(
       type: DataTypes.ENUM("em análise", "recusado", "aprovado"),
       allowNull: false,
       defaultValue: "em análise",
+    },
+    approvalFeedback: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {

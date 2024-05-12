@@ -27,6 +27,57 @@ class EventController {
     }
   }
 
+  static async getEventsToApprove(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const cityId =
+      typeof req.query.cityId === "string" ? req.query.cityId : undefined;
+    const cityName =
+      typeof req.query.cityName === "string" ? req.query.cityName : undefined;
+
+    if (!cityId && !cityName) {
+      res.status(400).json({
+        error: "Você deve fornecer um cityId ou cityName",
+      });
+      return;
+    }
+
+    try {
+      const events = await EventService.getEventsToApprove(cityId, cityName);
+      res.status(200).json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async approveEvent(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const approvedEvent = await EventService.approveEvent(req.params.id, req.body.approvalFeedback);
+      res.status(201).json(approvedEvent);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async rejectEvent(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const rejectedEvent = await EventService.rejectEvent(req.params.id, req.body.approvalFeedback);
+      res.status(201).json(rejectedEvent);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async getEventsRecomended(
     req: Request,
     res: Response,
