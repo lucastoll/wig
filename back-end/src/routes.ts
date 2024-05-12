@@ -1,3 +1,4 @@
+
 import express from "express";
 import { UserController } from "./controllers/userController";
 import { CityController } from "./controllers/cityController";
@@ -23,12 +24,17 @@ router.get("/categories", CategoryController.getCategories);
 router.post("/category", CategoryController.createCategory);
 
 router.get("/events", EventController.getEvents);
+router.get("/events/approve", EventController.getEventsToApprove);
 router.get("/events/categories", EventController.getEventsByCategories);
 router.get("/events/distance", EventController.getEventsByDistance);
 router.get("/events/recommendation", EventController.getEventsRecomended);
 router.get("/events/date", EventController.getEventsByDate);
 router.post("/event", EventController.createEvent);
 router.get("/event/getId/:id", EventController.getEventById);
+
+router.put("/event/acceptEvent/:id", EventController.approveEvent);
+router.put("/event/rejectEvent/:id", EventController.rejectEvent);
+
 router.post(
   "/events/organizer/:userId",
   verifyGoogleToken,
