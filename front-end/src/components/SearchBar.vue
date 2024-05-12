@@ -40,10 +40,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import debounce from "lodash/debounce";
 import CheckIcon from "@/assets/Check.png";
-import type IEvent from "@/types/IEvent";
 import { userStore } from "@/store";
 
 const emit = defineEmits(["update:searchQuery", "update:filter"]);
@@ -53,6 +52,15 @@ const showFilters = ref(false);
 const selectedFilterIndex = ref<number>(0);
 const selectedFilter = ref<string>("date");
 const filterOptions = ref([{ label: "Data Atual", image: CheckIcon }]);
+
+onMounted(() => {
+  if (userStore.loggedIn) {
+    filterOptions.value.push({ label: "Categorias", image: CheckIcon });
+    filterOptions.value.push({ label: "Distância", image: CheckIcon });
+  } else {
+    filterOptions.value = [{ label: "Data", image: CheckIcon }];
+  }
+});
 
 watch(userStore, () => {
   if (userStore.loggedIn) {

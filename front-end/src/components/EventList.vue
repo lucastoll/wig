@@ -21,14 +21,18 @@
             <div
               class="event-date"
               :style="{
-                backgroundColor: eventDateBackgroundColor(event.finalDate),
+                backgroundColor: eventDateBackgroundColor(
+                  event.finalDate.toString()
+                ),
               }"
             >
-              {{ formatDate(event.finalDate) }}
+              {{ formatDate(event.finalDate.toString()) }}
             </div>
             <div class="event-info">
               <div class="event-name">{{ event?.name }}</div>
-              <div class="event-category">{{ event?.Categories[0]?.name }}</div>
+              <div class="event-category">
+                {{ event?.Categories ? event?.Categories[0].name : "" }}
+              </div>
               <div class="event-location">{{ event?.Location?.address }}</div>
             </div>
           </div>
@@ -48,7 +52,7 @@
 <script lang="ts">
 import axios from "axios";
 import { useRouter } from "vue-router";
-import type IEvent from "@/types/IEvent";
+import type { IEvent } from "@/types/IEvent";
 import goToEvent from "@/helpers/goToEvent";
 
 export default {

@@ -13,7 +13,7 @@
       <div class="details">
         <img src="@/assets/Calendar.svg" alt="Calendar Icon" />
         <div class="event-date">
-          <span>{{ formatDate(events[0].finalDate) }}</span>
+          <span>{{ formatDate(events[0].finalDate.toString()) }}</span>
         </div>
         <p class="event-title">{{ events[0].name }}</p>
       </div>
@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import axios from "axios";
-import type IEvent from "@/types/IEvent";
+import type { IEvent } from "@/types/IEvent";
 import goToEvent from "@/helpers/goToEvent";
 
 const props = defineProps<{
