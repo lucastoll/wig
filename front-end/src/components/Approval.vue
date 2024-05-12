@@ -1,10 +1,13 @@
 <script setup lang="ts">
-
+import Popup from "@/components/PopupApproval.vue";
+import { ref } from "vue";
+const isOpen = ref<boolean>(false);
 </script>
 
 <template>
  <div class="approval">
-    <button class="approved" > aprovar </button>
+  <Popup :isOpen="isOpen"/>
+    <button class="approved" @click="isOpen=true"> aprovar </button>
     <button class="decline"> reprovar </button>
  </div>
 </template>
