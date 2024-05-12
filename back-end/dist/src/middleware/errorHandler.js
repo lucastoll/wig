@@ -8,7 +8,7 @@ function errorHandler(error, req, res, next) {
     }
     else {
         console.error("Erro:", error);
-        res.status(500).json({ error: "Erro interno do servidor" });
+        res.status(500).json({ error: `Erro interno do servidor: ${error}` });
     }
 }
 exports.errorHandler = errorHandler;

@@ -21,6 +21,8 @@ const customError_1 = require("../errors/customError");
 const city_1 = require("../models/city");
 const sequelize_1 = require("sequelize");
 const getDistance_1 = __importDefault(require("../helpers/getDistance"));
+const sustainabilityQuestion_1 = require("../models/sustainabilityQuestion");
+const getCoordinates_1 = __importDefault(require("../helpers/getCoordinates"));
 class EventService {
     static getEvents(cityId, cityName) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -83,7 +85,7 @@ class EventService {
             return events;
         });
     }
-    static getEventsById(eventId) {
+    static getEventById(eventId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const event = yield event_1.Event.findByPk(eventId, {
@@ -282,7 +284,7 @@ class EventService {
     }
     static createEvent(eventData) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { name, imageMobile, imageDesktop, organizerId, initialDate, finalDate, initialPrice, finalPrice, minAge, description, instagramEmbed, locationId, address, zipcode, maxCapacity, cityId, categoryIds, startTime, endTime, ticketUrl, } = eventData;
+            const { name, imageMobile, imageDesktop, organizerId, initialDate, finalDate, initialPrice, finalPrice, minAge, description, instagramEmbed, locationId, address, zipcode, maxCapacity, cityId, categoryIds, startTime, endTime, ticketUrl, questions, } = eventData;
             const organizer = yield user_1.User.findByPk(organizerId);
             if (!organizer) {
                 throw new customError_1.CustomError("Organizador não encontrado", 404);
@@ -309,6 +311,7 @@ class EventService {
                     const city = yield city_1.City.findOne({
                         where: { id: cityId },
                     });
+                    const { latitude, longitude } = yield (0, getCoordinates_1.default)(zipcode.toString());
                     if (!city) {
                         throw new customError_1.CustomError("Cidade não encontrada", 404);
                     }
@@ -317,6 +320,8 @@ class EventService {
                         zipcode,
                         maxCapacity,
                         cityId,
+                        coordlat: latitude,
+                        coordlon: longitude,
                     });
                 }
             }
@@ -341,7 +346,49 @@ class EventService {
                 ticketUrl,
             });
             yield newEvent.addCategories(categories);
+            if (questions) {
+                const sustainabilityQuestions = questions === null || questions === void 0 ? void 0 : questions.map((question) => (Object.assign(Object.assign({}, question), { eventId: newEvent.id })));
+                yield sustainabilityQuestion_1.SustainabilityQuestion.bulkCreate(sustainabilityQuestions);
+            }
             return newEvent;
+        });
+    }
+    static getOrganizerEvents(userId, email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield user_1.User.findByPk(userId);
+            if (!user) {
+                throw new customError_1.CustomError("Usuário não encontrado", 404);
+            }
+            if (user.email !== email) {
+                throw new customError_1.CustomError("Usuário não autorizado", 401);
+            }
+            const events = yield event_1.Event.findAll({
+                where: { organizerId: userId },
+                include: [
+                    { model: category_1.Category },
+                    { model: user_1.User, as: "organizer" },
+                    { model: location_1.Location },
+                ],
+            });
+            return events;
+        });
+    }
+    static getAnalysisEvents(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield user_1.User.findOne({ where: { email } });
+            if ((user === null || user === void 0 ? void 0 : user.administrator) === false) {
+                throw new customError_1.CustomError("Usuário não autorizado", 401);
+            }
+            const events = yield event_1.Event.findAll({
+                where: { status: "em análise" },
+                include: [
+                    { model: category_1.Category },
+                    { model: user_1.User, as: "organizer" },
+                    { model: location_1.Location },
+                    { model: sustainabilityQuestion_1.SustainabilityQuestion },
+                ],
+            });
+            return events;
         });
     }
 }

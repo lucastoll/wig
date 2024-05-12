@@ -141,7 +141,11 @@ class EventController {
                 return;
             }
             try {
-                const events = yield eventService_1.EventService.getEventsById(eventId);
+                const events = yield eventService_1.EventService.getEventById(eventId);
+                if (!events) {
+                    res.status(404).json({ error: "Evento não encontrado" });
+                    return;
+                }
                 res.status(200).json(events);
             }
             catch (error) {
@@ -162,7 +166,6 @@ class EventController {
                 "finalPrice",
                 "minAge",
                 "description",
-                "instagramEmbed",
                 "categoryIds",
                 "startTime",
                 "endTime",
@@ -178,6 +181,37 @@ class EventController {
             try {
                 const newEvent = yield eventService_1.EventService.createEvent(req.body);
                 res.status(201).json(newEvent);
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
+    static getOrganizerEvents(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const userId = typeof req.params.userId === "string" ? req.params.userId : undefined;
+            const email = req.body.email;
+            if (!userId) {
+                res.status(400).json({
+                    error: "Você deve fornecer um userId",
+                });
+                return;
+            }
+            try {
+                const events = yield eventService_1.EventService.getOrganizerEvents(userId, email);
+                res.status(200).json(events);
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
+    static getAnalysisEvents(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const email = req.body.email;
+            try {
+                const events = yield eventService_1.EventService.getAnalysisEvents(email);
+                res.status(200).json(events);
             }
             catch (error) {
                 next(error);

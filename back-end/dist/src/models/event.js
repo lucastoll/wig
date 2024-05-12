@@ -68,6 +68,11 @@ Event.init({
         type: sequelize_1.DataTypes.STRING,
         allowNull: true,
     },
+    status: {
+        type: sequelize_1.DataTypes.ENUM("em análise", "recusado", "aprovado"),
+        allowNull: false,
+        defaultValue: "em análise",
+    },
 }, {
     sequelize: db_1.default,
     modelName: "Event",

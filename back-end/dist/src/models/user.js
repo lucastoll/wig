@@ -45,6 +45,12 @@ User.init({
         allowNull: false,
         unique: false,
     },
+    administrator: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        allowNull: false,
+        unique: false,
+        defaultValue: false,
+    },
 }, {
     sequelize: db_1.default,
     modelName: "User",

@@ -53,7 +53,7 @@ class UserService {
             return user;
         });
     }
-    static createUser(name, email, address, categoryIds, zipcode, googleToken) {
+    static createUser(name, email, address, categoryIds, zipcode, googleToken, administator = false) {
         return __awaiter(this, void 0, void 0, function* () {
             const googleUser = yield verify(googleToken);
             if (googleUser.email !== email) {
@@ -77,6 +77,7 @@ class UserService {
                 zipcode,
                 coordlat: latitude,
                 coordlon: longitude,
+                administator
             });
             yield newUser.addCategories(categories);
             const reloadedUser = yield newUser.reload({ include: category_1.Category });
