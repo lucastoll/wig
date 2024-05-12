@@ -21,7 +21,7 @@ export const login: CallbackTypes.CredentialCallback = async (response) => {
     );
 
     const backEndUser = await axios.get(
-      `http://localhost:3000/user/${userData.email}`
+      `${import.meta.env.VITE_API_URL}/user/${userData.email}`
     );
     notify({
       title: "Usuario logado com sucesso!",

@@ -16,4 +16,12 @@ db.sync().then(() =>
   console.log(`Banco de dados conectado: ${process.env.DB_NAME}`)
 );
 
-app.listen(3000, () => console.log("Servidor iniciado na porta 3000"));
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
+if (process.env.NODE_ENV === "development") {
+  app.listen(3000, () => console.log("Servidor iniciado na porta 3000"));
+}
+
+export default app;
