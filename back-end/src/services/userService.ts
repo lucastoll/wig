@@ -41,7 +41,8 @@ class UserService {
     address: string,
     categoryIds: number[],
     zipcode: string,
-    googleToken: string
+    googleToken: string,
+    administator: boolean = false
   ): Promise<User> {
     const googleUser = await verify(googleToken);
     if (googleUser.email !== email) {
@@ -76,6 +77,7 @@ class UserService {
       zipcode,
       coordlat: latitude,
       coordlon: longitude,
+      administator
     });
 
     await newUser.addCategories(categories);

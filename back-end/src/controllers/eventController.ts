@@ -64,7 +64,7 @@ class EventController {
       next(error);
     }
   }
-  
+
   static async getEventsByDate(
     req: Request,
     res: Response,
@@ -74,7 +74,7 @@ class EventController {
       typeof req.query.cityId === "string" ? req.query.cityId : undefined;
     const cityName =
       typeof req.query.cityName === "string" ? req.query.cityName : undefined;
-    const searchBar = 
+    const searchBar =
       typeof req.query.searchBar === "string" ? req.query.searchBar : undefined;
 
     if (!cityId && !cityName) {
@@ -85,7 +85,11 @@ class EventController {
     }
 
     try {
-      const events = await EventService.getEventsByDate(cityId, cityName, searchBar);
+      const events = await EventService.getEventsByDate(
+        cityId,
+        cityName,
+        searchBar
+      );
       res.status(200).json(events);
     } catch (error) {
       next(error);
@@ -103,8 +107,8 @@ class EventController {
       typeof req.query.cityName === "string" ? req.query.cityName : undefined;
     const userId =
       typeof req.query.userId === "string" ? req.query.userId : undefined;
-    const searchBar = 
-      typeof req.query.searchBar === "string" ? req.query.searchBar : undefined;  
+    const searchBar =
+      typeof req.query.searchBar === "string" ? req.query.searchBar : undefined;
 
     if (!cityId && !cityName) {
       res.status(400).json({
@@ -144,8 +148,8 @@ class EventController {
       typeof req.query.cityName === "string" ? req.query.cityName : undefined;
     const userId =
       typeof req.query.userId === "string" ? req.query.userId : undefined;
-    const searchBar = 
-      typeof req.query.searchBar === "string" ? req.query.searchBar : undefined;  
+    const searchBar =
+      typeof req.query.searchBar === "string" ? req.query.searchBar : undefined;
 
     if (!cityId && !cityName) {
       res.status(400).json({
@@ -189,7 +193,11 @@ class EventController {
     }
 
     try {
-      const events = await EventService.getEventsById(eventId);
+      const events = await EventService.getEventById(eventId);
+      if (!events) {
+        res.status(404).json({ error: "Evento não encontrado" });
+        return;
+      }
       res.status(200).json(events);
     } catch (error) {
       next(error);
@@ -212,7 +220,6 @@ class EventController {
       "finalPrice",
       "minAge",
       "description",
-      "instagramEmbed",
       "categoryIds",
       "startTime",
       "endTime",
@@ -230,6 +237,45 @@ class EventController {
     try {
       const newEvent = await EventService.createEvent(req.body);
       res.status(201).json(newEvent);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getOrganizerEvents(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const userId =
+      typeof req.params.userId === "string" ? req.params.userId : undefined;
+    const email = req.body.email;
+
+    if (!userId) {
+      res.status(400).json({
+        error: "Você deve fornecer um userId",
+      });
+      return;
+    }
+
+    try {
+      const events = await EventService.getOrganizerEvents(userId, email);
+      res.status(200).json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getAnalysisEvents(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const email = req.body.email;
+
+    try {
+      const events = await EventService.getAnalysisEvents(email);
+      res.status(200).json(events);
     } catch (error) {
       next(error);
     }

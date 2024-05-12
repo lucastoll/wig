@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import type IEvent from "@/types/IEvent";
+import type { IEvent } from "@/types/IEvent";
 import { eventStore, cityStore } from "@/store";
 import { MdPreview } from "md-editor-v3";
 import axios from "axios";

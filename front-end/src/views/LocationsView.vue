@@ -1,5 +1,7 @@
 <template>
-  <div class="about">
-    <h1>esta é a pagina de locais</h1>
-  </div>
+  <p>Aqui é locais!</p>
 </template>
+
+<script setup lang="ts">
+
+</script>

@@ -11,7 +11,7 @@
           Você é um organizador de eventos buscando divulgar seu evento em
           Sorocaba?
         </p>
-        <button class="custom-button" @click="faleConosco">
+        <button class="custom-button" @click="cadastreAqui">
           {{ buttonText }}
         </button>
       </div>
@@ -22,11 +22,13 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
-const buttonText = ref("Fale Conosco");
+const buttonText = ref("Cadastre aqui!");
+const router = useRouter();
 
-const faleConosco = () => {
-  console.log("Botão 'Fale Conosco' clicado!");
+const cadastreAqui = () => {
+  router.push("/registrationEvent");
 };
 </script>
 

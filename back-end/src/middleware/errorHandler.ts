@@ -11,7 +11,7 @@ function errorHandler(
     res.status(error.statusCode).json({ error: error.message });
   } else {
     console.error("Erro:", error);
-    res.status(500).json({ error: "Erro interno do servidor" });
+    res.status(500).json({ error: `Erro interno do servidor: ${error}` });
   }
 }
 

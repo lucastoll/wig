@@ -6,6 +6,8 @@ import { CustomError } from "../errors/customError";
 import { City } from "../models/city";
 import { FindOptions, Op, WhereOptions, literal } from "sequelize";
 import getDistance from "../helpers/getDistance";
+import { SustainabilityQuestion } from "../models/sustainabilityQuestion";
+import getCoordinates from "../helpers/getCoordinates";
 
 type EventData = Event &
   Partial<Location> & {
@@ -13,6 +15,7 @@ type EventData = Event &
     cityId: number;
     organizerId: number;
     locationId?: number;
+    questions: { question: string; answer: string }[];
   };
 
 class EventService {
@@ -91,7 +94,7 @@ class EventService {
     return events;
   }
 
-  static async getEventsById(eventId: string): Promise<Event | null> {
+  static async getEventById(eventId: string): Promise<Event | null> {
     try {
       const event = await Event.findByPk(eventId, {
         include: [
@@ -369,6 +372,7 @@ class EventService {
       startTime,
       endTime,
       ticketUrl,
+      questions,
     } = eventData;
 
     const organizer = await User.findByPk(organizerId);
@@ -404,6 +408,8 @@ class EventService {
           where: { id: cityId },
         });
 
+        const { latitude, longitude } = await getCoordinates(zipcode.toString());
+
         if (!city) {
           throw new CustomError("Cidade não encontrada", 404);
         }
@@ -413,6 +419,8 @@ class EventService {
           zipcode,
           maxCapacity,
           cityId,
+          coordlat: latitude,
+          coordlon: longitude,
         });
       }
     } else {
@@ -441,7 +449,62 @@ class EventService {
     });
     await newEvent.addCategories(categories);
 
+    if(questions){      
+      const sustainabilityQuestions = questions?.map((question) => ({
+        ...question,
+        eventId: newEvent.id,
+      }));
+      await SustainabilityQuestion.bulkCreate(sustainabilityQuestions);
+    }
+      
+
+
     return newEvent;
+  }
+
+  static async getOrganizerEvents(
+    userId: string,
+    email: string
+  ): Promise<Event[]> {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new CustomError("Usuário não encontrado", 404);
+    }
+
+    if (user.email !== email) {
+      throw new CustomError("Usuário não autorizado", 401);
+    }
+
+    const events = await Event.findAll({
+      where: { organizerId: userId },
+      include: [
+        { model: Category },
+        { model: User, as: "organizer" },
+        { model: Location },
+      ],
+    });
+
+    return events;
+  }
+
+  static async getAnalysisEvents(email: string): Promise<Event[]> {
+    const user = await User.findOne({ where: { email } });
+
+    if (user?.administrator === false) {
+      throw new CustomError("Usuário não autorizado", 401);
+    }
+
+    const events = await Event.findAll({
+      where: { status: "em análise" },
+      include: [
+        { model: Category },
+        { model: User, as: "organizer" },
+        { model: Location },
+        { model: SustainabilityQuestion },
+      ],
+    });
+
+    return events;
   }
 }
 
