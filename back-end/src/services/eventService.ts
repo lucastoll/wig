@@ -1,4 +1,3 @@
-
 import { Event } from "../models/event";
 import { User } from "../models/user";
 import { Location } from "../models/location";
