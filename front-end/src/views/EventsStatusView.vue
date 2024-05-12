@@ -3,18 +3,28 @@ import { computed, onMounted, watch } from "vue";
 import { cityStore, userStore } from "@/store";
 import { useRouter } from "vue-router";
 import CardsSearch from "@/components/CardsSearch.vue";
+import { useNotification } from "@kyvg/vue3-notification";
+const { notify } = useNotification();
 
 const router = useRouter();
 
 onMounted(() => {
   if (!userStore.loggedIn && !userStore.loading) {
     router.push("/");
+    notify({
+      title: `Você precisa estar logado para acessar essa página!`,
+      type: "error",
+    });
   }
 });
 
 watch(userStore, () => {
   if (!userStore.loggedIn && !userStore.loading) {
     router.push("/");
+    notify({
+      title: `Você precisa estar logado para acessar essa página!`,
+      type: "error",
+    });
   }
 });
 

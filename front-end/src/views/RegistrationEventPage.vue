@@ -243,7 +243,7 @@
             <option value="16">16 anos</option>
             <option value="18">18 anos</option>
           </select>
-      </div>
+        </div>
       </div>
     </div>
     <h2 class="title">Imagens de divulgação</h2>
@@ -440,6 +440,7 @@ import type { IEventWithSustainabilityQuestions } from "@/types/IEvent";
 import type ILocation from "@/types/ILocation";
 import type ICategory from "@/types/ICategory";
 import { userStore } from "@/store";
+import { useRouter } from "vue-router";
 
 const { notify } = useNotification();
 const itIsFree = ref(true);
@@ -449,14 +450,15 @@ const categories = ref<ICategory[]>([]);
 const categoriesIds = ref<number[]>([]);
 const showLocalSelect = ref(false);
 const loading = ref(false);
+const router = useRouter();
 
 const form = ref<IEventWithSustainabilityQuestions>({
   name: "",
   organizerId: userStore.id,
   imageMobile: "",
   imageDesktop: "",
-  initialDate: undefined,
-  finalDate: undefined,
+  initialDate: new Date(),
+  finalDate: new Date(),
   initialPrice: 0,
   finalPrice: 10,
   minAge: 0,
@@ -578,8 +580,8 @@ const submitForm = () => {
             name: "",
             imageMobile: "",
             imageDesktop: "",
-            initialDate: undefined,
-            finalDate: undefined,
+            initialDate: new Date(),
+            finalDate: new Date(),
             initialPrice: 0,
             finalPrice: 0,
             minAge: 0,
@@ -731,6 +733,26 @@ onMounted(async () => {
     .then((res) => res.data);
 
   categoriesIds.value = categories.value.map((category) => category.id);
+});
+
+onMounted(() => {
+  if (!userStore.loggedIn && !userStore.loading) {
+    router.push("/");
+    notify({
+      title: `Você precisa estar logado para acessar essa página!`,
+      type: "error",
+    });
+  }
+});
+
+watch(userStore, () => {
+  if (!userStore.loggedIn && !userStore.loading) {
+    router.push("/");
+    notify({
+      title: `Você precisa estar logado para acessar essa página!`,
+      type: "error",
+    });
+  }
 });
 </script>
 <style scoped>

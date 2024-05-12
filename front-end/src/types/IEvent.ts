@@ -7,8 +7,8 @@ export interface IEvent {
   name: string;
   imageMobile: string;
   imageDesktop: string;
-  initialDate: Date | undefined;
-  finalDate: Date | undefined;
+  initialDate: Date;
+  finalDate: Date;
   initialPrice: number;
   finalPrice: number;
   minAge: number;
@@ -19,6 +19,7 @@ export interface IEvent {
   categoryIds?: number[];
   cityId: number;
   description: string;
+  status?: string;
   startTime: number;
   endTime: number;
   ticketUrl: string;

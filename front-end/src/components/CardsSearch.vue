@@ -20,18 +20,18 @@
                 active: showStatus,
                 desktop: true,
               }"
-              :style="{
-                backgroundColor: statusBackgroundColor(event.status),
-              }"
+            :style="{
+              backgroundColor: statusBackgroundColor(event.status ? event.status : ''),
+            }"
             >
-              {{ event.status.charAt(0).toUpperCase() + event.status.slice(1) }}
+              {{ event.status ? event.status.charAt(0).toUpperCase() + event.status.slice(1) : "" }}
             </div>
           </div>
           <div class="event-details">
             <div
               class="event-date"
               :style="{
-                backgroundColor: eventDateBackgroundColor(event.initialDate),
+                backgroundColor: eventDateBackgroundColor(event?.initialDate.toString()),
               }"
             >
               <img
@@ -39,7 +39,7 @@
                 src="@/assets/Calendar.png"
                 alt="Calendar Icon"
               />
-              {{ formatDate(event.initialDate) }}
+              {{ formatDate(event?.initialDate.toString()) }}
             </div>
             <div
               :class="{
@@ -47,10 +47,10 @@
                 active: showStatus,
               }"
               :style="{
-                backgroundColor: statusBackgroundColor(event.status),
+                backgroundColor: statusBackgroundColor(event.status ?? ''),
               }"
             >
-              {{ event.status.charAt(0).toUpperCase() + event.status.slice(1) }}
+              {{ event.status && event?.status?.charAt(0).toUpperCase() + event?.status?.slice(1) }}
             </div>
             <div class="event-name">{{ event?.name }}</div>
             <div class="event-categories">
@@ -89,8 +89,6 @@
 <script lang="ts">
 import axios from "axios";
 import { userStore } from "@/store";
-import type IEvent from "@/types/IEvent";
-import type ICategory from "@/types/ICategory";
 import goToEvent from "@/helpers/goToEvent";
 
 export default {
@@ -114,9 +112,9 @@ export default {
   },
   data() {
     return {
-      loading: false as boolean,
+      loading: false,
       user: userStore,
-      events: [] as IEvent[],
+      events: [],
     };
   },
   mounted() {
@@ -150,7 +148,7 @@ export default {
         this.loading = false;
       }
     },
-    formatDate(dateString: string) {
+    formatDate(dateString) {
       const eventDate = new Date(dateString);
       const today = new Date();
       const tomorrow = new Date();
@@ -164,7 +162,7 @@ export default {
         return eventDate.toLocaleDateString("pt-BR");
       }
     },
-    eventDateBackgroundColor(dateString: string) {
+    eventDateBackgroundColor(dateString) {
       const eventDate = new Date(dateString);
       const today = new Date();
       const tomorrow = new Date();
@@ -179,11 +177,11 @@ export default {
         return "#505050";
       }
     },
-    isUserCategory(category: ICategory) {
+    isUserCategory(category) {
       const userCategories = this.user.Categories.map((cat) => cat.name);
       return userCategories.includes(category.name);
     },
-    statusBackgroundColor(status: string) {
+    statusBackgroundColor(status) {
       switch (status) {
         case "aprovado":
           return "#41C13E";
@@ -361,7 +359,8 @@ export default {
 }
 
 @media screen and (min-width: 1024px) {
-  .event-status, .event-status.active{
+  .event-status,
+  .event-status.active {
     display: none;
   }
 
