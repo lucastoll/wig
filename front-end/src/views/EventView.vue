@@ -6,6 +6,7 @@ import type IQuestion from "@/types/IQuestions";
 import { eventStore, cityStore, userStore } from "@/store";
 import { MdPreview } from "md-editor-v3";
 import axios from "axios";
+import Approval from "@/components/Approval.vue";
 
 import Livre from "@/assets/Livre.svg";
 import Menor18 from "@/assets/eighteen.png";
@@ -106,7 +107,10 @@ onMounted(async () => {
     } catch (error) {
       router.push({ name: "NotFound" });
     }
+  }
+  if(userStore.administrator){
     try {
+      console.log("CAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", questions.value)
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/event/${event.value.id}/sustainabilityQuestions`,{
          googleToken: userStore.googleToken,
@@ -121,7 +125,6 @@ onMounted(async () => {
     } catch (error) {
       router.push({ name: "NotFound" });
     }
-    console.log("CAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", questions.value)
   }
   
   console.log("JOSEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",event.value)
@@ -169,11 +172,19 @@ onMounted(async () => {
           tabindex="0"
         ></iframe>
       </div>
-      <div class="teste" v-if ="userStore.administrator"> cuzao </div>
-      <div class="teste2" v-for="(item, index) in questions" :key="index">
-        {{ item.question }}
-        {{ item.answer }}
-      </div>
+      <div class="admin" v-if ="userStore.administrator"> 
+        <div class="questionsadmin" v-for="(item, index) in questions" :key="index">
+          <div class="question">
+            {{ item.question }}
+          </div>
+          <div class = "answer">
+            R: {{ item.answer }}
+          </div>
+        
+       
+      </div> 
+    </div>
+      
       <div class="infosWrapper">
         <div class="ticket">
           <img alt="" src="@/assets/ticket.svg" width="32" height="32" />
@@ -220,12 +231,31 @@ onMounted(async () => {
       <span class="foot">WIG 2024 © - Todos os direitos reservados</span>
     </div>
   </div>
+  <div v-if="userStore.administrator" class="analise">
+  <Approval/>
+  </div>
 </div>
 </template>
 
 <style scoped>
-.teste2{
+.analise{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.answer{
+  font-weight: 700;
+}
+.admin{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.questionsadmin{
+  display: flex;
+  flex-direction: column;
   color: black;
+  gap:5px;
 }
 .foot {
   font-size: smaller;
