@@ -5,7 +5,7 @@ import { userStore } from "@/store";
 
 
 defineProps({
-  isOpenApproval: {
+  isOpenDecline: {
     type: Boolean,
     required: true,
   },
@@ -64,15 +64,13 @@ const submit = async () => {
 };
 </script>
 <template>
-  <div v-if="isOpenApproval" class="overlay" @click.stop>
+  <div v-if="isOpenDecline" class="overlay" @click.stop>
     <div class="popup">
         <div class="container">
-            <h2 class="titulo">Pontos de sustentabilidade</h2>
-            <span class="texto">Cada resposta convincente deve 
-                contar 1 ponto, caso tenha dúvidas entre em
-                contato com o usuário pelo e-mail</span>
-            <input type="number" class="input" placeholder="Pontos em número">
-            <button class="aprovar"> Aprovar </button>
+            <h2 class="titulo">Motivo da recusa</h2>
+            <span class="texto">Explique por que o evento foi recusado</span>
+            <input type="text" class="input" placeholder="Motivo">
+            <button class="reprovar"> Reprovar </button>
         </div>
     </div>
   </div>
@@ -91,8 +89,8 @@ const submit = async () => {
   align-items: center;
   z-index: 3;
 }
-.aprovar{
-  background-color: #38A149;
+.reprovar{
+  background-color: #8C0000;
   border-radius: 20px;
   width: 100%;
   height: 36px;

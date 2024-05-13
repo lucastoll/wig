@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import Popup from "@/components/PopupApproval.vue";
+import PopupApproval from "@/components/PopupApproval.vue";
+import PopupDisapprove from "@/components/PopupDisapprove.vue";
 import { ref } from "vue";
-const isOpen = ref<boolean>(false);
+const isOpenApproval = ref<boolean>(false);
+const isOpenDecline = ref<boolean>(false);
 </script>
 
 <template>
  <div class="approval">
-  <Popup :isOpen="isOpen"/>
-    <button class="approved" @click="isOpen=true"> aprovar </button>
-    <button class="decline"> reprovar </button>
+  <PopupApproval :isOpenApproval="isOpenApproval"/>
+  <PopupDisapprove :isOpenDecline="isOpenDecline"/>
+    <button class="approved" @click="isOpenApproval=true"> aprovar </button>
+    <button class="decline" @click="isOpenDecline=true"> reprovar </button>
  </div>
 </template>
 <style>
