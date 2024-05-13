@@ -7,54 +7,74 @@ const isOpenDecline = ref<boolean>(false);
 </script>
 
 <template>
- <div class="approval">
-  <PopupApproval :isOpenApproval="isOpenApproval"/>
-  <PopupDisapprove :isOpenDecline="isOpenDecline"/>
-    <button class="approved" @click="isOpenApproval=true"> aprovar </button>
-    <button class="decline" @click="isOpenDecline=true"> reprovar </button>
- </div>
+  <div class="approval">
+    <PopupApproval :isOpenApproval="isOpenApproval" />
+    <PopupDisapprove :isOpenDecline="isOpenDecline" />
+    <div class="text">O que achou do evento?</div>
+    <button class="approved" @click="isOpenApproval = true">Aprovar</button>
+    <button class="decline" @click="isOpenDecline = true">Reprovar</button>
+  </div>
 </template>
 <style>
-.approval{
+.approval {
   display: flex;
   flex-direction: row;
   width: 100%;
   justify-content: center;
   background-color: none;
   position: fixed;
-  gap:3px;
+  gap: 3px;
   bottom: 50px;
   z-index: 2;
   padding: 0 10px 0 10px;
 }
-.approved{
-  background-color: #38A149;
-  border-radius: 20px;
-  width: 50%;
-  height: 36px;
-  color:white;
-  border: 2px solid black;
+.approved,
+.decline {
+  border: none;
+  outline: none;
 }
-.decline{
-  background-color: #8C0000;
-  border-radius: 20px;
+
+.approved {
+  background-color: #38a149;
+  border-radius: 24px;
   width: 50%;
   height: 36px;
-  color:white;
-  border: 2px solid black;
+  color: white;
+}
+.decline {
+  background-color: #8c0000;
+  border-radius: 24px;
+  width: 50%;
+  height: 36px;
+  color: white;
+}
+
+.text{
+  display: none;
 }
 @media screen and (min-width: 1024px) {
-  .approval{
-  display: flex;
-  flex-direction: row;
-  width: 85%;
-  justify-content: center;
-  background-color: none;
-  position: fixed;
-  gap:3px;
-  bottom: 5px;
-  z-index: 2;
-  padding: 0 10px 0 10px;
-}
+  .text{
+    display: block;
+    color: black;
+    display: flex;
+    flex-direction: column;
+  }
+  .approval {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: flex-end;
+    align-items: flex-end;
+    position: fixed;
+    gap: 3px;
+    bottom: 0px;
+    background: none;
+    z-index: 2;
+    padding: 16px;
+  }
+  .approved,
+  .decline {
+    max-width: 150px;
+  }
 }
 </style>

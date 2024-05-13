@@ -127,7 +127,7 @@ onMounted(async () => {
             <span v-if="index === event.Categories.length - 1">
               {{ item.name }}</span
             >
-            <span v-else>{{ item.name }},</span>
+            <span v-else>{{ item.name }}</span>
           </div>
         </div>
       </div>
@@ -181,7 +181,7 @@ onMounted(async () => {
             height="26"
           />
           <span
-            >{{ dayOfWeek }}, {{ formatDate(event.initialDate) }},
+            >{{ dayOfWeek }} {{ formatDate(event.initialDate) }},
             {{ event.startTime }}h às {{ event.endTime }}h</span
           >
         </div>
