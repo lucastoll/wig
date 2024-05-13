@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import type IEvent from "@/types/IEvent";
+import type { IEvent } from "@/types/IEvent";
 import type IQuestion from "@/types/IQuestions";
 import { eventStore, cityStore, userStore } from "@/store";
 import { MdPreview } from "md-editor-v3";
@@ -54,8 +54,8 @@ const mapUrl = computed(() => {
 
 const instagramId = computed(() => {
   const url = event.value.instagramEmbed;
-  const parts = url.split("/");
-  const id = parts[4];
+  const parts = url?.split("/");
+  const id = parts?.[4] ?? "";
   return id;
 });
 
@@ -92,15 +92,15 @@ const ageIcon = computed(() => {
 });
 
 onMounted(async () => {
+  console.log(event.value)
   if (!event.value.id) {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/events?cityId=${cityStore.id}`
+        `${import.meta.env.VITE_API_URL}/event/getId/${route.params.id}`
       );
+      console.log(response)
       if (response.status === 200) {
-        event.value = response.data.filter(
-          (event: IEvent) => event.id === Number(route.params.id)
-        )[0];
+        event.value = response.data;
       } else {
         throw new Error("Evento não encontrado");
       }
@@ -112,132 +112,136 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="events" v-if="event.imageMobile && event.imageDesktop">
-    <img :src="event.imageMobile" alt="imgMobile" class="imgEventMobile" />
-    <img :src="event.imageDesktop" alt="imgDesktop" class="imgEventDesktop" />
+  <div class="events" v-if="event?.imageMobile && event?.imageDesktop">
+    <img :src="event?.imageMobile" alt="imgMobile" class="imgEventMobile" />
+    <img :src="event?.imageDesktop" alt="imgDesktop" class="imgEventDesktop" />
   </div>
-  <div v-if="event.initialDate" class="grandFather">
-  <div  class="father">
-    <div class="sectiontitle">
-      <div class="title">
-        <h1 class="nameEvent">{{ event.name }}</h1>
-        <div class="row">
-          <span>Categorias:</span>
-          <div v-for="(item, index) in event.Categories" :key="index">
-            <span v-if="index === event.Categories.length - 1">
-              {{ item.name }}</span
+  <div v-if="event?.initialDate" class="grandFather">
+    <div class="father">
+      <div class="sectiontitle">
+        <div class="title">
+          <h1 class="nameEvent">{{ event.name }}</h1>
+          <div class="row">
+            <span>Categorias:</span>
+            <div v-for="(item, index) in event.Categories" :key="index">
+              <span v-if="index === (event?.Categories?.length ?? 0) - 1">
+                {{ item.name }}</span
+              >
+              <span v-else>{{ item.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="location">
+        <img
+          alt="Logo site"
+          src="@/assets/Location.svg"
+          width="20"
+          height="25"
+        />
+        <span v-if="event.Location?.name"
+          >{{ event.Location?.name }} - {{ event.Location.address }}</span
+        >
+        <span v-else>{{ event.Location?.address }}</span>
+      </div>
+      <div class="maps__infos">
+        <div class="maps">
+          <iframe
+            :src="mapUrl"
+            width="100%"
+            height="300px"
+            frameborder="0"
+            style="border: 0"
+            allowfullscreen="true"
+            aria-hidden="false"
+            tabindex="0"
+          ></iframe>
+        </div>
+        <div class="admin" v-if="userStore.administrator">
+          <div
+            class="questionsadmin"
+            v-for="(item, index) in questions"
+            :key="index"
+          >
+            <div class="question">
+              {{ item.question }}
+            </div>
+            <div class="answer">R: {{ item.answer }}</div>
+          </div>
+        </div>
+
+        <div class="infosWrapper">
+          <div class="ticket">
+            <img alt="" src="@/assets/ticket.svg" width="32" height="32" />
+            <span v-if="event.finalPrice > 0"
+              >R${{ event.initialPrice }},00 a R${{ event.finalPrice }},00</span
             >
-            <span v-else>{{ item.name }}</span>
+            <span v-else>Gratuito</span>
+          </div>
+          <div class="location">
+            <img
+              alt=""
+              src="@/assets/Iconecalendario.svg"
+              width="26"
+              height="26"
+            />
+            <span
+              >{{ dayOfWeek }} {{ formatDate(event.initialDate.toString()) }},
+              {{ event.startTime }}h às {{ event.endTime }}h</span
+            >
+          </div>
+          <div class="location">
+            <img alt="" :src="ageIcon" width="25" height="25" />
+            <span>{{ ageTextComputed }}</span>
           </div>
         </div>
       </div>
-    </div>
-    <div class="location">
-      <img alt="Logo site" src="@/assets/Location.svg" width="20" height="25" />
-      <span v-if="event.Location?.name"
-        >{{ event.Location?.name }} - {{ event.Location.address }}</span
-      >
-      <span v-else>{{ event.Location?.address }}</span>
-    </div>
-    <div class="maps__infos">
-      <div class="maps">
-        <iframe
-          :src="mapUrl"
-          width="100%"
-          height="300px"
-          frameborder="0"
-          style="border: 0"
-          allowfullscreen="true"
-          aria-hidden="false"
-          tabindex="0"
-        ></iframe>
+      <div class="description">
+        <MdPreview :modelValue="event.description" />
       </div>
-      <div class="admin" v-if ="userStore.administrator"> 
-        <div class="questionsadmin" v-for="(item, index) in questions" :key="index">
-          <div class="question">
-            {{ item.question }}
-          </div>
-          <div class = "answer">
-            R: {{ item.answer }}
-          </div>
-        
-       
-      </div> 
-    </div>
-      
-      <div class="infosWrapper">
-        <div class="ticket">
-          <img alt="" src="@/assets/ticket.svg" width="32" height="32" />
-          <span v-if="event.finalPrice > 0"
-            >R${{ event.initialPrice }},00 a R${{ event.finalPrice }},00</span
-          >
-          <span v-else>Gratuito</span>
-        </div>
-        <div class="location">
-          <img
-            alt=""
-            src="@/assets/Iconecalendario.svg"
-            width="26"
-            height="26"
-          />
-          <span
-            >{{ dayOfWeek }} {{ formatDate(event.initialDate) }},
-            {{ event.startTime }}h às {{ event.endTime }}h</span
-          >
-        </div>
-        <div class="location">
-          <img alt="" :src="ageIcon" width="25" height="25" />
-          <span>{{ ageTextComputed }}</span>
+      <div class="instagram">
+        <h2>Confira mais fotos no instagram</h2>
+        <div class="instagram_embed">
+          <iframe
+            :src="'https://www.instagram.com/p/' + instagramId + '/embed'"
+            width="100%"
+            height="100%"
+            frameborder="0"
+            scrolling="yes"
+            allowtransparency="true"
+          ></iframe>
         </div>
       </div>
-    </div>
-    <div class="description">
-      <MdPreview :modelValue="event.description" />
-    </div>
-    <div class="instagram">
-      <h2>Confira mais fotos no instagram</h2>
-      <div class="instagram_embed">
-        <iframe
-          :src="'https://www.instagram.com/p/' + instagramId + '/embed'"
-          width="100%"
-          height="100%"
-          frameborder="0"
-          scrolling="yes"
-          allowtransparency="true"
-        ></iframe>
+      <div class="footer">
+        <span class="foot">WIG 2024 © - Todos os direitos reservados</span>
       </div>
     </div>
-    <div class="footer">
-      <span class="foot">WIG 2024 © - Todos os direitos reservados</span>
+    <div v-if="userStore.administrator" class="analise">
+      <Approval />
     </div>
   </div>
-  <div v-if="userStore.administrator" class="analise">
-    <Approval/>
-  </div>
-  
-</div>
 </template>
 
 <style scoped>
-.analise{
+.analise {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
 }
-.answer{
+.answer {
   font-weight: 700;
 }
-.admin{
+.admin {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
-.questionsadmin{
+.questionsadmin {
   display: flex;
   flex-direction: column;
   color: black;
-  gap:5px;
+  gap: 5px;
 }
 .foot {
   font-size: smaller;
@@ -281,6 +285,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   padding: 16px 16px 50px;
+  width: 100%;
 }
 .location {
   display: flex;
@@ -322,8 +327,6 @@ onMounted(async () => {
   display: none;
 }
 
-
-
 .data .day {
   margin-top: 8px;
 }
@@ -345,7 +348,7 @@ onMounted(async () => {
 }
 .nameEvent {
   font-size: medium;
-  min-width: 75%!important;
+  min-width: 75% !important;
   color: black;
   font-weight: 700;
   width: 100%;
@@ -395,26 +398,26 @@ onMounted(async () => {
     display: flex;
   }
 
-  .sectiontitle{
+  .sectiontitle {
     justify-content: start;
   }
-.title{
-  align-items: start;
-  width: 100%;
-}
-.nameEvent{
-  text-align: left;
-}
-.row{
-  justify-content: flex-start;
-}
-  .grandFather{
+  .title {
+    align-items: start;
+    width: 100%;
+  }
+  .nameEvent {
+    text-align: left;
+  }
+  .row {
+    justify-content: flex-start;
+  }
+  .grandFather {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 0px 80px 0px 80px;
   }
-  .father{
+  .father {
     display: flex;
     flex-direction: column;
     max-width: 1280px;
@@ -438,10 +441,10 @@ onMounted(async () => {
     align-items: center;
     justify-content: space-between;
     margin-top: 30px;
-    gap:10px;
+    gap: 10px;
   }
 
-  .location{
+  .location {
     padding: 0px 0px 0px 0px;
   }
   .maps__infos {

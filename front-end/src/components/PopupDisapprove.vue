@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import { ref } from "vue";
 import axios from "axios";
 import { userStore } from "@/store";
-
 
 defineProps({
   isOpenDecline: {
@@ -11,14 +10,12 @@ defineProps({
   },
 });
 
-
-
 const cep = ref("");
 const cepError = ref(false);
 const hasSubmitError = ref(false);
 const selectedCategories = ref<number[]>([]);
 const sustentabilityPoints = ref<number>(0);
-
+const emit = defineEmits(["close"]);
 
 const submit = async () => {
   if (
@@ -64,14 +61,14 @@ const submit = async () => {
 };
 </script>
 <template>
-  <div v-if="isOpenDecline" class="overlay" @click.stop>
-    <div class="popup">
-        <div class="container">
-            <h2 class="titulo">Motivo da recusa</h2>
-            <span class="texto">Explique por que o evento foi recusado</span>
-            <input type="text" class="input" placeholder="Motivo">
-            <button class="reprovar"> Reprovar </button>
-        </div>
+  <div v-if="isOpenDecline" class="overlay" @click="emit('close')">
+    <div class="popup" @click.stop>
+      <div class="container">
+        <h2 class="titulo">Motivo da recusa</h2>
+        <span class="texto">Explique por que o evento foi recusado</span>
+        <input type="text" class="input" placeholder="Motivo" />
+        <button class="reprovar">Reprovar</button>
+      </div>
     </div>
   </div>
 </template>
@@ -89,21 +86,21 @@ const submit = async () => {
   align-items: center;
   z-index: 3;
 }
-.reprovar{
-  background-color: #8C0000;
+.reprovar {
+  background-color: #8c0000;
   border-radius: 20px;
   width: 100%;
   height: 36px;
-  color:white;
+  color: white;
   border: 2px solid black;
 }
 
-.input{
-    height: 38px;
-    border: 1px solid black;
-    border-radius: 8px;
-    width: 100%;
-    padding-left: 10px;
+.input {
+  height: 38px;
+  border: 1px solid black;
+  border-radius: 8px;
+  width: 100%;
+  padding-left: 10px;
 }
 .popup {
   width: 80%;
@@ -116,20 +113,19 @@ const submit = async () => {
   align-items: center;
 }
 
-.container{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap:10px;
-
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
-.titulo{
-color:black;
-font-weight: 700;
+.titulo {
+  color: black;
+  font-weight: 700;
 }
-.texto{
-    color: black;
-    font-size: small;
+.texto {
+  color: black;
+  font-size: small;
 }
 </style>
 @/types/ICategory

@@ -4,12 +4,19 @@ import PopupDisapprove from "@/components/PopupDisapprove.vue";
 import { ref } from "vue";
 const isOpenApproval = ref<boolean>(false);
 const isOpenDecline = ref<boolean>(false);
+const sustentabilityPoints = ref<number>(0);
 </script>
 
 <template>
   <div class="approval">
-    <PopupApproval :isOpenApproval="isOpenApproval" />
-    <PopupDisapprove :isOpenDecline="isOpenDecline" />
+    <PopupApproval
+      @close="isOpenApproval = false"
+      :isOpenApproval="isOpenApproval"
+    />
+    <PopupDisapprove
+      @close="isOpenDecline = false"
+      :isOpenDecline="isOpenDecline"
+    />
     <div class="text">O que achou do evento?</div>
     <button class="approved" @click="isOpenApproval = true">Aprovar</button>
     <button class="decline" @click="isOpenDecline = true">Reprovar</button>
@@ -49,11 +56,11 @@ const isOpenDecline = ref<boolean>(false);
   color: white;
 }
 
-.text{
+.text {
   display: none;
 }
 @media screen and (min-width: 1024px) {
-  .text{
+  .text {
     display: block;
     color: black;
     display: flex;
