@@ -108,26 +108,6 @@ onMounted(async () => {
       router.push({ name: "NotFound" });
     }
   }
-  if(userStore.administrator){
-    try {
-      console.log("CAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", questions.value)
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/event/${event.value.id}/sustainabilityQuestions`,{
-         googleToken: userStore.googleToken,
-         email: userStore.email
-        }
-      );
-      if (response.status === 200) {
-        questions.value = response.data
-      } else {
-        throw new Error("Evento não encontrado");
-      }
-    } catch (error) {
-      router.push({ name: "NotFound" });
-    }
-  }
-  
-  console.log("JOSEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",event.value)
 });
 </script>
 
@@ -232,8 +212,9 @@ onMounted(async () => {
     </div>
   </div>
   <div v-if="userStore.administrator" class="analise">
-  <Approval/>
+    <Approval/>
   </div>
+  
 </div>
 </template>
 
@@ -242,6 +223,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 70%;
 }
 .answer{
   font-weight: 700;
@@ -340,16 +322,7 @@ onMounted(async () => {
   display: none;
 }
 
-@media screen and (min-width: 400px) {
-  .data {
-    display: flex;
-  }
 
-
-  .nameEvent {
-    width: 75% !important;
-  }
-}
 
 .data .day {
   margin-top: 8px;
@@ -361,7 +334,7 @@ onMounted(async () => {
   margin-top: 8px;
   font-size: 20px;
   height: 80px;
-  max-width: 90%;
+  max-width: 100%;
   text-align: center;
   justify-content: center;
   align-items: center;
@@ -372,6 +345,7 @@ onMounted(async () => {
 }
 .nameEvent {
   font-size: medium;
+  min-width: 75%!important;
   color: black;
   font-weight: 700;
   width: 100%;
@@ -417,6 +391,10 @@ onMounted(async () => {
     display: none;
   }
 
+  .data {
+    display: flex;
+  }
+
   .sectiontitle{
     justify-content: start;
   }
@@ -425,7 +403,7 @@ onMounted(async () => {
   width: 100%;
 }
 .nameEvent{
-  padding-right: 475px;
+  text-align: left;
 }
 .row{
   justify-content: flex-start;
@@ -434,6 +412,7 @@ onMounted(async () => {
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 0px 80px 0px 80px;
   }
   .father{
     display: flex;
@@ -456,15 +435,21 @@ onMounted(async () => {
   .infosWrapper {
     display: flex;
     flex-direction: row;
+    align-items: center;
     justify-content: space-between;
-    margin-top: 20px;
+    margin-top: 30px;
+    gap:10px;
   }
 
+  .location{
+    padding: 0px 0px 0px 0px;
+  }
   .maps__infos {
     flex-direction: column-reverse;
   }
 
   .father {
+    padding: 0px 0px 0px 0px;
     padding-bottom: 0px;
   }
 }

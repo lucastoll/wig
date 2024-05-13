@@ -43,4 +43,18 @@ const isOpenDecline = ref<boolean>(false);
   color:white;
   border: 2px solid black;
 }
+@media screen and (min-width: 1024px) {
+  .approval{
+  display: flex;
+  flex-direction: row;
+  width: 85%;
+  justify-content: center;
+  background-color: none;
+  position: fixed;
+  gap:3px;
+  bottom: 5px;
+  z-index: 2;
+  padding: 0 10px 0 10px;
+}
+}
 </style>
