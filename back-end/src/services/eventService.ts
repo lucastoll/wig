@@ -43,7 +43,7 @@ class EventService {
           include: [{ model: City }],
         },
       ],
-      where: { status: 'Aprovado' }
+      where: { status: "Aprovado" },
     });
 
     return events;
@@ -74,37 +74,44 @@ class EventService {
           include: [{ model: City }],
         },
       ],
-      where: { status: 'Em análise' }
+      where: { status: "Em análise" },
     });
 
     return events;
   }
-  
-  static async approveEvent(eventId: string, approvalFeedback: string): Promise<void> {
+
+  static async approveEvent(
+    eventId: string,
+    approvalFeedback: string
+  ): Promise<void> {
     try {
-        const event = await Event.findByPk(eventId);
-        if (!event) {
-            throw new CustomError("Evento não encontrado", 404);
-        }
-        event.status = "aprovado";
-        event.approvalFeedback = approvalFeedback;
-        await event.save();
-    } catch (error) {
-        throw new CustomError("Erro ao aprovar o evento", 500);
-    }
-  }
-  static async rejectEvent(eventId: string, approvalFeedback: string): Promise<void> {
-  try {
       const event = await Event.findByPk(eventId);
       if (!event) {
-          throw new CustomError("Evento não encontrado", 404);
+        throw new CustomError("Evento não encontrado", 404);
+      }
+      event.status = "aprovado";
+      event.approvalFeedback = approvalFeedback;
+      await event.save();
+    } catch (error) {
+      throw new CustomError("Erro ao aprovar o evento", 500);
+    }
+  }
+
+  static async rejectEvent(
+    eventId: string,
+    approvalFeedback: string
+  ): Promise<void> {
+    try {
+      const event = await Event.findByPk(eventId);
+      if (!event) {
+        throw new CustomError("Evento não encontrado", 404);
       }
       event.status = "recusado";
       event.approvalFeedback = approvalFeedback;
       await event.save();
-  } catch (error) {
+    } catch (error) {
       throw new CustomError("Erro ao aprovar o evento", 500);
-  }
+    }
   }
 
   static async getEventsByDate(
@@ -125,7 +132,7 @@ class EventService {
 
     let eventsQuery: FindOptions = {
       include: [
-        { model: Category }, 
+        { model: Category },
         { model: User, as: "organizer" },
         {
           model: Location,
@@ -135,6 +142,7 @@ class EventService {
       ],
       where: {
         finalDate: { [Op.gte]: new Date() },
+        status: "Aprovado",
       },
       order: [["initialDate", "ASC"]],
       limit: 10,
@@ -202,7 +210,7 @@ class EventService {
         { model: User, as: "organizer" },
         {
           model: Location,
-          where: { cityId: city.id },
+          where: { cityId: city.id, status: "Aprovado" },
           include: [{ model: City }],
         },
       ],
@@ -293,6 +301,7 @@ class EventService {
           include: [{ model: City }],
         },
       ],
+      where: { status: "Aprovado" },
       limit: 10,
     };
 
@@ -372,6 +381,7 @@ class EventService {
           include: [{ model: City }],
         },
       ],
+      where: { status: "Aprovado" },
       limit: 10,
     };
 
