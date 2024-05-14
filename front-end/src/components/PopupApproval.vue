@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import axios from "axios";
-import { userStore } from "@/store";
+import { useNotification } from "@kyvg/vue3-notification";
+import { useRoute, useRouter } from "vue-router";
 
 defineProps({
   isOpenApproval: {
@@ -10,53 +11,32 @@ defineProps({
   },
 });
 
-const cep = ref("");
-const cepError = ref(false);
-const hasSubmitError = ref(false);
-const selectedCategories = ref<number[]>([]);
-const sustentabilityPoints = ref<number>(0);
+const reason = ref<string>("");
 const emit = defineEmits(["close"]);
+const { notify } = useNotification();
+const route = useRoute();
+const router = useRouter();
 
 const submit = async () => {
-  if (
-    cep.value.length !== 9 ||
-    cepError.value ||
-    selectedCategories.value.length === 0
-  ) {
-    hasSubmitError.value = true;
-    return;
-  } else {
-    try {
-      hasSubmitError.value = false;
-      const addressResponse = await axios.get(
-        `https://viacep.com.br/ws/${cep.value.replace("-", "")}/json/`
-      );
-      const address =
-        addressResponse.data.logradouro +
-        ", " +
-        addressResponse.data.bairro +
-        ", " +
-        addressResponse.data.localidade +
-        ", " +
-        addressResponse.data.uf;
-
-      const postResponse = await axios.post(
-        `${import.meta.env.VITE_API_URL}/user`,
-        {
-          name: userStore.name,
-          email: userStore.email,
-          zipcode: cep.value.replace("-", ""),
-          address,
-          categoryIds: selectedCategories.value,
-          googleToken: localStorage.getItem("credential"),
-        }
-      );
-
-      userStore.registerDone = true;
-      userStore.id = postResponse.data.id;
-    } catch (error) {
-      console.log(error);
-    }
+  try {
+    await axios.put(
+      `${import.meta.env.VITE_API_URL}/event/acceptEvent/${route.params.id}`,
+      {
+        approvalFeedback: reason.value,
+      }
+    );
+    notify({
+      title: "Evento aprovado com sucesso",
+      type: "success",
+    });
+    emit("close");
+    router.push({ name: "home" });
+  } catch (error) {
+    console.log(error);
+    notify({
+      title: "Ocorreu um erro ao aprovar o evento",
+      type: "error",
+    });
   }
 };
 </script>
@@ -69,8 +49,8 @@ const submit = async () => {
           >Cada resposta convincente deve contar 1 ponto, caso tenha dúvidas
           entre em contato com o usuário pelo e-mail</span
         >
-        <input type="number" class="input" placeholder="Pontos em número" />
-        <button class="aprovar">Aprovar</button>
+        <input v-model="reason" type="number" class="input" placeholder="Pontos em número" />
+        <button @click="submit" class="aprovar">Aprovar</button>
       </div>
     </div>
   </div>

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import axios from "axios";
-import { userStore } from "@/store";
+import { useNotification } from "@kyvg/vue3-notification";
+import { useRoute } from "vue-router";
+import router from "@/router";
 
 defineProps({
   isOpenDecline: {
@@ -10,52 +12,38 @@ defineProps({
   },
 });
 
-const cep = ref("");
-const cepError = ref(false);
-const hasSubmitError = ref(false);
-const selectedCategories = ref<number[]>([]);
-const sustentabilityPoints = ref<number>(0);
+const reason = ref<string>("");
 const emit = defineEmits(["close"]);
+const { notify } = useNotification();
+const route = useRoute();
 
 const submit = async () => {
-  if (
-    cep.value.length !== 9 ||
-    cepError.value ||
-    selectedCategories.value.length === 0
-  ) {
-    hasSubmitError.value = true;
+  if (reason.value.length === 0) {
+    notify({
+      title: "Por favor, insira um motivo para a recusa",
+      type: "error",
+    });
     return;
   } else {
     try {
-      hasSubmitError.value = false;
-      const addressResponse = await axios.get(
-        `https://viacep.com.br/ws/${cep.value.replace("-", "")}/json/`
-      );
-      const address =
-        addressResponse.data.logradouro +
-        ", " +
-        addressResponse.data.bairro +
-        ", " +
-        addressResponse.data.localidade +
-        ", " +
-        addressResponse.data.uf;
-
-      const postResponse = await axios.post(
-        `${import.meta.env.VITE_API_URL}/user`,
+      await axios.put(
+        `${import.meta.env.VITE_API_URL}/event/rejectEvent/${route.params.id}`,
         {
-          name: userStore.name,
-          email: userStore.email,
-          zipcode: cep.value.replace("-", ""),
-          address,
-          categoryIds: selectedCategories.value,
-          googleToken: localStorage.getItem("credential"),
+          approvalFeedback: reason.value,
         }
       );
-
-      userStore.registerDone = true;
-      userStore.id = postResponse.data.id;
+      notify({
+        title: "Evento cancelado com sucesso",
+        type: "success",
+      });
+      emit("close");
+      router.push({ name: "home" });
     } catch (error) {
       console.log(error);
+      notify({
+        title: "Ocorreu um erro ao cancelar o evento",
+        type: "error",
+      });
     }
   }
 };
@@ -66,8 +54,13 @@ const submit = async () => {
       <div class="container">
         <h2 class="titulo">Motivo da recusa</h2>
         <span class="texto">Explique por que o evento foi recusado</span>
-        <input type="text" class="input" placeholder="Motivo" />
-        <button class="reprovar">Reprovar</button>
+        <input
+          v-model="reason"
+          type="text"
+          class="input"
+          placeholder="Motivo"
+        />
+        <button class="reprovar" @click="submit">Reprovar</button>
       </div>
     </div>
   </div>

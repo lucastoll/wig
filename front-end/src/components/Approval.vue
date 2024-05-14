@@ -4,7 +4,6 @@ import PopupDisapprove from "@/components/PopupDisapprove.vue";
 import { ref } from "vue";
 const isOpenApproval = ref<boolean>(false);
 const isOpenDecline = ref<boolean>(false);
-const sustentabilityPoints = ref<number>(0);
 </script>
 
 <template>

@@ -43,7 +43,7 @@ class EventService {
           include: [{ model: City }],
         },
       ],
-      where: { status: "Aprovado" },
+      where: { status: "aprovado" },
     });
 
     return events;
@@ -142,7 +142,7 @@ class EventService {
       ],
       where: {
         finalDate: { [Op.gte]: new Date() },
-        status: "Aprovado",
+        status: "aprovado",
       },
       order: [["initialDate", "ASC"]],
       limit: 10,
@@ -210,10 +210,11 @@ class EventService {
         { model: User, as: "organizer" },
         {
           model: Location,
-          where: { cityId: city.id, status: "Aprovado" },
+          where: { cityId: city.id },
           include: [{ model: City }],
         },
       ],
+      where: { status: "aprovado" },
     });
 
     const userCoordinates = {
@@ -301,7 +302,7 @@ class EventService {
           include: [{ model: City }],
         },
       ],
-      where: { status: "Aprovado" },
+      where: { status: "aprovado" },
       limit: 10,
     };
 
@@ -381,7 +382,7 @@ class EventService {
           include: [{ model: City }],
         },
       ],
-      where: { status: "Aprovado" },
+      where: { status: "aprovado" },
       limit: 10,
     };
 

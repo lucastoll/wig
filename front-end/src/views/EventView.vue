@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import type { IEvent } from "@/types/IEvent";
 import type IQuestion from "@/types/IQuestions";
-import { eventStore, cityStore, userStore } from "@/store";
+import { eventStore, userStore } from "@/store";
 import { MdPreview } from "md-editor-v3";
 import axios from "axios";
 import Approval from "@/components/Approval.vue";
@@ -91,14 +91,33 @@ const ageIcon = computed(() => {
   }
 });
 
+watch(userStore, () => {
+  if (userStore.administrator) {
+    axios
+      .post(
+        `${import.meta.env.VITE_API_URL}/event/${
+          event.value.id
+        }/sustainabilityQuestions`,
+        {
+          googleToken: userStore.googleToken,
+          email: userStore.email,
+        }
+      )
+      .then((response) => {
+        questions.value = response.data;
+      })
+      .catch((error) => {
+        router.push({ name: "NotFound" });
+      });
+  }
+});
+
 onMounted(async () => {
-  console.log(event.value)
   if (!event.value.id) {
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/event/getId/${route.params.id}`
       );
-      console.log(response)
       if (response.status === 200) {
         event.value = response.data;
       } else {
@@ -106,6 +125,27 @@ onMounted(async () => {
       }
     } catch (error) {
       router.push({ name: "NotFound" });
+    }
+
+    if (userStore.administrator) {
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/event/${
+            event.value.id
+          }/sustainabilityQuestions`,
+          {
+            googleToken: userStore.googleToken,
+            email: userStore.email,
+          }
+        );
+        if (response.status === 200) {
+          questions.value = response.data;
+        } else {
+          throw new Error("Evento não encontrado");
+        }
+      } catch (error) {
+        router.push({ name: "NotFound" });
+      }
     }
   }
 });
@@ -158,6 +198,7 @@ onMounted(async () => {
           ></iframe>
         </div>
         <div class="admin" v-if="userStore.administrator">
+          <h2 style="color: black">Pontos de sustentabilidade</h2>
           <div
             class="questionsadmin"
             v-for="(item, index) in questions"
@@ -168,8 +209,24 @@ onMounted(async () => {
             </div>
             <div class="answer">R: {{ item.answer }}</div>
           </div>
+          <h2 style="color: black">Informações do organizador</h2>
+          <div class="questionsadmin">
+            <div class="question">Nome: {{ event?.organizer?.name }}</div>
+            <div class="question">Email: {{ event?.organizer?.email }}</div>
+          </div>
         </div>
-
+        <div
+          class="admin"
+          v-if="
+            userStore.email === event.organizer?.email &&
+            event.status === 'recusado'
+          "
+        >
+          <h2 style="color: black">Motivo da recusa</h2>
+          <div class="questionsadmin">
+            <div class="question">R: {{ event?.approvalFeedback }}</div>
+          </div>
+        </div>
         <div class="infosWrapper">
           <div class="ticket">
             <img alt="" src="@/assets/ticket.svg" width="32" height="32" />
@@ -216,7 +273,10 @@ onMounted(async () => {
         <span class="foot">WIG 2024 © - Todos os direitos reservados</span>
       </div>
     </div>
-    <div v-if="userStore.administrator" class="analise">
+    <div
+      v-if="userStore.administrator && event.status === 'em análise'"
+      class="analise"
+    >
       <Approval />
     </div>
   </div>
