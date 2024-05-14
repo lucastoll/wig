@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import type { IEvent } from "@/types/IEvent";
-import { eventStore, cityStore } from "@/store";
+import type IQuestion from "@/types/IQuestions";
+import { eventStore, userStore } from "@/store";
 import { MdPreview } from "md-editor-v3";
 import axios from "axios";
+import Approval from "@/components/Approval.vue";
 
 import Livre from "@/assets/Livre.svg";
 import Menor18 from "@/assets/eighteen.png";
@@ -16,6 +18,7 @@ import Menor10 from "@/assets/ten.png";
 const event = ref<IEvent>(eventStore);
 const route = useRoute();
 const router = useRouter();
+const questions = ref<IQuestion[]>();
 
 function formatDate(dateString: string) {
   const eventDate = new Date(dateString);
@@ -51,8 +54,8 @@ const mapUrl = computed(() => {
 
 const instagramId = computed(() => {
   const url = event.value.instagramEmbed;
-  const parts = url.split("/");
-  const id = parts[4];
+  const parts = url?.split("/");
+  const id = parts?.[4] ?? "";
   return id;
 });
 
@@ -88,117 +91,218 @@ const ageIcon = computed(() => {
   }
 });
 
+watch(userStore, () => {
+  if (userStore.administrator) {
+    axios
+      .post(
+        `${import.meta.env.VITE_API_URL}/event/${
+          event.value.id
+        }/sustainabilityQuestions`,
+        {
+          googleToken: userStore.googleToken,
+          email: userStore.email,
+        }
+      )
+      .then((response) => {
+        questions.value = response.data;
+      })
+      .catch((error) => {
+        router.push({ name: "NotFound" });
+      });
+  }
+});
+
 onMounted(async () => {
   if (!event.value.id) {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/events?cityId=${cityStore.id}`
+        `${import.meta.env.VITE_API_URL}/event/getId/${route.params.id}`
       );
       if (response.status === 200) {
-        event.value = response.data.filter(
-          (event: IEvent) => event.id === Number(route.params.id)
-        )[0];
+        event.value = response.data;
       } else {
         throw new Error("Evento não encontrado");
       }
     } catch (error) {
       router.push({ name: "NotFound" });
     }
+
+    if (userStore.administrator) {
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/event/${
+            event.value.id
+          }/sustainabilityQuestions`,
+          {
+            googleToken: userStore.googleToken,
+            email: userStore.email,
+          }
+        );
+        if (response.status === 200) {
+          questions.value = response.data;
+        } else {
+          throw new Error("Evento não encontrado");
+        }
+      } catch (error) {
+        router.push({ name: "NotFound" });
+      }
+    }
   }
 });
 </script>
 
 <template>
-  <div class="events" v-if="event.imageMobile && event.imageDesktop">
-    <img :src="event.imageMobile" alt="imgMobile" class="imgEventMobile" />
-    <img :src="event.imageDesktop" alt="imgDesktop" class="imgEventDesktop" />
+  <div class="events" v-if="event?.imageMobile && event?.imageDesktop">
+    <img :src="event?.imageMobile" alt="imgMobile" class="imgEventMobile" />
+    <img :src="event?.imageDesktop" alt="imgDesktop" class="imgEventDesktop" />
   </div>
-  <div v-if="event.initialDate" class="grandFather">
-  <div  class="father">
-    <div class="sectiontitle">
-      <div class="title">
-        <h1 class="nameEvent">{{ event.name }}</h1>
-        <div class="row">
-          <span>Categorias:</span>
-          <div v-for="(item, index) in event.Categories" :key="index">
-            <span v-if="index === event.Categories.length - 1">
-              {{ item.name }}</span
-            >
-            <span v-else>{{ item.name }},</span>
+  <div v-if="event?.initialDate" class="grandFather">
+    <div class="father">
+      <div class="sectiontitle">
+        <div class="title">
+          <h1 class="nameEvent">{{ event.name }}</h1>
+          <div class="row">
+            <span>Categorias:</span>
+            <div v-for="(item, index) in event.Categories" :key="index">
+              <span v-if="index === (event?.Categories?.length ?? 0) - 1">
+                {{ item.name }}</span
+              >
+              <span v-else>{{ item.name }}</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="location">
-      <img alt="Logo site" src="@/assets/Location.svg" width="20" height="25" />
-      <span v-if="event.Location?.name"
-        >{{ event.Location?.name }} - {{ event.Location.address }}</span
-      >
-      <span v-else>{{ event.Location?.address }}</span>
-    </div>
-    <div class="maps__infos">
-      <div class="maps">
-        <iframe
-          :src="mapUrl"
-          width="100%"
-          height="300px"
-          frameborder="0"
-          style="border: 0"
-          allowfullscreen="true"
-          aria-hidden="false"
-          tabindex="0"
-        ></iframe>
+      <div class="location">
+        <img
+          alt="Logo site"
+          src="@/assets/Location.svg"
+          width="20"
+          height="25"
+        />
+        <span v-if="event.Location?.name"
+          >{{ event.Location?.name }} - {{ event.Location.address }}</span
+        >
+        <span v-else>{{ event.Location?.address }}</span>
       </div>
-      <div class="infosWrapper">
-        <div class="ticket">
-          <img alt="" src="@/assets/ticket.svg" width="32" height="32" />
-          <span v-if="event.finalPrice > 0"
-            >R${{ event.initialPrice }},00 a R${{ event.finalPrice }},00</span
+      <div class="maps__infos">
+        <div class="maps">
+          <iframe
+            :src="mapUrl"
+            width="100%"
+            height="300px"
+            frameborder="0"
+            style="border: 0"
+            allowfullscreen="true"
+            aria-hidden="false"
+            tabindex="0"
+          ></iframe>
+        </div>
+        <div class="admin" v-if="userStore.administrator">
+          <h2 style="color: black">Pontos de sustentabilidade</h2>
+          <div
+            class="questionsadmin"
+            v-for="(item, index) in questions"
+            :key="index"
           >
-          <span v-else>Gratuito</span>
+            <div class="question">
+              {{ item.question }}
+            </div>
+            <div class="answer">R: {{ item.answer }}</div>
+          </div>
+          <h2 style="color: black">Informações do organizador</h2>
+          <div class="questionsadmin">
+            <div class="question">Nome: {{ event?.organizer?.name }}</div>
+            <div class="question">Email: {{ event?.organizer?.email }}</div>
+          </div>
         </div>
-        <div class="location">
-          <img
-            alt=""
-            src="@/assets/Iconecalendario.svg"
-            width="26"
-            height="26"
-          />
-          <span
-            >{{ dayOfWeek }}, {{ formatDate(event.initialDate) }},
-            {{ event.startTime }}h às {{ event.endTime }}h</span
-          >
+        <div
+          class="admin"
+          v-if="
+            userStore.email === event.organizer?.email &&
+            event.status === 'recusado'
+          "
+        >
+          <h2 style="color: black">Motivo da recusa</h2>
+          <div class="questionsadmin">
+            <div class="question">R: {{ event?.approvalFeedback }}</div>
+          </div>
         </div>
-        <div class="location">
-          <img alt="" :src="ageIcon" width="25" height="25" />
-          <span>{{ ageTextComputed }}</span>
+        <div class="infosWrapper">
+          <div class="ticket">
+            <img alt="" src="@/assets/ticket.svg" width="32" height="32" />
+            <span v-if="event.finalPrice > 0"
+              >R${{ event.initialPrice }},00 a R${{ event.finalPrice }},00</span
+            >
+            <span v-else>Gratuito</span>
+          </div>
+          <div class="location">
+            <img
+              alt=""
+              src="@/assets/Iconecalendario.svg"
+              width="26"
+              height="26"
+            />
+            <span
+              >{{ dayOfWeek }} {{ formatDate(event.initialDate.toString()) }},
+              {{ event.startTime }}h às {{ event.endTime }}h</span
+            >
+          </div>
+          <div class="location">
+            <img alt="" :src="ageIcon" width="25" height="25" />
+            <span>{{ ageTextComputed }}</span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="description">
-      <MdPreview :modelValue="event.description" />
-    </div>
-    <div class="instagram">
-      <h2>Confira mais fotos no instagram</h2>
-      <div class="instagram_embed">
-        <iframe
-          :src="'https://www.instagram.com/p/' + instagramId + '/embed'"
-          width="100%"
-          height="100%"
-          frameborder="0"
-          scrolling="yes"
-          allowtransparency="true"
-        ></iframe>
+      <div class="description">
+        <MdPreview :modelValue="event.description" />
+      </div>
+      <div class="instagram">
+        <h2>Confira mais fotos no instagram</h2>
+        <div class="instagram_embed">
+          <iframe
+            :src="'https://www.instagram.com/p/' + instagramId + '/embed'"
+            width="100%"
+            height="100%"
+            frameborder="0"
+            scrolling="yes"
+            allowtransparency="true"
+          ></iframe>
+        </div>
+      </div>
+      <div class="footer">
+        <span class="foot">WIG 2024 © - Todos os direitos reservados</span>
       </div>
     </div>
-    <div class="footer">
-      <span class="foot">WIG 2024 © - Todos os direitos reservados</span>
+    <div
+      v-if="userStore.administrator && event.status === 'em análise'"
+      class="analise"
+    >
+      <Approval />
     </div>
   </div>
-</div>
 </template>
 
 <style scoped>
+.analise {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.answer {
+  font-weight: 700;
+}
+.admin {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.questionsadmin {
+  display: flex;
+  flex-direction: column;
+  color: black;
+  gap: 5px;
+}
 .foot {
   font-size: smaller;
   color: black;
@@ -241,6 +345,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   padding: 16px 16px 50px;
+  width: 100%;
 }
 .location {
   display: flex;
@@ -282,17 +387,6 @@ onMounted(async () => {
   display: none;
 }
 
-@media screen and (min-width: 400px) {
-  .data {
-    display: flex;
-  }
-
-
-  .nameEvent {
-    width: 75% !important;
-  }
-}
-
 .data .day {
   margin-top: 8px;
 }
@@ -303,7 +397,7 @@ onMounted(async () => {
   margin-top: 8px;
   font-size: 20px;
   height: 80px;
-  max-width: 90%;
+  max-width: 100%;
   text-align: center;
   justify-content: center;
   align-items: center;
@@ -314,6 +408,7 @@ onMounted(async () => {
 }
 .nameEvent {
   font-size: medium;
+  min-width: 75% !important;
   color: black;
   font-weight: 700;
   width: 100%;
@@ -359,25 +454,30 @@ onMounted(async () => {
     display: none;
   }
 
-  .sectiontitle{
+  .data {
+    display: flex;
+  }
+
+  .sectiontitle {
     justify-content: start;
   }
-.title{
-  align-items: start;
-  width: 100%;
-}
-.nameEvent{
-  padding-right: 475px;
-}
-.row{
-  justify-content: flex-start;
-}
-  .grandFather{
+  .title {
+    align-items: start;
+    width: 100%;
+  }
+  .nameEvent {
+    text-align: left;
+  }
+  .row {
+    justify-content: flex-start;
+  }
+  .grandFather {
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 0px 80px 0px 80px;
   }
-  .father{
+  .father {
     display: flex;
     flex-direction: column;
     max-width: 1280px;
@@ -398,15 +498,21 @@ onMounted(async () => {
   .infosWrapper {
     display: flex;
     flex-direction: row;
+    align-items: center;
     justify-content: space-between;
-    margin-top: 20px;
+    margin-top: 30px;
+    gap: 10px;
   }
 
+  .location {
+    padding: 0px 0px 0px 0px;
+  }
   .maps__infos {
     flex-direction: column-reverse;
   }
 
   .father {
+    padding: 0px 0px 0px 0px;
     padding-bottom: 0px;
   }
 }
