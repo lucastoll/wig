@@ -31,6 +31,47 @@ class EventController {
             }
         });
     }
+    static getEventsToApprove(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cityId = typeof req.query.cityId === "string" ? req.query.cityId : undefined;
+            const cityName = typeof req.query.cityName === "string" ? req.query.cityName : undefined;
+            if (!cityId && !cityName) {
+                res.status(400).json({
+                    error: "Você deve fornecer um cityId ou cityName",
+                });
+                return;
+            }
+            try {
+                const events = yield eventService_1.EventService.getEventsToApprove(cityId, cityName);
+                res.status(200).json(events);
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
+    static approveEvent(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const approvedEvent = yield eventService_1.EventService.approveEvent(req.params.id, req.body.approvalFeedback);
+                res.status(201).json(approvedEvent);
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
+    static rejectEvent(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const rejectedEvent = yield eventService_1.EventService.rejectEvent(req.params.id, req.body.approvalFeedback);
+                res.status(201).json(rejectedEvent);
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
     static getEventsRecomended(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const cityId = typeof req.query.cityId === "string" ? req.query.cityId : undefined;

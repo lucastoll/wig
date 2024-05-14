@@ -91,8 +91,9 @@ const ageIcon = computed(() => {
   }
 });
 
-watch(userStore, () => {
-  if (userStore.administrator) {
+watch([userStore, event], () => {
+  console.log(userStore.administrator);
+  if (userStore.administrator && event.value.id) {
     axios
       .post(
         `${import.meta.env.VITE_API_URL}/event/${
@@ -105,6 +106,7 @@ watch(userStore, () => {
       )
       .then((response) => {
         questions.value = response.data;
+        console.log(questions.value);
       })
       .catch((error) => {
         router.push({ name: "NotFound" });

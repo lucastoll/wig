@@ -22,7 +22,6 @@ const city_1 = require("../models/city");
 const sequelize_1 = require("sequelize");
 const getDistance_1 = __importDefault(require("../helpers/getDistance"));
 const sustainabilityQuestion_1 = require("../models/sustainabilityQuestion");
-const getCoordinates_1 = __importDefault(require("../helpers/getCoordinates"));
 class EventService {
     static getEvents(cityId, cityName) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -46,8 +45,68 @@ class EventService {
                         include: [{ model: city_1.City }],
                     },
                 ],
+                where: { status: "aprovado" },
             });
             return events;
+        });
+    }
+    static getEventsToApprove(cityId, cityName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let city;
+            if (cityId) {
+                city = yield city_1.City.findByPk(String(cityId));
+            }
+            else if (cityName) {
+                city = yield city_1.City.findOne({ where: { name: String(cityName) } });
+            }
+            if (!city) {
+                throw new customError_1.CustomError("Cidade não encontrada", 404);
+            }
+            const events = yield event_1.Event.findAll({
+                include: [
+                    { model: category_1.Category },
+                    { model: user_1.User, as: "organizer" },
+                    {
+                        model: location_1.Location,
+                        where: { cityId: city.id },
+                        include: [{ model: city_1.City }],
+                    },
+                ],
+                where: { status: "Em análise" },
+            });
+            return events;
+        });
+    }
+    static approveEvent(eventId, approvalFeedback) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const event = yield event_1.Event.findByPk(eventId);
+                if (!event) {
+                    throw new customError_1.CustomError("Evento não encontrado", 404);
+                }
+                event.status = "aprovado";
+                event.approvalFeedback = approvalFeedback;
+                yield event.save();
+            }
+            catch (error) {
+                throw new customError_1.CustomError("Erro ao aprovar o evento", 500);
+            }
+        });
+    }
+    static rejectEvent(eventId, approvalFeedback) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const event = yield event_1.Event.findByPk(eventId);
+                if (!event) {
+                    throw new customError_1.CustomError("Evento não encontrado", 404);
+                }
+                event.status = "recusado";
+                event.approvalFeedback = approvalFeedback;
+                yield event.save();
+            }
+            catch (error) {
+                throw new customError_1.CustomError("Erro ao aprovar o evento", 500);
+            }
         });
     }
     static getEventsByDate(cityId, cityName, searchBar) {
@@ -74,6 +133,7 @@ class EventService {
                 ],
                 where: {
                     finalDate: { [sequelize_1.Op.gte]: new Date() },
+                    status: "aprovado",
                 },
                 order: [["initialDate", "ASC"]],
                 limit: 10,
@@ -135,6 +195,7 @@ class EventService {
                         include: [{ model: city_1.City }],
                     },
                 ],
+                where: { status: "aprovado" },
             });
             const userCoordinates = {
                 latitude: user.coordlat,
@@ -202,6 +263,7 @@ class EventService {
                         include: [{ model: city_1.City }],
                     },
                 ],
+                where: { status: "aprovado" },
                 limit: 10,
             };
             if (searchBar) {
@@ -256,6 +318,7 @@ class EventService {
                         include: [{ model: city_1.City }],
                     },
                 ],
+                where: { status: "aprovado" },
                 limit: 10,
             };
             if (searchBar) {
@@ -311,7 +374,6 @@ class EventService {
                     const city = yield city_1.City.findOne({
                         where: { id: cityId },
                     });
-                    const { latitude, longitude } = yield (0, getCoordinates_1.default)(zipcode.toString());
                     if (!city) {
                         throw new customError_1.CustomError("Cidade não encontrada", 404);
                     }
@@ -320,8 +382,6 @@ class EventService {
                         zipcode,
                         maxCapacity,
                         cityId,
-                        coordlat: latitude,
-                        coordlon: longitude,
                     });
                 }
             }
@@ -346,10 +406,8 @@ class EventService {
                 ticketUrl,
             });
             yield newEvent.addCategories(categories);
-            if (questions) {
-                const sustainabilityQuestions = questions === null || questions === void 0 ? void 0 : questions.map((question) => (Object.assign(Object.assign({}, question), { eventId: newEvent.id })));
-                yield sustainabilityQuestion_1.SustainabilityQuestion.bulkCreate(sustainabilityQuestions);
-            }
+            const sustainabilityQuestions = questions.map((question) => (Object.assign(Object.assign({}, question), { eventId: newEvent.id })));
+            yield sustainabilityQuestion_1.SustainabilityQuestion.bulkCreate(sustainabilityQuestions);
             return newEvent;
         });
     }

@@ -73,6 +73,10 @@ Event.init({
         allowNull: false,
         defaultValue: "em análise",
     },
+    approvalFeedback: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
+    },
 }, {
     sequelize: db_1.default,
     modelName: "Event",

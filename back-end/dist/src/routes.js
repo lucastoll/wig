@@ -22,12 +22,15 @@ router.post("/location", locationController_1.LocationController.createLocation)
 router.get("/categories", categoryController_1.CategoryController.getCategories);
 router.post("/category", categoryController_1.CategoryController.createCategory);
 router.get("/events", eventController_1.EventController.getEvents);
+router.get("/events/approve", eventController_1.EventController.getEventsToApprove);
 router.get("/events/categories", eventController_1.EventController.getEventsByCategories);
 router.get("/events/distance", eventController_1.EventController.getEventsByDistance);
 router.get("/events/recommendation", eventController_1.EventController.getEventsRecomended);
 router.get("/events/date", eventController_1.EventController.getEventsByDate);
 router.post("/event", eventController_1.EventController.createEvent);
 router.get("/event/getId/:id", eventController_1.EventController.getEventById);
+router.put("/event/acceptEvent/:id", eventController_1.EventController.approveEvent);
+router.put("/event/rejectEvent/:id", eventController_1.EventController.rejectEvent);
 router.post("/events/organizer/:userId", verifyGoogleToken_1.verifyGoogleToken, eventController_1.EventController.getOrganizerEvents);
 router.post("/events/analysis", verifyGoogleToken_1.verifyGoogleToken, eventController_1.EventController.getAnalysisEvents);
 router.post("/event/:eventId/sustainabilityQuestions", verifyGoogleToken_1.verifyGoogleToken, sustainabilityQuestionController_1.SustainabilityQuestionController.getEventSustainabilityQuestions);
