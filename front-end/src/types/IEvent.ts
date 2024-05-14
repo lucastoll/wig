@@ -20,6 +20,13 @@ export interface IEvent {
   cityId: number;
   description: string;
   status?: string;
+  organizer?: {
+    id: string;
+    name: string;
+    email: string;
+    imageUrl: string;
+  };
+  approvalFeedback?: string;
   startTime: number;
   endTime: number;
   ticketUrl: string;
