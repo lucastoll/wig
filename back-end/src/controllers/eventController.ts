@@ -364,10 +364,8 @@ class EventController implements IEventController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const email = req.body.email;
-
     try {
-      const events = await this.eventService.getAnalysisEvents(email);
+      const events = await this.eventService.getAnalysisEvents();
       res.status(200).json(events);
     } catch (error) {
       next(error);

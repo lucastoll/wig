@@ -24,8 +24,6 @@ class SustainabilityQuestionController
     const eventId =
       typeof req.params.eventId === "string" ? req.params.eventId : undefined;
 
-    const email = req.body.email;
-
     if (!eventId) {
       res.status(400).json({
         error: "Você deve fornecer um eventId",
@@ -36,8 +34,7 @@ class SustainabilityQuestionController
     try {
       const sustainabilityQuestions =
         await this.sustainabilityQuestionService.getEventSustainabilityQuestions(
-          eventId,
-          email
+          eventId
         );
       res.status(200).json(sustainabilityQuestions);
     } catch (error) {

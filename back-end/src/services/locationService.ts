@@ -21,15 +21,11 @@ class LocationService implements ILocationService {
     return locations;
   }
 
-  async createLocation(
+  async checkExistingLocation(
     address: string,
     zipcode: string,
-    maxCapacity: number,
-    cityId: number,
-    name: string
-  ): Promise<Location> {
-    const { latitude, longitude } = await getCoordinates(zipcode);
-
+    cityId: number
+  ) {
     const existingLocation = await Location.findOne({
       where: { address, zipcode, cityId },
     });
@@ -40,6 +36,17 @@ class LocationService implements ILocationService {
         400
       );
     }
+  }
+
+  async createLocation(
+    address: string,
+    zipcode: string,
+    maxCapacity: number,
+    cityId: number,
+    name: string
+  ): Promise<Location> {
+    const { latitude, longitude } = await getCoordinates(zipcode);
+    await this.checkExistingLocation(address, zipcode, cityId);
 
     const newLocation = await Location.create({
       address,
@@ -53,6 +60,7 @@ class LocationService implements ILocationService {
 
     return newLocation;
   }
+
   catch() {
     throw new CustomError("Erro ao criar localização", 500);
   }

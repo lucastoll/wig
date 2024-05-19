@@ -63,14 +63,7 @@ class UserController implements IUserController {
     const { name, email, address, categoryIds, zipcode, googleToken } =
       req.body;
 
-    const fields = [
-      "name",
-      "email",
-      "address",
-      "zipcode",
-      "categoryIds",
-      "googleToken",
-    ];
+    const fields = ["name", "email", "address", "zipcode", "categoryIds"];
 
     for (let field of fields) {
       if (!req.body[field]) {
@@ -94,8 +87,7 @@ class UserController implements IUserController {
         email,
         address,
         categoryIds,
-        zipcode,
-        googleToken
+        zipcode
       );
       res.status(201).json(newUser);
     } catch (error) {

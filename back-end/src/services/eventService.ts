@@ -13,7 +13,7 @@ interface IEventService {
     cityId: string | undefined,
     cityName: string | undefined
   ): Promise<Event[]>;
-  getAnalysisEvents(email: string): Promise<Event[]>;
+  getAnalysisEvents(): Promise<Event[]>;
   getEventsToApprove(
     cityId: string | undefined,
     cityName: string | undefined
@@ -29,18 +29,18 @@ interface IEventService {
   getEventsRecomendation(
     cityId: string | undefined,
     cityName: string | undefined,
-    userId: string | undefined
+    userId: string
   ): Promise<Event[]>;
   getEventsByCategories(
     cityId: string | undefined,
     cityName: string | undefined,
-    userId: string | undefined,
+    userId: string,
     searchBar: string | undefined
   ): Promise<Event[]>;
   getEventsByDistance(
     cityId: string | undefined,
     cityName: string | undefined,
-    userId: string | undefined,
+    userId: string,
     searchBar: string | undefined
   ): Promise<Event[]>;
   createEvent(eventData: EventData): Promise<Event>;
@@ -57,10 +57,10 @@ type EventData = Event &
   };
 
 class EventService implements IEventService {
-  async getEvents(
+  async findCity(
     cityId: string | undefined,
     cityName: string | undefined
-  ): Promise<Event[]> {
+  ): Promise<City> {
     let city;
     if (cityId) {
       city = await City.findByPk(String(cityId));
@@ -72,6 +72,71 @@ class EventService implements IEventService {
       throw new CustomError("Cidade não encontrada", 404);
     }
 
+    return city;
+  }
+
+  async findUser(userId: string): Promise<User> {
+    const user = await User.findByPk(userId, {
+      include: [Category],
+    });
+
+    if (!user) {
+      throw new CustomError("Usuário não encontrado", 404);
+    }
+
+    return user;
+  }
+
+  calculateCategoryPoints(user: User, event: Event) {
+    let points = 0;
+
+    user.Categories.forEach((userCategory) => {
+      if (
+        event.Categories.some(
+          (eventCategory) => eventCategory.id === userCategory.id
+        )
+      ) {
+        points += 5;
+        console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
+      }
+    });
+
+    return points;
+  }
+
+  calculateDistancePoints(user: User, event: Event) {
+    const userCoordinates = {
+      latitude: user.coordlat,
+      longitude: user.coordlon,
+    };
+
+    const eventCoordinates = {
+      latitude: event.Location.coordlat,
+      longitude: event.Location.coordlon,
+    };
+
+    const distance = getDistance(userCoordinates, eventCoordinates);
+    let points = 0;
+
+    if (distance <= 1.0) {
+      points += 12;
+      console.log("\n\nEvento a menos de 1km +12 pontos");
+    } else if (distance <= 3.0) {
+      points += 8;
+      console.log("\n\nEvento a menos de 3km +8 pontos");
+    } else if (distance <= 5.0) {
+      points += 4;
+      console.log("\n\nEvento a menos de 5km +4 pontos");
+    }
+
+    return points;
+  }
+
+  async getEvents(
+    cityId: string | undefined,
+    cityName: string | undefined
+  ): Promise<Event[]> {
+    const city = await this.findCity(cityId, cityName);
     const events = await Event.findAll({
       include: [
         { model: Category },
@@ -92,17 +157,7 @@ class EventService implements IEventService {
     cityId: string | undefined,
     cityName: string | undefined
   ): Promise<Event[]> {
-    let city;
-    if (cityId) {
-      city = await City.findByPk(String(cityId));
-    } else if (cityName) {
-      city = await City.findOne({ where: { name: String(cityName) } });
-    }
-
-    if (!city) {
-      throw new CustomError("Cidade não encontrada", 404);
-    }
-
+    const city = await this.findCity(cityId, cityName);
     const events = await Event.findAll({
       include: [
         { model: Category },
@@ -152,17 +207,7 @@ class EventService implements IEventService {
     cityName: string | undefined,
     searchBar: string | undefined
   ): Promise<Event[]> {
-    let city;
-    if (cityId) {
-      city = await City.findByPk(String(cityId));
-    } else if (cityName) {
-      city = await City.findOne({ where: { name: String(cityName) } });
-    }
-
-    if (!city) {
-      throw new CustomError("Cidade não encontrada", 404);
-    }
-
+    const city = await this.findCity(cityId, cityName);
     let eventsQuery: FindOptions = {
       include: [
         { model: Category },
@@ -212,30 +257,10 @@ class EventService implements IEventService {
   async getEventsRecomendation(
     cityId: string | undefined,
     cityName: string | undefined,
-    userId: string | undefined
+    userId: string
   ): Promise<Event[]> {
-    let city;
-    if (cityId) {
-      city = await City.findByPk(String(cityId));
-    } else if (cityName) {
-      city = await City.findOne({ where: { name: String(cityName) } });
-    }
-    if (!city) {
-      throw new CustomError("Cidade não encontrada", 404);
-    }
-
-    const user = await User.findByPk(userId, {
-      include: [
-        {
-          model: Category,
-          as: "Categories",
-        },
-      ],
-    });
-
-    if (!user) {
-      throw new CustomError("Usuário não encontrado", 404);
-    }
+    const city = await this.findCity(cityId, cityName);
+    const user = await this.findUser(userId);
 
     const events = await Event.findAll({
       include: [
@@ -250,37 +275,10 @@ class EventService implements IEventService {
       where: { status: "aprovado" },
     });
 
-    const userCoordinates = {
-      latitude: user.coordlat,
-      longitude: user.coordlon,
-    };
-
     const eventsWithRecommendations = events.map(async (event) => {
-      const eventCoordinates = {
-        latitude: event.Location.coordlat,
-        longitude: event.Location.coordlon,
-      };
-      const distance = getDistance(userCoordinates, eventCoordinates);
       let recommendationPoints = 0;
-
-      if (distance <= 1.0) {
-        recommendationPoints += 12;
-      } else if (distance <= 3.0) {
-        recommendationPoints += 8;
-      } else if (distance <= 5.0) {
-        recommendationPoints += 4;
-      }
-
-      user.Categories.forEach((userCategory) => {
-        if (
-          event.Categories.some(
-            (eventCategory) => eventCategory.id === userCategory.id
-          )
-        ) {
-          recommendationPoints += 5;
-          console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
-        }
-      });
+      recommendationPoints += this.calculateDistancePoints(user, event);
+      recommendationPoints += this.calculateCategoryPoints(user, event);
 
       return {
         ...event.get({ plain: true }),
@@ -299,32 +297,12 @@ class EventService implements IEventService {
   async getEventsByCategories(
     cityId: string | undefined,
     cityName: string | undefined,
-    userId: string | undefined,
+    userId: string,
     searchBar: string | undefined
   ): Promise<Event[]> {
-    let city;
-    if (cityId) {
-      city = await City.findByPk(String(cityId));
-    } else if (cityName) {
-      city = await City.findOne({ where: { name: String(cityName) } });
-    }
-    if (!city) {
-      throw new CustomError("Cidade não encontrada", 404);
-    }
-
-    const user = await User.findByPk(userId, {
-      include: [
-        {
-          model: Category,
-          as: "Categories",
-        },
-      ],
-    });
-
-    if (!user) {
-      throw new CustomError("Usuário não encontrado", 404);
-    }
-
+    const city = await this.findCity(cityId, cityName);
+    const user = await this.findUser(userId);
+    console.log(user);
     let eventsQuery: FindOptions = {
       include: [
         { model: Category },
@@ -347,20 +325,8 @@ class EventService implements IEventService {
     }
 
     const events = await Event.findAll(eventsQuery);
-
     const eventsWithRecommendations = events.map(async (event) => {
-      let recommendationPoints = 0;
-
-      user.Categories.forEach((userCategory) => {
-        if (
-          event.Categories.some(
-            (eventCategory) => eventCategory.id === userCategory.id
-          )
-        ) {
-          recommendationPoints += 5;
-          console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
-        }
-      });
+      let recommendationPoints = this.calculateCategoryPoints(user, event);
 
       return {
         ...event.get({ plain: true }),
@@ -379,31 +345,11 @@ class EventService implements IEventService {
   async getEventsByDistance(
     cityId: string | undefined,
     cityName: string | undefined,
-    userId: string | undefined,
+    userId: string,
     searchBar: string | undefined
   ): Promise<Event[]> {
-    let city;
-    if (cityId) {
-      city = await City.findByPk(String(cityId));
-    } else if (cityName) {
-      city = await City.findOne({ where: { name: String(cityName) } });
-    }
-    if (!city) {
-      throw new CustomError("Cidade não encontrada", 404);
-    }
-
-    const user = await User.findByPk(userId, {
-      include: [
-        {
-          model: Category,
-          as: "Categories",
-        },
-      ],
-    });
-
-    if (!user) {
-      throw new CustomError("Usuário não encontrado", 404);
-    }
+    const city = await this.findCity(cityId, cityName);
+    const user = await this.findUser(userId);
 
     let eventsQuery: FindOptions = {
       include: [
@@ -477,10 +423,7 @@ class EventService implements IEventService {
       questions,
     } = eventData;
 
-    const organizer = await User.findByPk(organizerId);
-    if (!organizer) {
-      throw new CustomError("Organizador não encontrado", 404);
-    }
+    await this.findUser(organizerId.toString());
 
     const categories = await Category.findAll({ where: { id: categoryIds } });
     if (categories.length !== categoryIds.length) {
@@ -558,10 +501,7 @@ class EventService implements IEventService {
   }
 
   async getOrganizerEvents(userId: string, email: string): Promise<Event[]> {
-    const user = await User.findByPk(userId);
-    if (!user) {
-      throw new CustomError("Usuário não encontrado", 404);
-    }
+    const user = await this.findUser(userId);
 
     if (user.email !== email) {
       throw new CustomError("Usuário não autorizado", 401);
@@ -579,13 +519,7 @@ class EventService implements IEventService {
     return events;
   }
 
-  async getAnalysisEvents(email: string): Promise<Event[]> {
-    const user = await User.findOne({ where: { email } });
-
-    if (user?.administrator === false) {
-      throw new CustomError("Usuário não autorizado", 401);
-    }
-
+  async getAnalysisEvents(): Promise<Event[]> {
     const events = await Event.findAll({
       where: { status: "em análise" },
       include: [

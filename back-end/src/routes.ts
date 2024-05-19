@@ -6,6 +6,7 @@ import { ILocationController } from "./controllers/locationController";
 import { ISustainabilityQuestionController } from "./controllers/sustainabilityQuestionController";
 import { IUserController } from "./controllers/userController";
 import { verifyGoogleToken } from "./middleware/verifyGoogleToken";
+import { checkAdminByEmail } from "./middleware/checkAdminByEmail";
 
 class Routes {
   private router = express.Router();
@@ -85,13 +86,17 @@ class Routes {
       (req, res, next) =>
         this.eventController.getOrganizerEvents(req, res, next)
     );
-    this.router.post("/events/analysis", verifyGoogleToken, (req, res, next) =>
-      this.eventController.getAnalysisEvents(req, res, next)
+    this.router.post(
+      "/events/analysis",
+      verifyGoogleToken,
+      checkAdminByEmail,
+      (req, res, next) => this.eventController.getAnalysisEvents(req, res, next)
     );
     // Sustainability Questions
     this.router.post(
       "/event/:eventId/sustainabilityQuestions",
       verifyGoogleToken,
+      checkAdminByEmail,
       (req, res, next) =>
         this.sustainabilityQuestionController.getEventSustainabilityQuestions(
           req,
