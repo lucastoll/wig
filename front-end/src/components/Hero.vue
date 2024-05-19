@@ -1,15 +1,7 @@
 <template>
   <div id="app">
-    <div
-      @click="goToEvent(events[0])"
-      v-if="events.length > 0"
-      class="main-event"
-    >
-      <img
-        :src="imageSrc"
-        :alt="'Event Image ' + events[0].name"
-        class="main-image"
-      />
+    <div @click="goToEvent(events[0])" v-if="events.length > 0" class="main-event">
+      <img :src="imageSrc" :alt="'Event Image ' + events[0].name" class="main-image" />
       <div class="details">
         <img src="@/assets/Calendar.svg" alt="Calendar Icon" />
         <div class="event-date">
@@ -22,55 +14,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
-import axios from "axios";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import type { IEvent } from "@/types/IEvent";
 import goToEvent from "@/helpers/goToEvent";
 
 const props = defineProps<{
-  endpoint: string;
+  events: IEvent[];
 }>();
 
-watch(props, () => {
-  fetchEvents();
-});
-
-const events = ref<IEvent[]>([]);
 const windowWidth = ref(window.innerWidth);
 
 const imageSrc = computed(() => {
-  return windowWidth.value < 768
-    ? events.value[0]?.imageMobile
-    : events.value[0]?.imageDesktop;
+  return windowWidth.value < 768 ? props.events[0]?.imageMobile : props.events[0]?.imageDesktop;
 });
 
 const handleResize = () => {
   windowWidth.value = window.innerWidth;
 };
 
-const fetchEvents = async () => {
-  try {
-    const response = await axios.get(props.endpoint);
-    events.value = response.data;
-  } catch (error) {
-    console.error("Erro ao buscar eventos:", error);
-  }
-};
-
-const formatDate = (dateString: string) => {
-  const eventDate = new Date(dateString);
-  return eventDate.toLocaleDateString("pt-BR");
-};
-
 onMounted(() => {
-  fetchEvents();
   window.addEventListener("resize", handleResize);
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener("resize", handleResize);
 });
+
+const formatDate = (dateString: string) => {
+  const eventDate = new Date(dateString);
+  return eventDate.toLocaleDateString("pt-BR");
+};
 </script>
+
+
 <style scoped>
 .main-event {
   position: relative;

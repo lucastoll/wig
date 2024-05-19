@@ -3,45 +3,23 @@
     <div class="event-list-container">
       <h2 class="title">{{ title }}</h2>
       <div class="events-wrapper" ref="eventsWrapper">
-        <div
-          class="arrow-left-container"
-          v-if="showLeftArrow"
-          @click="scrollLeft"
-        >
+        <div class="arrow-left-container" v-if="showLeftArrow" @click="scrollLeft">
           <div class="arrow-click-area">&#10094;</div>
         </div>
-        <div
-          @click="goToEvent(event)"
-          class="event-card"
-          v-for="(event, index) in events"
-          :key="index"
-        >
+        <div @click="goToEvent(event)" class="event-card" v-for="(event, index) in events" :key="index">
           <img :src="event.imageMobile" alt="Event Image" />
           <div class="event-details">
-            <div
-              class="event-date"
-              :style="{
-                backgroundColor: eventDateBackgroundColor(
-                  event.initialDate.toString()
-                ),
-              }"
-            >
-              {{ formatDate(event.initialDate.toString()) }}
+            <div class="event-date" :style="{ backgroundColor: eventDateBackgroundColor(event.finalDate.toString()) }">
+              {{ formatDate(event.finalDate.toString()) }}
             </div>
             <div class="event-info">
               <div class="event-name">{{ event?.name }}</div>
-              <div class="event-category">
-                {{ event?.Categories ? event?.Categories[0].name : "" }}
-              </div>
+              <div class="event-category">{{ event?.Categories ? event?.Categories[0].name : "" }}</div>
               <div class="event-location">{{ event?.Location?.address }}</div>
             </div>
           </div>
         </div>
-        <div
-          class="arrow-right-container"
-          v-if="showRightArrow"
-          @click="scrollRight"
-        >
+        <div class="arrow-right-container" v-if="showRightArrow" @click="scrollRight">
           <div class="arrow-click-area">&#10095;</div>
         </div>
       </div>
@@ -49,116 +27,79 @@
   </div>
 </template>
 
-<script lang="ts">
-import axios from "axios";
-import { useRouter } from "vue-router";
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import type { IEvent } from "@/types/IEvent";
 import goToEvent from "@/helpers/goToEvent";
 
-export default {
-  props: {
-    endpoint: {
-      type: String,
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      events: [] as IEvent[],
-      showLeftArrow: false,
-      showRightArrow: false,
-    };
-  },
-  mounted() {
-    this.checkScroll();
-    this.fetchEvents();
-    window.addEventListener("resize", this.checkScroll);
-    const router = useRouter();
-  },
-  beforeDestroy() {
-    window.removeEventListener("resize", this.checkScroll);
-  },
-  watch: {
-    endpoint: {
-      handler: "fetchEvents",
-      immediate: true,
-    },
-  },
-  methods: {
-    goToEvent(event: IEvent) {
-      goToEvent(event);
-    },
-    async fetchEvents() {
-      try {
-        const response = await axios.get(this.endpoint);
-        this.events = response.data;
-      } catch (error) {
-        console.error("Erro ao buscar eventos:", error);
-      }
-    },
-    checkScroll() {
-      const wrapper = this.$refs.eventsWrapper as HTMLElement;
-      const scrollWidth = wrapper.scrollWidth;
-      const clientWidth = wrapper.clientWidth;
-      const scrollLeft = wrapper.scrollLeft;
-      const maxScroll = scrollWidth - clientWidth;
-      const isMobile = window.innerWidth < 768;
+const props = defineProps<{
+  events: IEvent[];
+  title: string;
+}>();
 
-      this.showLeftArrow = !isMobile && scrollLeft > 0;
-      this.showRightArrow =
-        !isMobile &&
-        (wrapper.children[wrapper.children.length - 2] as HTMLElement)
-          ?.offsetLeft +
-          (wrapper.children[wrapper.children.length - 2] as HTMLElement)
-            ?.clientWidth >
-          clientWidth &&
-        scrollLeft < maxScroll;
-    },
-    scrollLeft() {
-      const wrapper = this.$refs.eventsWrapper as HTMLElement;
-      wrapper.scrollBy({ left: -150, behavior: "smooth" });
-      this.checkScroll();
-    },
-    scrollRight() {
-      const wrapper = this.$refs.eventsWrapper as HTMLElement;
-      wrapper.scrollBy({ left: 150, behavior: "smooth" });
-      this.checkScroll();
-    },
-    formatDate(dateString: string) {
-      const eventDate = new Date(dateString);
-      const today = new Date();
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
+const showLeftArrow = ref(false);
+const showRightArrow = ref(false);
 
-      if (eventDate.toDateString() === today.toDateString()) {
-        return "Hoje";
-      } else if (eventDate.toDateString() === tomorrow.toDateString()) {
-        return "Amanhã";
-      } else {
-        return eventDate.toLocaleDateString("pt-BR");
-      }
-    },
-    eventDateBackgroundColor(dateString: string) {
-      const eventDate = new Date(dateString);
-      const today = new Date();
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
+const checkScroll = () => {
+  const wrapper = document.querySelector('.events-wrapper') as HTMLElement;
+  const scrollWidth = wrapper.scrollWidth;
+  const clientWidth = wrapper.clientWidth;
+  const scrollLeft = wrapper.scrollLeft;
+  const maxScroll = scrollWidth - clientWidth;
+  const isMobile = window.innerWidth < 768;
 
-      if (
-        eventDate.toDateString() === today.toDateString() ||
-        eventDate.toDateString() === tomorrow.toDateString()
-      ) {
-        return "green";
-      } else {
-        return "#505050";
-      }
-    },
-  },
+  showLeftArrow.value = !isMobile && scrollLeft > 0;
+  showRightArrow.value = !isMobile && (wrapper.children[wrapper.children.length - 2] as HTMLElement)?.offsetLeft + (wrapper.children[wrapper.children.length - 2] as HTMLElement)?.clientWidth > clientWidth && scrollLeft < maxScroll;
 };
+
+const scrollLeft = () => {
+  const wrapper = document.querySelector('.events-wrapper') as HTMLElement;
+  wrapper.scrollBy({ left: -150, behavior: 'smooth' });
+  checkScroll();
+};
+
+const scrollRight = () => {
+  const wrapper = document.querySelector('.events-wrapper') as HTMLElement;
+  wrapper.scrollBy({ left: 150, behavior: 'smooth' });
+  checkScroll();
+};
+
+const formatDate = (dateString: string) => {
+  const eventDate = new Date(dateString);
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  if (eventDate.toDateString() === today.toDateString()) {
+    return 'Hoje';
+  } else if (eventDate.toDateString() === tomorrow.toDateString()) {
+    return 'Amanhã';
+  } else {
+    return eventDate.toLocaleDateString('pt-BR');
+  }
+};
+
+const eventDateBackgroundColor = (dateString: string) => {
+  const eventDate = new Date(dateString);
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  if (eventDate.toDateString() === today.toDateString() || eventDate.toDateString() === tomorrow.toDateString()) {
+    return 'green';
+  } else {
+    return '#505050';
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('resize', checkScroll);
+  checkScroll();
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', checkScroll);
+});
 </script>
 
 <style scoped>
