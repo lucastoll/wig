@@ -1,17 +1,37 @@
 import { Request, Response, NextFunction } from "express";
-import { UserService } from "../services/userService";
+import { IUserService } from "../services/userService";
 
-class UserController {
-  static async getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
+interface IUserController {
+  getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void>;
+  getUserByEmail(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
+  createUser(req: Request, res: Response, next: NextFunction): Promise<void>;
+}
+
+class UserController implements IUserController {
+  constructor(private userService: IUserService) {}
+
+  async getAllUsers(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      const users = await UserService.getAllUsers();
+      const users = await this.userService.getAllUsers();
       res.json(users);
     } catch (error) {
       next(error);
     }
   }
 
-  static async getUserByEmail(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getUserByEmail(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     const { email } = req.params;
 
     if (!email) {
@@ -22,7 +42,7 @@ class UserController {
     }
 
     try {
-      const user = await UserService.getUserByEmail(email);
+      const user = await this.userService.getUserByEmail(email);
 
       if (!user) {
         res.status(404).json({ error: "Usuário não encontrado" });
@@ -35,8 +55,13 @@ class UserController {
     }
   }
 
-  static async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { name, email, address, categoryIds, zipcode, googleToken } = req.body;
+  async createUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const { name, email, address, categoryIds, zipcode, googleToken } =
+      req.body;
 
     const fields = [
       "name",
@@ -44,9 +69,9 @@ class UserController {
       "address",
       "zipcode",
       "categoryIds",
-      "googleToken"
+      "googleToken",
     ];
-    
+
     for (let field of fields) {
       if (!req.body[field]) {
         res.status(400).json({
@@ -55,7 +80,7 @@ class UserController {
         return;
       }
     }
-    
+
     if (!Array.isArray(req.body.categoryIds)) {
       res.status(400).json({
         error: "O campo categoryIds deve ser um array",
@@ -64,7 +89,14 @@ class UserController {
     }
 
     try {
-      const newUser = await UserService.createUser(name, email, address, categoryIds, zipcode, googleToken);
+      const newUser = await this.userService.createUser(
+        name,
+        email,
+        address,
+        categoryIds,
+        zipcode,
+        googleToken
+      );
       res.status(201).json(newUser);
     } catch (error) {
       next(error);
@@ -72,4 +104,4 @@ class UserController {
   }
 }
 
-export { UserController };
+export { UserController, IUserController };

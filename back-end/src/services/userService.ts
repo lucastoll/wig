@@ -21,13 +21,26 @@ async function verify(token: string) {
   }
 }
 
-class UserService {
-  static async getAllUsers(): Promise<User[]> {
+interface IUserService {
+  getAllUsers(): Promise<User[]>;
+  getUserByEmail(email: string): Promise<User | null>;
+  createUser(
+    name: string,
+    email: string,
+    address: string,
+    categoryIds: number[],
+    zipcode: string,
+    googleToken: string
+  ): Promise<User>;
+}
+
+class UserService implements IUserService {
+  async getAllUsers(): Promise<User[]> {
     const users = await User.findAll();
     return users;
   }
 
-  static async getUserByEmail(email: string): Promise<User | null> {
+  async getUserByEmail(email: string): Promise<User | null> {
     const user = await User.findOne({
       where: { email },
       include: Category,
@@ -35,14 +48,13 @@ class UserService {
     return user;
   }
 
-  static async createUser(
+  async createUser(
     name: string,
     email: string,
     address: string,
     categoryIds: number[],
     zipcode: string,
-    googleToken: string,
-    administator: boolean = false
+    googleToken: string
   ): Promise<User> {
     const googleUser = await verify(googleToken);
     if (googleUser.email !== email) {
@@ -77,7 +89,6 @@ class UserService {
       zipcode,
       coordlat: latitude,
       coordlon: longitude,
-      administator
     });
 
     await newUser.addCategories(categories);
@@ -88,4 +99,4 @@ class UserService {
   }
 }
 
-export { UserService };
+export { UserService, IUserService };

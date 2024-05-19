@@ -8,6 +8,45 @@ import { FindOptions, Op, WhereOptions, literal } from "sequelize";
 import getDistance from "../helpers/getDistance";
 import { SustainabilityQuestion } from "../models/sustainabilityQuestion";
 
+interface IEventService {
+  getEvents(
+    cityId: string | undefined,
+    cityName: string | undefined
+  ): Promise<Event[]>;
+  getAnalysisEvents(email: string): Promise<Event[]>;
+  getEventsToApprove(
+    cityId: string | undefined,
+    cityName: string | undefined
+  ): Promise<Event[]>;
+  approveEvent(eventId: string, approvalFeedback: string): Promise<void>;
+  rejectEvent(eventId: string, approvalFeedback: string): Promise<void>;
+  getEventsByDate(
+    cityId: string | undefined,
+    cityName: string | undefined,
+    searchBar: string | undefined
+  ): Promise<Event[]>;
+  getEventById(eventId: string): Promise<Event | null>;
+  getEventsRecomendation(
+    cityId: string | undefined,
+    cityName: string | undefined,
+    userId: string | undefined
+  ): Promise<Event[]>;
+  getEventsByCategories(
+    cityId: string | undefined,
+    cityName: string | undefined,
+    userId: string | undefined,
+    searchBar: string | undefined
+  ): Promise<Event[]>;
+  getEventsByDistance(
+    cityId: string | undefined,
+    cityName: string | undefined,
+    userId: string | undefined,
+    searchBar: string | undefined
+  ): Promise<Event[]>;
+  createEvent(eventData: EventData): Promise<Event>;
+  getOrganizerEvents(userId: string, email: string): Promise<Event[]>;
+}
+
 type EventData = Event &
   Partial<Location> & {
     categoryIds: number[];
@@ -17,8 +56,8 @@ type EventData = Event &
     questions: { question: string; answer: string }[];
   };
 
-class EventService {
-  static async getEvents(
+class EventService implements IEventService {
+  async getEvents(
     cityId: string | undefined,
     cityName: string | undefined
   ): Promise<Event[]> {
@@ -49,7 +88,7 @@ class EventService {
     return events;
   }
 
-  static async getEventsToApprove(
+  async getEventsToApprove(
     cityId: string | undefined,
     cityName: string | undefined
   ): Promise<Event[]> {
@@ -80,10 +119,7 @@ class EventService {
     return events;
   }
 
-  static async approveEvent(
-    eventId: string,
-    approvalFeedback: string
-  ): Promise<void> {
+  async approveEvent(eventId: string, approvalFeedback: string): Promise<void> {
     try {
       const event = await Event.findByPk(eventId);
       if (!event) {
@@ -97,10 +133,7 @@ class EventService {
     }
   }
 
-  static async rejectEvent(
-    eventId: string,
-    approvalFeedback: string
-  ): Promise<void> {
+  async rejectEvent(eventId: string, approvalFeedback: string): Promise<void> {
     try {
       const event = await Event.findByPk(eventId);
       if (!event) {
@@ -114,7 +147,7 @@ class EventService {
     }
   }
 
-  static async getEventsByDate(
+  async getEventsByDate(
     cityId: string | undefined,
     cityName: string | undefined,
     searchBar: string | undefined
@@ -160,7 +193,7 @@ class EventService {
     return events;
   }
 
-  static async getEventById(eventId: string): Promise<Event | null> {
+  async getEventById(eventId: string): Promise<Event | null> {
     try {
       const event = await Event.findByPk(eventId, {
         include: [
@@ -176,7 +209,7 @@ class EventService {
     }
   }
 
-  static async getEventsRecomendation(
+  async getEventsRecomendation(
     cityId: string | undefined,
     cityName: string | undefined,
     userId: string | undefined
@@ -263,7 +296,7 @@ class EventService {
     return resolvedEvents;
   }
 
-  static async getEventsByCategories(
+  async getEventsByCategories(
     cityId: string | undefined,
     cityName: string | undefined,
     userId: string | undefined,
@@ -343,7 +376,7 @@ class EventService {
     return resolvedEvents;
   }
 
-  static async getEventsByDistance(
+  async getEventsByDistance(
     cityId: string | undefined,
     cityName: string | undefined,
     userId: string | undefined,
@@ -419,7 +452,7 @@ class EventService {
     return resolvedEvents.map((event) => event.event);
   }
 
-  static async createEvent(eventData: EventData): Promise<Event> {
+  async createEvent(eventData: EventData): Promise<Event> {
     const {
       name,
       imageMobile,
@@ -524,10 +557,7 @@ class EventService {
     return newEvent;
   }
 
-  static async getOrganizerEvents(
-    userId: string,
-    email: string
-  ): Promise<Event[]> {
+  async getOrganizerEvents(userId: string, email: string): Promise<Event[]> {
     const user = await User.findByPk(userId);
     if (!user) {
       throw new CustomError("Usuário não encontrado", 404);
@@ -549,7 +579,7 @@ class EventService {
     return events;
   }
 
-  static async getAnalysisEvents(email: string): Promise<Event[]> {
+  async getAnalysisEvents(email: string): Promise<Event[]> {
     const user = await User.findOne({ where: { email } });
 
     if (user?.administrator === false) {
@@ -570,4 +600,4 @@ class EventService {
   }
 }
 
-export { EventService };
+export { EventService, IEventService };

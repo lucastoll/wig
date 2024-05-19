@@ -1,15 +1,33 @@
 require("dotenv").config();
 import cors from "cors";
 import express from "express";
-import routes from "./src/routes";
+import { Routes } from "./src/routes";
 import db from "./src/db";
 import "./src/associations";
 import { errorHandler } from "./src/middleware/errorHandler";
+import {
+  createCategoryController,
+  createCityController,
+  createEventController,
+  createLocationController,
+  createSustainabilityQuestionController,
+  createUserController,
+} from "./src/controllers/controllerFactory";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(routes);
+
+const routes = new Routes(
+  createCategoryController(),
+  createCityController(),
+  createEventController(),
+  createLocationController(),
+  createSustainabilityQuestionController(),
+  createUserController()
+);
+app.use(routes.getRouter());
+
 app.use(errorHandler);
 
 db.sync().then(() =>

@@ -1,22 +1,37 @@
 import { Request, Response, NextFunction } from "express";
-import { LocationService } from "../services/locationService";
+import { ILocationService } from "../services/locationService";
 import { ValidationError } from "sequelize";
 
-class LocationController {
-  static async getAllLocations(
+interface ILocationController {
+  getAllLocations(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
+  createLocation(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
+}
+
+class LocationController implements ILocationController {
+  constructor(private locationService: ILocationService) {}
+
+  async getAllLocations(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const locations = await LocationService.getAllLocations();
+      const locations = await this.locationService.getAllLocations();
       res.json(locations);
     } catch (error) {
       next(error);
     }
   }
 
-  static async createLocation(
+  async createLocation(
     req: Request,
     res: Response,
     next: NextFunction
@@ -32,7 +47,7 @@ class LocationController {
     }
 
     try {
-      const newLocation = await LocationService.createLocation(
+      const newLocation = await this.locationService.createLocation(
         address,
         zipcode,
         maxCapacity,
@@ -48,4 +63,4 @@ class LocationController {
   }
 }
 
-export { LocationController };
+export { LocationController, ILocationController };

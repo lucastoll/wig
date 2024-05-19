@@ -2,15 +2,26 @@ import { CustomError } from "../errors/customError";
 import getCoordinates from "../helpers/getCoordinates";
 import { Location } from "../models/location";
 
-class LocationService {
-  static async getAllLocations(): Promise<Location[]> {
+interface ILocationService {
+  getAllLocations(): Promise<Location[]>;
+  createLocation(
+    address: string,
+    zipcode: string,
+    maxCapacity: number,
+    cityId: number,
+    name: string
+  ): Promise<Location>;
+}
+
+class LocationService implements ILocationService {
+  async getAllLocations(): Promise<Location[]> {
     const locations = await Location.findAll({
       include: "City",
     });
     return locations;
   }
 
-  static async createLocation(
+  async createLocation(
     address: string,
     zipcode: string,
     maxCapacity: number,
@@ -47,4 +58,4 @@ class LocationService {
   }
 }
 
-export { LocationService };
+export { LocationService, ILocationService };

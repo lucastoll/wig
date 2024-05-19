@@ -1,8 +1,22 @@
 import { NextFunction, Request, Response } from "express";
-import { SustainabilityQuestionService } from "../services/sustainabilityQuestionService";
+import { ISustainabilityQuestionService } from "../services/sustainabilityQuestionService";
 
-class SustainabilityQuestionController {
-  static async getEventSustainabilityQuestions(
+interface ISustainabilityQuestionController {
+  getEventSustainabilityQuestions(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
+}
+
+class SustainabilityQuestionController
+  implements ISustainabilityQuestionController
+{
+  constructor(
+    private sustainabilityQuestionService: ISustainabilityQuestionService
+  ) {}
+
+  async getEventSustainabilityQuestions(
     req: Request,
     res: Response,
     next: NextFunction
@@ -21,7 +35,7 @@ class SustainabilityQuestionController {
 
     try {
       const sustainabilityQuestions =
-        await SustainabilityQuestionService.getEventSustainabilityQuestions(
+        await this.sustainabilityQuestionService.getEventSustainabilityQuestions(
           eventId,
           email
         );
@@ -32,4 +46,4 @@ class SustainabilityQuestionController {
   }
 }
 
-export { SustainabilityQuestionController };
+export { SustainabilityQuestionController, ISustainabilityQuestionController };

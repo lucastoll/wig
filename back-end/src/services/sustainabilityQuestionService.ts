@@ -2,8 +2,18 @@ import { CustomError } from "../errors/customError";
 import { SustainabilityQuestion } from "../models/sustainabilityQuestion";
 import { User } from "../models/user";
 
-class SustainabilityQuestionService {
-  static async getEventSustainabilityQuestions(eventId: string, email: string) {
+interface ISustainabilityQuestionService {
+  getEventSustainabilityQuestions(
+    eventId: string,
+    email: string
+  ): Promise<SustainabilityQuestion[]>;
+}
+
+class SustainabilityQuestionService implements ISustainabilityQuestionService {
+  async getEventSustainabilityQuestions(
+    eventId: string,
+    email: string
+  ): Promise<SustainabilityQuestion[]> {
     const user = await User.findOne({ where: { email } });
 
     if (user?.administrator === false) {
@@ -17,4 +27,4 @@ class SustainabilityQuestionService {
   }
 }
 
-export { SustainabilityQuestionService };
+export { SustainabilityQuestionService, ISustainabilityQuestionService };

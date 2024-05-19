@@ -1,17 +1,40 @@
 import { Request, Response, NextFunction } from "express";
-import { CategoryService } from "../services/categoryService";
+import { ICategoryService } from "../services/categoryService";
 
-class CategoryController {
-  static async getCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
+interface ICategoryController {
+  getCategories(req: Request, res: Response, next: NextFunction): Promise<void>;
+  createCategory(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
+}
+
+class CategoryController implements ICategoryController {
+  private categoryService: ICategoryService;
+
+  constructor(categoryService: ICategoryService) {
+    this.categoryService = categoryService;
+  }
+
+  async getCategories(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      const categories = await CategoryService.getCategories();
+      const categories = await this.categoryService.getCategories();
       res.status(200).json(categories);
     } catch (error) {
       next(error);
     }
   }
 
-  static async createCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async createCategory(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     const { name } = req.body;
 
     if (!name) {
@@ -22,7 +45,7 @@ class CategoryController {
     }
 
     try {
-      const newCategory = await CategoryService.createCategory(name);
+      const newCategory = await this.categoryService.createCategory(name);
       res.status(201).json(newCategory);
     } catch (error) {
       next(error);
@@ -30,4 +53,4 @@ class CategoryController {
   }
 }
 
-export { CategoryController };
+export { CategoryController, ICategoryController };
