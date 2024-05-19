@@ -1,5 +1,5 @@
 <template>
-  <div v-if="loading">Carregando...</div>
+  <div v-if="loading"><LogoLoading /></div>
   <div v-else>
     <Hero :events="heroEvents" />
     <EventList :events="eventListEvents" title="Eventos recomendados" />
@@ -14,6 +14,7 @@ import axios from "axios";
 import Footer from "../components/Footer.vue";
 import Hero from "../components/Hero.vue";
 import EventList from "../components/EventList.vue";
+import LogoLoading from "@/components/LogoLoading.vue";
 import { cityStore, userStore } from "@/store";
 
 const heroEndpoint = computed(() => `${import.meta.env.VITE_API_URL}/events?cityId=${cityStore.id}`);
