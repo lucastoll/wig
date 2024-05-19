@@ -5,6 +5,7 @@ import { IEventController } from "./controllers/eventController";
 import { ILocationController } from "./controllers/locationController";
 import { ISustainabilityQuestionController } from "./controllers/sustainabilityQuestionController";
 import { IUserController } from "./controllers/userController";
+import { verifyGoogleToken } from "./middleware/verifyGoogleToken";
 
 class Routes {
   private router = express.Router();
@@ -78,12 +79,19 @@ class Routes {
     this.router.put("/event/rejectEvent/:id", (req, res, next) =>
       this.eventController.rejectEvent(req, res, next)
     );
-    this.router.post("/events/analysis", (req, res, next) =>
+    this.router.post(
+      "/events/organizer/:userId",
+      verifyGoogleToken,
+      (req, res, next) =>
+        this.eventController.getOrganizerEvents(req, res, next)
+    );
+    this.router.post("/events/analysis", verifyGoogleToken, (req, res, next) =>
       this.eventController.getAnalysisEvents(req, res, next)
     );
     // Sustainability Questions
     this.router.post(
       "/event/:eventId/sustainabilityQuestions",
+      verifyGoogleToken,
       (req, res, next) =>
         this.sustainabilityQuestionController.getEventSustainabilityQuestions(
           req,
@@ -105,7 +113,7 @@ class Routes {
     this.router.get("/user/:email", (req, res, next) =>
       this.userController.getUserByEmail(req, res, next)
     );
-    this.router.post("/user", (req, res, next) =>
+    this.router.post("/user", verifyGoogleToken, (req, res, next) =>
       this.userController.createUser(req, res, next)
     );
   }
