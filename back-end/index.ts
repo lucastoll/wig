@@ -17,7 +17,7 @@ db.sync().then(() =>
 );
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("Hello World! v2");
 });
 
 if (process.env.NODE_ENV === "development") {
