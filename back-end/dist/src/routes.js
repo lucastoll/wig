@@ -3,35 +3,53 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Routes = void 0;
 const express_1 = __importDefault(require("express"));
-const userController_1 = require("./controllers/userController");
-const cityController_1 = require("./controllers/cityController");
-const locationController_1 = require("./controllers/locationController");
-const categoryController_1 = require("./controllers/categoryController");
-const eventController_1 = require("./controllers/eventController");
 const verifyGoogleToken_1 = require("./middleware/verifyGoogleToken");
-const sustainabilityQuestionController_1 = require("./controllers/sustainabilityQuestionController");
-const router = express_1.default.Router();
-router.get("/users", userController_1.UserController.getAllUsers);
-router.post("/user", verifyGoogleToken_1.verifyGoogleToken, userController_1.UserController.createUser);
-router.get("/user/:email", userController_1.UserController.getUserByEmail);
-router.get("/cities", cityController_1.CityController.getAllCities);
-router.post("/city", cityController_1.CityController.createCity);
-router.get("/locations", locationController_1.LocationController.getAllLocations);
-router.post("/location", locationController_1.LocationController.createLocation);
-router.get("/categories", categoryController_1.CategoryController.getCategories);
-router.post("/category", categoryController_1.CategoryController.createCategory);
-router.get("/events", eventController_1.EventController.getEvents);
-router.get("/events/approve", eventController_1.EventController.getEventsToApprove);
-router.get("/events/categories", eventController_1.EventController.getEventsByCategories);
-router.get("/events/distance", eventController_1.EventController.getEventsByDistance);
-router.get("/events/recommendation", eventController_1.EventController.getEventsRecomended);
-router.get("/events/date", eventController_1.EventController.getEventsByDate);
-router.post("/event", eventController_1.EventController.createEvent);
-router.get("/event/getId/:id", eventController_1.EventController.getEventById);
-router.put("/event/acceptEvent/:id", eventController_1.EventController.approveEvent);
-router.put("/event/rejectEvent/:id", eventController_1.EventController.rejectEvent);
-router.post("/events/organizer/:userId", verifyGoogleToken_1.verifyGoogleToken, eventController_1.EventController.getOrganizerEvents);
-router.post("/events/analysis", verifyGoogleToken_1.verifyGoogleToken, eventController_1.EventController.getAnalysisEvents);
-router.post("/event/:eventId/sustainabilityQuestions", verifyGoogleToken_1.verifyGoogleToken, sustainabilityQuestionController_1.SustainabilityQuestionController.getEventSustainabilityQuestions);
-exports.default = router;
+const checkAdminByEmail_1 = require("./middleware/checkAdminByEmail");
+class Routes {
+    constructor(categoryController, cityController, eventController, locationController, sustainabilityQuestionController, userController) {
+        this.router = express_1.default.Router();
+        this.categoryController = categoryController;
+        this.cityController = cityController;
+        this.eventController = eventController;
+        this.locationController = locationController;
+        this.sustainabilityQuestionController = sustainabilityQuestionController;
+        this.userController = userController;
+        this.initializeRoutes();
+    }
+    initializeRoutes() {
+        // Categories
+        this.router.get("/categories", (req, res, next) => this.categoryController.getCategories(req, res, next));
+        this.router.post("/category", (req, res, next) => this.categoryController.createCategory(req, res, next));
+        // Cities
+        this.router.get("/cities", (req, res, next) => this.cityController.getAllCities(req, res, next));
+        this.router.post("/city", (req, res, next) => this.cityController.createCity(req, res, next));
+        // Events
+        this.router.get("/events", (req, res, next) => this.eventController.getEvents(req, res, next));
+        this.router.get("/events/approve", (req, res, next) => this.eventController.getEventsToApprove(req, res, next));
+        this.router.get("/events/categories", (req, res, next) => this.eventController.getEventsByCategories(req, res, next));
+        this.router.get("/events/distance", (req, res, next) => this.eventController.getEventsByDistance(req, res, next));
+        this.router.get("/events/recommendation", (req, res, next) => this.eventController.getEventsRecomended(req, res, next));
+        this.router.get("/events/date", (req, res, next) => this.eventController.getEventsByDate(req, res, next));
+        this.router.post("/event", (req, res, next) => this.eventController.createEvent(req, res, next));
+        this.router.get("/event/getId/:id", (req, res, next) => this.eventController.getEventById(req, res, next));
+        this.router.put("/event/acceptEvent/:id", (req, res, next) => this.eventController.approveEvent(req, res, next));
+        this.router.put("/event/rejectEvent/:id", (req, res, next) => this.eventController.rejectEvent(req, res, next));
+        this.router.post("/events/organizer/:userId", verifyGoogleToken_1.verifyGoogleToken, (req, res, next) => this.eventController.getOrganizerEvents(req, res, next));
+        this.router.post("/events/analysis", verifyGoogleToken_1.verifyGoogleToken, checkAdminByEmail_1.checkAdminByEmail, (req, res, next) => this.eventController.getAnalysisEvents(req, res, next));
+        // Sustainability Questions
+        this.router.post("/event/:eventId/sustainabilityQuestions", verifyGoogleToken_1.verifyGoogleToken, checkAdminByEmail_1.checkAdminByEmail, (req, res, next) => this.sustainabilityQuestionController.getEventSustainabilityQuestions(req, res, next));
+        // Locations
+        this.router.get("/locations", (req, res, next) => this.locationController.getAllLocations(req, res, next));
+        this.router.post("/location", (req, res, next) => this.locationController.createLocation(req, res, next));
+        // Users
+        this.router.get("/users", (req, res, next) => this.userController.getAllUsers(req, res, next));
+        this.router.get("/user/:email", (req, res, next) => this.userController.getUserByEmail(req, res, next));
+        this.router.post("/user", verifyGoogleToken_1.verifyGoogleToken, (req, res, next) => this.userController.createUser(req, res, next));
+    }
+    getRouter() {
+        return this.router;
+    }
+}
+exports.Routes = Routes;

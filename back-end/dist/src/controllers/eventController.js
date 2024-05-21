@@ -10,9 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventController = void 0;
-const eventService_1 = require("../services/eventService");
 class EventController {
-    static getEvents(req, res, next) {
+    constructor(eventService) {
+        this.eventService = eventService;
+    }
+    getEvents(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const cityId = typeof req.query.cityId === "string" ? req.query.cityId : undefined;
             const cityName = typeof req.query.cityName === "string" ? req.query.cityName : undefined;
@@ -23,7 +25,7 @@ class EventController {
                 return;
             }
             try {
-                const events = yield eventService_1.EventService.getEvents(cityId, cityName);
+                const events = yield this.eventService.getEvents(cityId, cityName);
                 res.status(200).json(events);
             }
             catch (error) {
@@ -31,7 +33,7 @@ class EventController {
             }
         });
     }
-    static getEventsToApprove(req, res, next) {
+    getEventsToApprove(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const cityId = typeof req.query.cityId === "string" ? req.query.cityId : undefined;
             const cityName = typeof req.query.cityName === "string" ? req.query.cityName : undefined;
@@ -42,7 +44,7 @@ class EventController {
                 return;
             }
             try {
-                const events = yield eventService_1.EventService.getEventsToApprove(cityId, cityName);
+                const events = yield this.eventService.getEventsToApprove(cityId, cityName);
                 res.status(200).json(events);
             }
             catch (error) {
@@ -50,10 +52,10 @@ class EventController {
             }
         });
     }
-    static approveEvent(req, res, next) {
+    approveEvent(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const approvedEvent = yield eventService_1.EventService.approveEvent(req.params.id, req.body.approvalFeedback);
+                const approvedEvent = yield this.eventService.approveEvent(req.params.id, req.body.approvalFeedback);
                 res.status(201).json(approvedEvent);
             }
             catch (error) {
@@ -61,10 +63,10 @@ class EventController {
             }
         });
     }
-    static rejectEvent(req, res, next) {
+    rejectEvent(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const rejectedEvent = yield eventService_1.EventService.rejectEvent(req.params.id, req.body.approvalFeedback);
+                const rejectedEvent = yield this.eventService.rejectEvent(req.params.id, req.body.approvalFeedback);
                 res.status(201).json(rejectedEvent);
             }
             catch (error) {
@@ -72,7 +74,7 @@ class EventController {
             }
         });
     }
-    static getEventsRecomended(req, res, next) {
+    getEventsRecomended(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const cityId = typeof req.query.cityId === "string" ? req.query.cityId : undefined;
             const cityName = typeof req.query.cityName === "string" ? req.query.cityName : undefined;
@@ -90,7 +92,7 @@ class EventController {
                 return;
             }
             try {
-                const events = yield eventService_1.EventService.getEventsRecomendation(cityId, cityName, userId);
+                const events = yield this.eventService.getEventsRecomendation(cityId, cityName, userId);
                 res.status(200).json(events);
             }
             catch (error) {
@@ -98,7 +100,7 @@ class EventController {
             }
         });
     }
-    static getEventsByDate(req, res, next) {
+    getEventsByDate(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const cityId = typeof req.query.cityId === "string" ? req.query.cityId : undefined;
             const cityName = typeof req.query.cityName === "string" ? req.query.cityName : undefined;
@@ -110,7 +112,7 @@ class EventController {
                 return;
             }
             try {
-                const events = yield eventService_1.EventService.getEventsByDate(cityId, cityName, searchBar);
+                const events = yield this.eventService.getEventsByDate(cityId, cityName, searchBar);
                 res.status(200).json(events);
             }
             catch (error) {
@@ -118,34 +120,7 @@ class EventController {
             }
         });
     }
-    static getEventsByDistance(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const cityId = typeof req.query.cityId === "string" ? req.query.cityId : undefined;
-            const cityName = typeof req.query.cityName === "string" ? req.query.cityName : undefined;
-            const userId = typeof req.query.userId === "string" ? req.query.userId : undefined;
-            const searchBar = typeof req.query.searchBar === "string" ? req.query.searchBar : undefined;
-            if (!cityId && !cityName) {
-                res.status(400).json({
-                    error: "Você deve fornecer um cityId ou cityName",
-                });
-                return;
-            }
-            if (!userId) {
-                res.status(400).json({
-                    error: "Você deve fornecer um userId",
-                });
-                return;
-            }
-            try {
-                const events = yield eventService_1.EventService.getEventsByDistance(cityId, cityName, userId, searchBar);
-                res.status(200).json(events);
-            }
-            catch (error) {
-                next(error);
-            }
-        });
-    }
-    static getEventsByCategories(req, res, next) {
+    getEventsByDistance(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const cityId = typeof req.query.cityId === "string" ? req.query.cityId : undefined;
             const cityName = typeof req.query.cityName === "string" ? req.query.cityName : undefined;
@@ -164,7 +139,7 @@ class EventController {
                 return;
             }
             try {
-                const events = yield eventService_1.EventService.getEventsByCategories(cityId, cityName, userId, searchBar);
+                const events = yield this.eventService.getEventsByDistance(cityId, cityName, userId, searchBar);
                 res.status(200).json(events);
             }
             catch (error) {
@@ -172,7 +147,34 @@ class EventController {
             }
         });
     }
-    static getEventById(req, res, next) {
+    getEventsByCategories(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cityId = typeof req.query.cityId === "string" ? req.query.cityId : undefined;
+            const cityName = typeof req.query.cityName === "string" ? req.query.cityName : undefined;
+            const userId = typeof req.query.userId === "string" ? req.query.userId : undefined;
+            const searchBar = typeof req.query.searchBar === "string" ? req.query.searchBar : undefined;
+            if (!cityId && !cityName) {
+                res.status(400).json({
+                    error: "Você deve fornecer um cityId ou cityName",
+                });
+                return;
+            }
+            if (!userId) {
+                res.status(400).json({
+                    error: "Você deve fornecer um userId",
+                });
+                return;
+            }
+            try {
+                const events = yield this.eventService.getEventsByCategories(cityId, cityName, userId, searchBar);
+                res.status(200).json(events);
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
+    getEventById(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const eventId = typeof req.params.id === "string" ? req.params.id : undefined;
             if (!eventId) {
@@ -182,7 +184,7 @@ class EventController {
                 return;
             }
             try {
-                const events = yield eventService_1.EventService.getEventById(eventId);
+                const events = yield this.eventService.getEventById(eventId);
                 if (!events) {
                     res.status(404).json({ error: "Evento não encontrado" });
                     return;
@@ -194,7 +196,7 @@ class EventController {
             }
         });
     }
-    static createEvent(req, res, next) {
+    createEvent(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const fields = [
                 "name",
@@ -212,7 +214,7 @@ class EventController {
                 "endTime",
             ];
             for (let field of fields) {
-                if (!req.body[field]) {
+                if (!req.body[field] && req.body[field] !== 0) {
                     res.status(400).json({
                         error: `O campo ${field} é obrigatório`,
                     });
@@ -220,7 +222,7 @@ class EventController {
                 }
             }
             try {
-                const newEvent = yield eventService_1.EventService.createEvent(req.body);
+                const newEvent = yield this.eventService.createEvent(req.body);
                 res.status(201).json(newEvent);
             }
             catch (error) {
@@ -228,7 +230,7 @@ class EventController {
             }
         });
     }
-    static getOrganizerEvents(req, res, next) {
+    getOrganizerEvents(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = typeof req.params.userId === "string" ? req.params.userId : undefined;
             const email = req.body.email;
@@ -239,7 +241,7 @@ class EventController {
                 return;
             }
             try {
-                const events = yield eventService_1.EventService.getOrganizerEvents(userId, email);
+                const events = yield this.eventService.getOrganizerEvents(userId, email);
                 res.status(200).json(events);
             }
             catch (error) {
@@ -247,11 +249,10 @@ class EventController {
             }
         });
     }
-    static getAnalysisEvents(req, res, next) {
+    getAnalysisEvents(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const email = req.body.email;
             try {
-                const events = yield eventService_1.EventService.getAnalysisEvents(email);
+                const events = yield this.eventService.getAnalysisEvents();
                 res.status(200).json(events);
             }
             catch (error) {

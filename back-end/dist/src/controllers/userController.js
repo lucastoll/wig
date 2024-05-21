@@ -10,12 +10,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
-const userService_1 = require("../services/userService");
 class UserController {
-    static getAllUsers(req, res, next) {
+    constructor(userService) {
+        this.userService = userService;
+    }
+    getAllUsers(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const users = yield userService_1.UserService.getAllUsers();
+                const users = yield this.userService.getAllUsers();
                 res.json(users);
             }
             catch (error) {
@@ -23,7 +25,7 @@ class UserController {
             }
         });
     }
-    static getUserByEmail(req, res, next) {
+    getUserByEmail(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const { email } = req.params;
             if (!email) {
@@ -33,7 +35,7 @@ class UserController {
                 return;
             }
             try {
-                const user = yield userService_1.UserService.getUserByEmail(email);
+                const user = yield this.userService.getUserByEmail(email);
                 if (!user) {
                     res.status(404).json({ error: "Usuário não encontrado" });
                     return;
@@ -45,17 +47,10 @@ class UserController {
             }
         });
     }
-    static createUser(req, res, next) {
+    createUser(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const { name, email, address, categoryIds, zipcode, googleToken } = req.body;
-            const fields = [
-                "name",
-                "email",
-                "address",
-                "zipcode",
-                "categoryIds",
-                "googleToken"
-            ];
+            const fields = ["name", "email", "address", "zipcode", "categoryIds"];
             for (let field of fields) {
                 if (!req.body[field]) {
                     res.status(400).json({
@@ -71,7 +66,7 @@ class UserController {
                 return;
             }
             try {
-                const newUser = yield userService_1.UserService.createUser(name, email, address, categoryIds, zipcode, googleToken);
+                const newUser = yield this.userService.createUser(name, email, address, categoryIds, zipcode);
                 res.status(201).json(newUser);
             }
             catch (error) {

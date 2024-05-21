@@ -10,12 +10,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CategoryController = void 0;
-const categoryService_1 = require("../services/categoryService");
 class CategoryController {
-    static getCategories(req, res, next) {
+    constructor(categoryService) {
+        this.categoryService = categoryService;
+    }
+    getCategories(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const categories = yield categoryService_1.CategoryService.getCategories();
+                const categories = yield this.categoryService.getCategories();
                 res.status(200).json(categories);
             }
             catch (error) {
@@ -23,7 +25,7 @@ class CategoryController {
             }
         });
     }
-    static createCategory(req, res, next) {
+    createCategory(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const { name } = req.body;
             if (!name) {
@@ -33,7 +35,7 @@ class CategoryController {
                 return;
             }
             try {
-                const newCategory = yield categoryService_1.CategoryService.createCategory(name);
+                const newCategory = yield this.categoryService.createCategory(name);
                 res.status(201).json(newCategory);
             }
             catch (error) {

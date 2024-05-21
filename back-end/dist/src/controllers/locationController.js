@@ -10,13 +10,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LocationController = void 0;
-const locationService_1 = require("../services/locationService");
 const sequelize_1 = require("sequelize");
 class LocationController {
-    static getAllLocations(req, res, next) {
+    constructor(locationService) {
+        this.locationService = locationService;
+    }
+    getAllLocations(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const locations = yield locationService_1.LocationService.getAllLocations();
+                const locations = yield this.locationService.getAllLocations();
                 res.json(locations);
             }
             catch (error) {
@@ -24,7 +26,7 @@ class LocationController {
             }
         });
     }
-    static createLocation(req, res, next) {
+    createLocation(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const { address, zipcode, maxCapacity, cityId, name } = req.body;
             if (!address || !zipcode || !maxCapacity || !cityId) {
@@ -34,7 +36,7 @@ class LocationController {
                 return;
             }
             try {
-                const newLocation = yield locationService_1.LocationService.createLocation(address, zipcode, maxCapacity, cityId, name);
+                const newLocation = yield this.locationService.createLocation(address, zipcode, maxCapacity, cityId, name);
                 res.status(201).json(newLocation);
             }
             catch (error) {

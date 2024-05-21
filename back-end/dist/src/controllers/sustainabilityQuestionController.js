@@ -10,12 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SustainabilityQuestionController = void 0;
-const sustainabilityQuestionService_1 = require("../services/sustainabilityQuestionService");
 class SustainabilityQuestionController {
-    static getEventSustainabilityQuestions(req, res, next) {
+    constructor(sustainabilityQuestionService) {
+        this.sustainabilityQuestionService = sustainabilityQuestionService;
+    }
+    getEventSustainabilityQuestions(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const eventId = typeof req.params.eventId === "string" ? req.params.eventId : undefined;
-            const email = req.body.email;
             if (!eventId) {
                 res.status(400).json({
                     error: "Você deve fornecer um eventId",
@@ -23,7 +24,7 @@ class SustainabilityQuestionController {
                 return;
             }
             try {
-                const sustainabilityQuestions = yield sustainabilityQuestionService_1.SustainabilityQuestionService.getEventSustainabilityQuestions(eventId, email);
+                const sustainabilityQuestions = yield this.sustainabilityQuestionService.getEventSustainabilityQuestions(eventId);
                 res.status(200).json(sustainabilityQuestions);
             }
             catch (error) {

@@ -10,12 +10,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CityController = void 0;
-const cityService_1 = require("../services/cityService");
 class CityController {
-    static getAllCities(req, res, next) {
+    constructor(cityService) {
+        this.cityService = cityService;
+    }
+    getAllCities(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const cities = yield cityService_1.CityService.getAllCities();
+                const cities = yield this.cityService.getAllCities();
                 res.json(cities);
             }
             catch (error) {
@@ -23,7 +25,7 @@ class CityController {
             }
         });
     }
-    static createCity(req, res, next) {
+    createCity(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const { name } = req.body;
             if (!name) {
@@ -33,7 +35,7 @@ class CityController {
                 return;
             }
             try {
-                const newCity = yield cityService_1.CityService.createCity(name);
+                const newCity = yield this.cityService.createCity(name);
                 res.status(201).json(newCity);
             }
             catch (error) {
