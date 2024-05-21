@@ -2,23 +2,30 @@ import { CustomError } from "../errors/customError";
 import getCoordinates from "../helpers/getCoordinates";
 import { Location } from "../models/location";
 
-class LocationService {
-  static async getAllLocations(): Promise<Location[]> {
+interface ILocationService {
+  getAllLocations(): Promise<Location[]>;
+  createLocation(
+    address: string,
+    zipcode: string,
+    maxCapacity: number,
+    cityId: number,
+    name: string
+  ): Promise<Location>;
+}
+
+class LocationService implements ILocationService {
+  async getAllLocations(): Promise<Location[]> {
     const locations = await Location.findAll({
       include: "City",
     });
     return locations;
   }
 
-  static async createLocation(
+  async checkExistingLocation(
     address: string,
     zipcode: string,
-    maxCapacity: number,
-    cityId: number,
-    name: string
-  ): Promise<Location> {
-    const { latitude, longitude } = await getCoordinates(zipcode);
-
+    cityId: number
+  ) {
     const existingLocation = await Location.findOne({
       where: { address, zipcode, cityId },
     });
@@ -29,6 +36,17 @@ class LocationService {
         400
       );
     }
+  }
+
+  async createLocation(
+    address: string,
+    zipcode: string,
+    maxCapacity: number,
+    cityId: number,
+    name: string
+  ): Promise<Location> {
+    const { latitude, longitude } = await getCoordinates(zipcode);
+    await this.checkExistingLocation(address, zipcode, cityId);
 
     const newLocation = await Location.create({
       address,
@@ -42,9 +60,10 @@ class LocationService {
 
     return newLocation;
   }
+
   catch() {
     throw new CustomError("Erro ao criar localização", 500);
   }
 }
 
-export { LocationService };
+export { LocationService, ILocationService };

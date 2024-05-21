@@ -1,8 +1,41 @@
 import { Request, Response, NextFunction } from "express";
-import { EventService } from "../services/eventService";
+import { IEventService } from "../services/eventService";
 
-class EventController {
-  static async getEvents(
+interface IEventController {
+  getEvents: (req: Request, res: Response, next: NextFunction) => void;
+  getEventsToApprove: (req: Request, res: Response, next: NextFunction) => void;
+  approveEvent: (req: Request, res: Response, next: NextFunction) => void;
+  rejectEvent: (req: Request, res: Response, next: NextFunction) => void;
+  getEventsRecomended: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => void;
+  getEventsByDate: (req: Request, res: Response, next: NextFunction) => void;
+  getEventsByDistance: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => void;
+  getEventsByCategories: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => void;
+  getEventById: (req: Request, res: Response, next: NextFunction) => void;
+  createEvent: (req: Request, res: Response, next: NextFunction) => void;
+  getOrganizerEvents: (req: Request, res: Response, next: NextFunction) => void;
+  getAnalysisEvents: (req: Request, res: Response, next: NextFunction) => void;
+}
+
+class EventController implements IEventController {
+  private eventService: IEventService;
+
+  constructor(eventService: IEventService) {
+    this.eventService = eventService;
+  }
+
+  async getEvents(
     req: Request,
     res: Response,
     next: NextFunction
@@ -20,14 +53,14 @@ class EventController {
     }
 
     try {
-      const events = await EventService.getEvents(cityId, cityName);
+      const events = await this.eventService.getEvents(cityId, cityName);
       res.status(200).json(events);
     } catch (error) {
       next(error);
     }
   }
 
-  static async getEventsToApprove(
+  async getEventsToApprove(
     req: Request,
     res: Response,
     next: NextFunction
@@ -45,40 +78,49 @@ class EventController {
     }
 
     try {
-      const events = await EventService.getEventsToApprove(cityId, cityName);
+      const events = await this.eventService.getEventsToApprove(
+        cityId,
+        cityName
+      );
       res.status(200).json(events);
     } catch (error) {
       next(error);
     }
   }
 
-  static async approveEvent(
+  async approveEvent(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const approvedEvent = await EventService.approveEvent(req.params.id, req.body.approvalFeedback);
+      const approvedEvent = await this.eventService.approveEvent(
+        req.params.id,
+        req.body.approvalFeedback
+      );
       res.status(201).json(approvedEvent);
     } catch (error) {
       next(error);
     }
   }
 
-  static async rejectEvent(
+  async rejectEvent(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const rejectedEvent = await EventService.rejectEvent(req.params.id, req.body.approvalFeedback);
+      const rejectedEvent = await this.eventService.rejectEvent(
+        req.params.id,
+        req.body.approvalFeedback
+      );
       res.status(201).json(rejectedEvent);
     } catch (error) {
       next(error);
     }
   }
 
-  static async getEventsRecomended(
+  async getEventsRecomended(
     req: Request,
     res: Response,
     next: NextFunction
@@ -105,7 +147,7 @@ class EventController {
     }
 
     try {
-      const events = await EventService.getEventsRecomendation(
+      const events = await this.eventService.getEventsRecomendation(
         cityId,
         cityName,
         userId
@@ -116,7 +158,7 @@ class EventController {
     }
   }
 
-  static async getEventsByDate(
+  async getEventsByDate(
     req: Request,
     res: Response,
     next: NextFunction
@@ -136,7 +178,7 @@ class EventController {
     }
 
     try {
-      const events = await EventService.getEventsByDate(
+      const events = await this.eventService.getEventsByDate(
         cityId,
         cityName,
         searchBar
@@ -147,48 +189,7 @@ class EventController {
     }
   }
 
-  static async getEventsByDistance(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    const cityId =
-      typeof req.query.cityId === "string" ? req.query.cityId : undefined;
-    const cityName =
-      typeof req.query.cityName === "string" ? req.query.cityName : undefined;
-    const userId =
-      typeof req.query.userId === "string" ? req.query.userId : undefined;
-    const searchBar =
-      typeof req.query.searchBar === "string" ? req.query.searchBar : undefined;
-
-    if (!cityId && !cityName) {
-      res.status(400).json({
-        error: "Você deve fornecer um cityId ou cityName",
-      });
-      return;
-    }
-
-    if (!userId) {
-      res.status(400).json({
-        error: "Você deve fornecer um userId",
-      });
-      return;
-    }
-
-    try {
-      const events = await EventService.getEventsByDistance(
-        cityId,
-        cityName,
-        userId,
-        searchBar
-      );
-      res.status(200).json(events);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async getEventsByCategories(
+  async getEventsByDistance(
     req: Request,
     res: Response,
     next: NextFunction
@@ -217,7 +218,7 @@ class EventController {
     }
 
     try {
-      const events = await EventService.getEventsByCategories(
+      const events = await this.eventService.getEventsByDistance(
         cityId,
         cityName,
         userId,
@@ -229,7 +230,48 @@ class EventController {
     }
   }
 
-  static async getEventById(
+  async getEventsByCategories(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const cityId =
+      typeof req.query.cityId === "string" ? req.query.cityId : undefined;
+    const cityName =
+      typeof req.query.cityName === "string" ? req.query.cityName : undefined;
+    const userId =
+      typeof req.query.userId === "string" ? req.query.userId : undefined;
+    const searchBar =
+      typeof req.query.searchBar === "string" ? req.query.searchBar : undefined;
+
+    if (!cityId && !cityName) {
+      res.status(400).json({
+        error: "Você deve fornecer um cityId ou cityName",
+      });
+      return;
+    }
+
+    if (!userId) {
+      res.status(400).json({
+        error: "Você deve fornecer um userId",
+      });
+      return;
+    }
+
+    try {
+      const events = await this.eventService.getEventsByCategories(
+        cityId,
+        cityName,
+        userId,
+        searchBar
+      );
+      res.status(200).json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getEventById(
     req: Request,
     res: Response,
     next: NextFunction
@@ -244,7 +286,7 @@ class EventController {
     }
 
     try {
-      const events = await EventService.getEventById(eventId);
+      const events = await this.eventService.getEventById(eventId);
       if (!events) {
         res.status(404).json({ error: "Evento não encontrado" });
         return;
@@ -255,7 +297,7 @@ class EventController {
     }
   }
 
-  static async createEvent(
+  async createEvent(
     req: Request,
     res: Response,
     next: NextFunction
@@ -277,7 +319,7 @@ class EventController {
     ];
 
     for (let field of fields) {
-      if (!req.body[field]) {
+      if (!req.body[field] && req.body[field] !== 0) {
         res.status(400).json({
           error: `O campo ${field} é obrigatório`,
         });
@@ -286,14 +328,14 @@ class EventController {
     }
 
     try {
-      const newEvent = await EventService.createEvent(req.body);
+      const newEvent = await this.eventService.createEvent(req.body);
       res.status(201).json(newEvent);
     } catch (error) {
       next(error);
     }
   }
 
-  static async getOrganizerEvents(
+  async getOrganizerEvents(
     req: Request,
     res: Response,
     next: NextFunction
@@ -310,22 +352,20 @@ class EventController {
     }
 
     try {
-      const events = await EventService.getOrganizerEvents(userId, email);
+      const events = await this.eventService.getOrganizerEvents(userId, email);
       res.status(200).json(events);
     } catch (error) {
       next(error);
     }
   }
 
-  static async getAnalysisEvents(
+  async getAnalysisEvents(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const email = req.body.email;
-
     try {
-      const events = await EventService.getAnalysisEvents(email);
+      const events = await this.eventService.getAnalysisEvents();
       res.status(200).json(events);
     } catch (error) {
       next(error);
@@ -333,4 +373,4 @@ class EventController {
   }
 }
 
-export { EventController };
+export { EventController, IEventController };
