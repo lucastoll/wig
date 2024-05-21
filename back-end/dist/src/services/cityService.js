@@ -10,16 +10,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CityService = void 0;
+// CityService.ts
 const customError_1 = require("../errors/customError");
 const city_1 = require("../models/city");
 class CityService {
-    static getAllCities() {
+    getAllCities() {
         return __awaiter(this, void 0, void 0, function* () {
             const cities = yield city_1.City.findAll();
             return cities;
         });
     }
-    static createCity(name) {
+    createCity(name) {
         return __awaiter(this, void 0, void 0, function* () {
             const existingCity = yield city_1.City.findOne({ where: { name } });
             if (existingCity) {

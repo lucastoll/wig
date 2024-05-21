@@ -22,8 +22,9 @@ const city_1 = require("../models/city");
 const sequelize_1 = require("sequelize");
 const getDistance_1 = __importDefault(require("../helpers/getDistance"));
 const sustainabilityQuestion_1 = require("../models/sustainabilityQuestion");
+const getCoordinates_1 = __importDefault(require("../helpers/getCoordinates"));
 class EventService {
-    static getEvents(cityId, cityName) {
+    findCity(cityId, cityName) {
         return __awaiter(this, void 0, void 0, function* () {
             let city;
             if (cityId) {
@@ -35,6 +36,58 @@ class EventService {
             if (!city) {
                 throw new customError_1.CustomError("Cidade não encontrada", 404);
             }
+            return city;
+        });
+    }
+    findUser(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield user_1.User.findByPk(userId, {
+                include: [category_1.Category],
+            });
+            if (!user) {
+                throw new customError_1.CustomError("Usuário não encontrado", 404);
+            }
+            return user;
+        });
+    }
+    calculateCategoryPoints(user, event) {
+        let points = 0;
+        user.Categories.forEach((userCategory) => {
+            if (event.Categories.some((eventCategory) => eventCategory.id === userCategory.id)) {
+                points += 5;
+                console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
+            }
+        });
+        return points;
+    }
+    calculateDistancePoints(user, event) {
+        const userCoordinates = {
+            latitude: user.coordlat,
+            longitude: user.coordlon,
+        };
+        const eventCoordinates = {
+            latitude: event.Location.coordlat,
+            longitude: event.Location.coordlon,
+        };
+        const distance = (0, getDistance_1.default)(userCoordinates, eventCoordinates);
+        let points = 0;
+        if (distance <= 1.0) {
+            points += 12;
+            console.log("\n\nEvento a menos de 1km +12 pontos");
+        }
+        else if (distance <= 3.0) {
+            points += 8;
+            console.log("\n\nEvento a menos de 3km +8 pontos");
+        }
+        else if (distance <= 5.0) {
+            points += 4;
+            console.log("\n\nEvento a menos de 5km +4 pontos");
+        }
+        return points;
+    }
+    getEvents(cityId, cityName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const city = yield this.findCity(cityId, cityName);
             const events = yield event_1.Event.findAll({
                 include: [
                     { model: category_1.Category },
@@ -50,18 +103,9 @@ class EventService {
             return events;
         });
     }
-    static getEventsToApprove(cityId, cityName) {
+    getEventsToApprove(cityId, cityName) {
         return __awaiter(this, void 0, void 0, function* () {
-            let city;
-            if (cityId) {
-                city = yield city_1.City.findByPk(String(cityId));
-            }
-            else if (cityName) {
-                city = yield city_1.City.findOne({ where: { name: String(cityName) } });
-            }
-            if (!city) {
-                throw new customError_1.CustomError("Cidade não encontrada", 404);
-            }
+            const city = yield this.findCity(cityId, cityName);
             const events = yield event_1.Event.findAll({
                 include: [
                     { model: category_1.Category },
@@ -77,7 +121,7 @@ class EventService {
             return events;
         });
     }
-    static approveEvent(eventId, approvalFeedback) {
+    approveEvent(eventId, approvalFeedback) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const event = yield event_1.Event.findByPk(eventId);
@@ -93,7 +137,7 @@ class EventService {
             }
         });
     }
-    static rejectEvent(eventId, approvalFeedback) {
+    rejectEvent(eventId, approvalFeedback) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const event = yield event_1.Event.findByPk(eventId);
@@ -109,18 +153,9 @@ class EventService {
             }
         });
     }
-    static getEventsByDate(cityId, cityName, searchBar) {
+    getEventsByDate(cityId, cityName, searchBar) {
         return __awaiter(this, void 0, void 0, function* () {
-            let city;
-            if (cityId) {
-                city = yield city_1.City.findByPk(String(cityId));
-            }
-            else if (cityName) {
-                city = yield city_1.City.findOne({ where: { name: String(cityName) } });
-            }
-            if (!city) {
-                throw new customError_1.CustomError("Cidade não encontrada", 404);
-            }
+            const city = yield this.findCity(cityId, cityName);
             let eventsQuery = {
                 include: [
                     { model: category_1.Category },
@@ -145,7 +180,7 @@ class EventService {
             return events;
         });
     }
-    static getEventById(eventId) {
+    getEventById(eventId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const event = yield event_1.Event.findByPk(eventId, {
@@ -162,29 +197,10 @@ class EventService {
             }
         });
     }
-    static getEventsRecomendation(cityId, cityName, userId) {
+    getEventsRecomendation(cityId, cityName, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            let city;
-            if (cityId) {
-                city = yield city_1.City.findByPk(String(cityId));
-            }
-            else if (cityName) {
-                city = yield city_1.City.findOne({ where: { name: String(cityName) } });
-            }
-            if (!city) {
-                throw new customError_1.CustomError("Cidade não encontrada", 404);
-            }
-            const user = yield user_1.User.findByPk(userId, {
-                include: [
-                    {
-                        model: category_1.Category,
-                        as: "Categories",
-                    },
-                ],
-            });
-            if (!user) {
-                throw new customError_1.CustomError("Usuário não encontrado", 404);
-            }
+            const city = yield this.findCity(cityId, cityName);
+            const user = yield this.findUser(userId);
             const events = yield event_1.Event.findAll({
                 include: [
                     { model: category_1.Category },
@@ -197,32 +213,10 @@ class EventService {
                 ],
                 where: { status: "aprovado" },
             });
-            const userCoordinates = {
-                latitude: user.coordlat,
-                longitude: user.coordlon,
-            };
             const eventsWithRecommendations = events.map((event) => __awaiter(this, void 0, void 0, function* () {
-                const eventCoordinates = {
-                    latitude: event.Location.coordlat,
-                    longitude: event.Location.coordlon,
-                };
-                const distance = (0, getDistance_1.default)(userCoordinates, eventCoordinates);
                 let recommendationPoints = 0;
-                if (distance <= 1.0) {
-                    recommendationPoints += 12;
-                }
-                else if (distance <= 3.0) {
-                    recommendationPoints += 8;
-                }
-                else if (distance <= 5.0) {
-                    recommendationPoints += 4;
-                }
-                user.Categories.forEach((userCategory) => {
-                    if (event.Categories.some((eventCategory) => eventCategory.id === userCategory.id)) {
-                        recommendationPoints += 5;
-                        console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
-                    }
-                });
+                recommendationPoints += this.calculateDistancePoints(user, event);
+                recommendationPoints += this.calculateCategoryPoints(user, event);
                 return Object.assign(Object.assign({}, event.get({ plain: true })), { recommendationPoints });
             }));
             const resolvedEvents = yield Promise.all(eventsWithRecommendations);
@@ -230,29 +224,11 @@ class EventService {
             return resolvedEvents;
         });
     }
-    static getEventsByCategories(cityId, cityName, userId, searchBar) {
+    getEventsByCategories(cityId, cityName, userId, searchBar) {
         return __awaiter(this, void 0, void 0, function* () {
-            let city;
-            if (cityId) {
-                city = yield city_1.City.findByPk(String(cityId));
-            }
-            else if (cityName) {
-                city = yield city_1.City.findOne({ where: { name: String(cityName) } });
-            }
-            if (!city) {
-                throw new customError_1.CustomError("Cidade não encontrada", 404);
-            }
-            const user = yield user_1.User.findByPk(userId, {
-                include: [
-                    {
-                        model: category_1.Category,
-                        as: "Categories",
-                    },
-                ],
-            });
-            if (!user) {
-                throw new customError_1.CustomError("Usuário não encontrado", 404);
-            }
+            const city = yield this.findCity(cityId, cityName);
+            const user = yield this.findUser(userId);
+            console.log(user);
             let eventsQuery = {
                 include: [
                     { model: category_1.Category },
@@ -271,13 +247,7 @@ class EventService {
             }
             const events = yield event_1.Event.findAll(eventsQuery);
             const eventsWithRecommendations = events.map((event) => __awaiter(this, void 0, void 0, function* () {
-                let recommendationPoints = 0;
-                user.Categories.forEach((userCategory) => {
-                    if (event.Categories.some((eventCategory) => eventCategory.id === userCategory.id)) {
-                        recommendationPoints += 5;
-                        console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
-                    }
-                });
+                let recommendationPoints = this.calculateCategoryPoints(user, event);
                 return Object.assign(Object.assign({}, event.get({ plain: true })), { recommendationPoints });
             }));
             const resolvedEvents = yield Promise.all(eventsWithRecommendations);
@@ -285,29 +255,10 @@ class EventService {
             return resolvedEvents;
         });
     }
-    static getEventsByDistance(cityId, cityName, userId, searchBar) {
+    getEventsByDistance(cityId, cityName, userId, searchBar) {
         return __awaiter(this, void 0, void 0, function* () {
-            let city;
-            if (cityId) {
-                city = yield city_1.City.findByPk(String(cityId));
-            }
-            else if (cityName) {
-                city = yield city_1.City.findOne({ where: { name: String(cityName) } });
-            }
-            if (!city) {
-                throw new customError_1.CustomError("Cidade não encontrada", 404);
-            }
-            const user = yield user_1.User.findByPk(userId, {
-                include: [
-                    {
-                        model: category_1.Category,
-                        as: "Categories",
-                    },
-                ],
-            });
-            if (!user) {
-                throw new customError_1.CustomError("Usuário não encontrado", 404);
-            }
+            const city = yield this.findCity(cityId, cityName);
+            const user = yield this.findUser(userId);
             let eventsQuery = {
                 include: [
                     { model: category_1.Category },
@@ -345,13 +296,10 @@ class EventService {
             return resolvedEvents.map((event) => event.event);
         });
     }
-    static createEvent(eventData) {
+    createEvent(eventData) {
         return __awaiter(this, void 0, void 0, function* () {
             const { name, imageMobile, imageDesktop, organizerId, initialDate, finalDate, initialPrice, finalPrice, minAge, description, instagramEmbed, locationId, address, zipcode, maxCapacity, cityId, categoryIds, startTime, endTime, ticketUrl, questions, } = eventData;
-            const organizer = yield user_1.User.findByPk(organizerId);
-            if (!organizer) {
-                throw new customError_1.CustomError("Organizador não encontrado", 404);
-            }
+            yield this.findUser(organizerId.toString());
             const categories = yield category_1.Category.findAll({ where: { id: categoryIds } });
             if (categories.length !== categoryIds.length) {
                 throw new customError_1.CustomError("Uma ou mais categorias não foram encontradas", 404);
@@ -377,11 +325,14 @@ class EventService {
                     if (!city) {
                         throw new customError_1.CustomError("Cidade não encontrada", 404);
                     }
+                    const { latitude, longitude } = yield (0, getCoordinates_1.default)(zipcode.toString());
                     location = yield location_1.Location.create({
                         address,
                         zipcode,
                         maxCapacity,
                         cityId,
+                        coordlat: latitude,
+                        coordlon: longitude,
                     });
                 }
             }
@@ -406,17 +357,16 @@ class EventService {
                 ticketUrl,
             });
             yield newEvent.addCategories(categories);
-            const sustainabilityQuestions = questions.map((question) => (Object.assign(Object.assign({}, question), { eventId: newEvent.id })));
-            yield sustainabilityQuestion_1.SustainabilityQuestion.bulkCreate(sustainabilityQuestions);
+            if (questions) {
+                const sustainabilityQuestions = questions.map((question) => (Object.assign(Object.assign({}, question), { eventId: newEvent.id })));
+                yield sustainabilityQuestion_1.SustainabilityQuestion.bulkCreate(sustainabilityQuestions);
+            }
             return newEvent;
         });
     }
-    static getOrganizerEvents(userId, email) {
+    getOrganizerEvents(userId, email) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield user_1.User.findByPk(userId);
-            if (!user) {
-                throw new customError_1.CustomError("Usuário não encontrado", 404);
-            }
+            const user = yield this.findUser(userId);
             if (user.email !== email) {
                 throw new customError_1.CustomError("Usuário não autorizado", 401);
             }
@@ -431,12 +381,8 @@ class EventService {
             return events;
         });
     }
-    static getAnalysisEvents(email) {
+    getAnalysisEvents() {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield user_1.User.findOne({ where: { email } });
-            if ((user === null || user === void 0 ? void 0 : user.administrator) === false) {
-                throw new customError_1.CustomError("Usuário não autorizado", 401);
-            }
             const events = yield event_1.Event.findAll({
                 where: { status: "em análise" },
                 include: [

@@ -10,16 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SustainabilityQuestionService = void 0;
-const customError_1 = require("../errors/customError");
 const sustainabilityQuestion_1 = require("../models/sustainabilityQuestion");
-const user_1 = require("../models/user");
 class SustainabilityQuestionService {
-    static getEventSustainabilityQuestions(eventId, email) {
+    getEventSustainabilityQuestions(eventId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield user_1.User.findOne({ where: { email } });
-            if ((user === null || user === void 0 ? void 0 : user.administrator) === false) {
-                throw new customError_1.CustomError("Usuário não autorizado", 401);
-            }
             const sustainabilityQuestions = yield sustainabilityQuestion_1.SustainabilityQuestion.findAll({
                 where: { eventId },
             });

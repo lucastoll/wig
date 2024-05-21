@@ -17,7 +17,7 @@ const customError_1 = require("../errors/customError");
 const getCoordinates_1 = __importDefault(require("../helpers/getCoordinates"));
 const location_1 = require("../models/location");
 class LocationService {
-    static getAllLocations() {
+    getAllLocations() {
         return __awaiter(this, void 0, void 0, function* () {
             const locations = yield location_1.Location.findAll({
                 include: "City",
@@ -25,15 +25,20 @@ class LocationService {
             return locations;
         });
     }
-    static createLocation(address, zipcode, maxCapacity, cityId, name) {
+    checkExistingLocation(address, zipcode, cityId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { latitude, longitude } = yield (0, getCoordinates_1.default)(zipcode);
             const existingLocation = yield location_1.Location.findOne({
                 where: { address, zipcode, cityId },
             });
             if (existingLocation) {
                 throw new customError_1.CustomError("Uma localização com o mesmo endereço, CEP e ID da cidade já existe", 400);
             }
+        });
+    }
+    createLocation(address, zipcode, maxCapacity, cityId, name) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { latitude, longitude } = yield (0, getCoordinates_1.default)(zipcode);
+            yield this.checkExistingLocation(address, zipcode, cityId);
             const newLocation = yield location_1.Location.create({
                 address,
                 zipcode,

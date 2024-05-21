@@ -9,20 +9,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CategoryService = void 0;
-const category_1 = require("../models/category");
-class CategoryService {
-    getCategories() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const categories = yield category_1.Category.findAll();
-            return categories;
-        });
-    }
-    createCategory(name) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const newCategory = yield category_1.Category.create({ name });
-            return newCategory;
-        });
-    }
+exports.checkAdminByEmail = void 0;
+const user_1 = require("../models/user");
+function checkAdminByEmail(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { email } = req.body;
+        if (!email) {
+            res.status(400).json({
+                error: "O email é obrigatório",
+            });
+            return;
+        }
+        const user = yield user_1.User.findOne({ where: { email } });
+        if ((user === null || user === void 0 ? void 0 : user.administrator) === false) {
+            res.status(401).json({
+                error: "Operação não autorizada",
+            });
+        }
+        next();
+    });
 }
-exports.CategoryService = CategoryService;
+exports.checkAdminByEmail = checkAdminByEmail;
