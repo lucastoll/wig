@@ -7,6 +7,7 @@ import { City } from "../models/city";
 import { FindOptions, Op, WhereOptions, literal } from "sequelize";
 import getDistance from "../helpers/getDistance";
 import { SustainabilityQuestion } from "../models/sustainabilityQuestion";
+import getCoordinates from "../helpers/getCoordinates";
 
 interface IEventService {
   getEvents(
@@ -457,11 +458,15 @@ class EventService implements IEventService {
           throw new CustomError("Cidade não encontrada", 404);
         }
 
+        const { latitude, longitude } = await getCoordinates(zipcode.toString());
+
         location = await Location.create({
           address,
           zipcode,
           maxCapacity,
           cityId,
+          coordlat: latitude,
+          coordlon: longitude,
         });
       }
     } else {
@@ -490,12 +495,14 @@ class EventService implements IEventService {
     });
     await newEvent.addCategories(categories);
 
-    const sustainabilityQuestions = questions.map((question) => ({
-      ...question,
-      eventId: newEvent.id,
-    }));
+    if(questions){
+      const sustainabilityQuestions = questions.map((question) => ({
+        ...question,
+        eventId: newEvent.id,
+      }));
 
-    await SustainabilityQuestion.bulkCreate(sustainabilityQuestions);
+      await SustainabilityQuestion.bulkCreate(sustainabilityQuestions);
+    }
 
     return newEvent;
   }

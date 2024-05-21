@@ -319,7 +319,7 @@ class EventController implements IEventController {
     ];
 
     for (let field of fields) {
-      if (!req.body[field]) {
+      if (!req.body[field] && req.body[field] !== 0) {
         res.status(400).json({
           error: `O campo ${field} é obrigatório`,
         });
