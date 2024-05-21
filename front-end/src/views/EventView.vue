@@ -92,7 +92,6 @@ const ageIcon = computed(() => {
 });
 
 watch([userStore, event], () => {
-  console.log(userStore.administrator);
   if (userStore.administrator && event.value.id) {
     axios
       .post(
@@ -128,26 +127,25 @@ onMounted(async () => {
     } catch (error) {
       router.push({ name: "NotFound" });
     }
-
-    if (userStore.administrator) {
-      try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/event/${
-            event.value.id
-          }/sustainabilityQuestions`,
-          {
-            googleToken: userStore.googleToken,
-            email: userStore.email,
-          }
-        );
-        if (response.status === 200) {
-          questions.value = response.data;
-        } else {
-          throw new Error("Evento não encontrado");
+  }
+  if (userStore.administrator) {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/event/${
+          event.value.id
+        }/sustainabilityQuestions`,
+        {
+          googleToken: userStore.googleToken,
+          email: userStore.email,
         }
-      } catch (error) {
-        router.push({ name: "NotFound" });
+      );
+      if (response.status === 200) {
+        questions.value = response.data;
+      } else {
+        throw new Error("Evento não encontrado");
       }
+    } catch (error) {
+      router.push({ name: "NotFound" });
     }
   }
 });

@@ -1,17 +1,37 @@
+// CityController.ts
 import { Request, Response, NextFunction } from "express";
-import { CityService } from "../services/cityService";
+import { ICityService } from "../services/cityService";
 
-class CityController {
-  static async getAllCities(req: Request, res: Response, next: NextFunction): Promise<void> {
+interface ICityController {
+  getAllCities(req: Request, res: Response, next: NextFunction): Promise<void>;
+  createCity(req: Request, res: Response, next: NextFunction): Promise<void>;
+}
+
+class CityController implements ICityController {
+  private cityService: ICityService;
+
+  constructor(cityService: ICityService) {
+    this.cityService = cityService;
+  }
+
+  async getAllCities(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      const cities = await CityService.getAllCities();
+      const cities = await this.cityService.getAllCities();
       res.json(cities);
     } catch (error) {
       next(error);
     }
   }
 
-  static async createCity(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async createCity(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     const { name } = req.body;
 
     if (!name) {
@@ -22,12 +42,12 @@ class CityController {
     }
 
     try {
-      const newCity = await CityService.createCity(name);
+      const newCity = await this.cityService.createCity(name);
       res.status(201).json(newCity);
     } catch (error) {
-        next(error);
-      }
+      next(error);
+    }
   }
 }
 
-export { CityController };
+export { CityController, ICityController };
