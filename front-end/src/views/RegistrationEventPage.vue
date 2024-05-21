@@ -217,7 +217,7 @@
           </div>
         </div>
         <div class="linkBuy">
-          <h3 class="subtitle">* Link para compra do ingresso</h3>
+          <h3 class="subtitle">Link para compra do ingresso</h3>
           <input
             :class="{
               inputTextPriceLink: true,
@@ -275,7 +275,7 @@
         />
       </div>
       <div class="instagramLink">
-        <h3 class="subtitle">* Link da imagem Instagram</h3>
+        <h3 class="subtitle">Link da imagem Instagram</h3>
         <input
           :class="{
             inputTextLinkDivulgation: true,
@@ -452,28 +452,7 @@ const showLocalSelect = ref(false);
 const loading = ref(false);
 const router = useRouter();
 
-const form = ref<IEventWithSustainabilityQuestions>({
-  name: "",
-  organizerId: userStore.id,
-  imageMobile: "",
-  imageDesktop: "",
-  initialDate: new Date(),
-  finalDate: new Date(),
-  initialPrice: 0,
-  finalPrice: 10,
-  minAge: 0,
-  locationId: 0,
-  address: "",
-  zipcode: 0,
-  maxCapacity: 0,
-  categoryIds: [],
-  cityId: 0,
-  description: "# Descrição do evento!",
-  startTime: 0,
-  endTime: 1,
-  ticketUrl: "",
-  instagramEmbed: "",
-});
+const form = ref<IEventWithSustainabilityQuestions>({});
 
 const errors = ref<Record<string, boolean>>({});
 
@@ -492,7 +471,6 @@ const requiredFields = [
   "description",
   "startTime",
   "endTime",
-  "ticketUrl",
   "categoryIds",
 ];
 
@@ -525,7 +503,11 @@ const submitForm = () => {
   loading.value = true;
 
   for (const field of requiredFields) {
-    if (!form.value[field as keyof typeof form.value]) {
+    console.log(form.value[field as keyof typeof form.value]);
+    if (
+      !form.value[field as keyof typeof form.value] &&
+      form.value[field as keyof typeof form.value] !== 0
+    ) {
       errors.value[field] = true;
     }
     if (field === "categoryIds" && form.value?.categoryIds?.length === 0) {

@@ -7,6 +7,46 @@ import { City } from "../models/city";
 import { FindOptions, Op, WhereOptions, literal } from "sequelize";
 import getDistance from "../helpers/getDistance";
 import { SustainabilityQuestion } from "../models/sustainabilityQuestion";
+import getCoordinates from "../helpers/getCoordinates";
+
+interface IEventService {
+  getEvents(
+    cityId: string | undefined,
+    cityName: string | undefined
+  ): Promise<Event[]>;
+  getAnalysisEvents(): Promise<Event[]>;
+  getEventsToApprove(
+    cityId: string | undefined,
+    cityName: string | undefined
+  ): Promise<Event[]>;
+  approveEvent(eventId: string, approvalFeedback: string): Promise<void>;
+  rejectEvent(eventId: string, approvalFeedback: string): Promise<void>;
+  getEventsByDate(
+    cityId: string | undefined,
+    cityName: string | undefined,
+    searchBar: string | undefined
+  ): Promise<Event[]>;
+  getEventById(eventId: string): Promise<Event | null>;
+  getEventsRecomendation(
+    cityId: string | undefined,
+    cityName: string | undefined,
+    userId: string
+  ): Promise<Event[]>;
+  getEventsByCategories(
+    cityId: string | undefined,
+    cityName: string | undefined,
+    userId: string,
+    searchBar: string | undefined
+  ): Promise<Event[]>;
+  getEventsByDistance(
+    cityId: string | undefined,
+    cityName: string | undefined,
+    userId: string,
+    searchBar: string | undefined
+  ): Promise<Event[]>;
+  createEvent(eventData: EventData): Promise<Event>;
+  getOrganizerEvents(userId: string, email: string): Promise<Event[]>;
+}
 
 type EventData = Event &
   Partial<Location> & {
@@ -17,11 +57,11 @@ type EventData = Event &
     questions: { question: string; answer: string }[];
   };
 
-class EventService {
-  static async getEvents(
+class EventService implements IEventService {
+  async findCity(
     cityId: string | undefined,
     cityName: string | undefined
-  ): Promise<Event[]> {
+  ): Promise<City> {
     let city;
     if (cityId) {
       city = await City.findByPk(String(cityId));
@@ -33,6 +73,71 @@ class EventService {
       throw new CustomError("Cidade não encontrada", 404);
     }
 
+    return city;
+  }
+
+  async findUser(userId: string): Promise<User> {
+    const user = await User.findByPk(userId, {
+      include: [Category],
+    });
+
+    if (!user) {
+      throw new CustomError("Usuário não encontrado", 404);
+    }
+
+    return user;
+  }
+
+  calculateCategoryPoints(user: User, event: Event) {
+    let points = 0;
+
+    user.Categories.forEach((userCategory) => {
+      if (
+        event.Categories.some(
+          (eventCategory) => eventCategory.id === userCategory.id
+        )
+      ) {
+        points += 5;
+        console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
+      }
+    });
+
+    return points;
+  }
+
+  calculateDistancePoints(user: User, event: Event) {
+    const userCoordinates = {
+      latitude: user.coordlat,
+      longitude: user.coordlon,
+    };
+
+    const eventCoordinates = {
+      latitude: event.Location.coordlat,
+      longitude: event.Location.coordlon,
+    };
+
+    const distance = getDistance(userCoordinates, eventCoordinates);
+    let points = 0;
+
+    if (distance <= 1.0) {
+      points += 12;
+      console.log("\n\nEvento a menos de 1km +12 pontos");
+    } else if (distance <= 3.0) {
+      points += 8;
+      console.log("\n\nEvento a menos de 3km +8 pontos");
+    } else if (distance <= 5.0) {
+      points += 4;
+      console.log("\n\nEvento a menos de 5km +4 pontos");
+    }
+
+    return points;
+  }
+
+  async getEvents(
+    cityId: string | undefined,
+    cityName: string | undefined
+  ): Promise<Event[]> {
+    const city = await this.findCity(cityId, cityName);
     const events = await Event.findAll({
       include: [
         { model: Category },
@@ -49,21 +154,11 @@ class EventService {
     return events;
   }
 
-  static async getEventsToApprove(
+  async getEventsToApprove(
     cityId: string | undefined,
     cityName: string | undefined
   ): Promise<Event[]> {
-    let city;
-    if (cityId) {
-      city = await City.findByPk(String(cityId));
-    } else if (cityName) {
-      city = await City.findOne({ where: { name: String(cityName) } });
-    }
-
-    if (!city) {
-      throw new CustomError("Cidade não encontrada", 404);
-    }
-
+    const city = await this.findCity(cityId, cityName);
     const events = await Event.findAll({
       include: [
         { model: Category },
@@ -80,10 +175,7 @@ class EventService {
     return events;
   }
 
-  static async approveEvent(
-    eventId: string,
-    approvalFeedback: string
-  ): Promise<void> {
+  async approveEvent(eventId: string, approvalFeedback: string): Promise<void> {
     try {
       const event = await Event.findByPk(eventId);
       if (!event) {
@@ -97,10 +189,7 @@ class EventService {
     }
   }
 
-  static async rejectEvent(
-    eventId: string,
-    approvalFeedback: string
-  ): Promise<void> {
+  async rejectEvent(eventId: string, approvalFeedback: string): Promise<void> {
     try {
       const event = await Event.findByPk(eventId);
       if (!event) {
@@ -114,22 +203,12 @@ class EventService {
     }
   }
 
-  static async getEventsByDate(
+  async getEventsByDate(
     cityId: string | undefined,
     cityName: string | undefined,
     searchBar: string | undefined
   ): Promise<Event[]> {
-    let city;
-    if (cityId) {
-      city = await City.findByPk(String(cityId));
-    } else if (cityName) {
-      city = await City.findOne({ where: { name: String(cityName) } });
-    }
-
-    if (!city) {
-      throw new CustomError("Cidade não encontrada", 404);
-    }
-
+    const city = await this.findCity(cityId, cityName);
     let eventsQuery: FindOptions = {
       include: [
         { model: Category },
@@ -160,7 +239,7 @@ class EventService {
     return events;
   }
 
-  static async getEventById(eventId: string): Promise<Event | null> {
+  async getEventById(eventId: string): Promise<Event | null> {
     try {
       const event = await Event.findByPk(eventId, {
         include: [
@@ -176,33 +255,13 @@ class EventService {
     }
   }
 
-  static async getEventsRecomendation(
+  async getEventsRecomendation(
     cityId: string | undefined,
     cityName: string | undefined,
-    userId: string | undefined
+    userId: string
   ): Promise<Event[]> {
-    let city;
-    if (cityId) {
-      city = await City.findByPk(String(cityId));
-    } else if (cityName) {
-      city = await City.findOne({ where: { name: String(cityName) } });
-    }
-    if (!city) {
-      throw new CustomError("Cidade não encontrada", 404);
-    }
-
-    const user = await User.findByPk(userId, {
-      include: [
-        {
-          model: Category,
-          as: "Categories",
-        },
-      ],
-    });
-
-    if (!user) {
-      throw new CustomError("Usuário não encontrado", 404);
-    }
+    const city = await this.findCity(cityId, cityName);
+    const user = await this.findUser(userId);
 
     const events = await Event.findAll({
       include: [
@@ -217,37 +276,10 @@ class EventService {
       where: { status: "aprovado" },
     });
 
-    const userCoordinates = {
-      latitude: user.coordlat,
-      longitude: user.coordlon,
-    };
-
     const eventsWithRecommendations = events.map(async (event) => {
-      const eventCoordinates = {
-        latitude: event.Location.coordlat,
-        longitude: event.Location.coordlon,
-      };
-      const distance = getDistance(userCoordinates, eventCoordinates);
       let recommendationPoints = 0;
-
-      if (distance <= 1.0) {
-        recommendationPoints += 12;
-      } else if (distance <= 3.0) {
-        recommendationPoints += 8;
-      } else if (distance <= 5.0) {
-        recommendationPoints += 4;
-      }
-
-      user.Categories.forEach((userCategory) => {
-        if (
-          event.Categories.some(
-            (eventCategory) => eventCategory.id === userCategory.id
-          )
-        ) {
-          recommendationPoints += 5;
-          console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
-        }
-      });
+      recommendationPoints += this.calculateDistancePoints(user, event);
+      recommendationPoints += this.calculateCategoryPoints(user, event);
 
       return {
         ...event.get({ plain: true }),
@@ -263,35 +295,15 @@ class EventService {
     return resolvedEvents;
   }
 
-  static async getEventsByCategories(
+  async getEventsByCategories(
     cityId: string | undefined,
     cityName: string | undefined,
-    userId: string | undefined,
+    userId: string,
     searchBar: string | undefined
   ): Promise<Event[]> {
-    let city;
-    if (cityId) {
-      city = await City.findByPk(String(cityId));
-    } else if (cityName) {
-      city = await City.findOne({ where: { name: String(cityName) } });
-    }
-    if (!city) {
-      throw new CustomError("Cidade não encontrada", 404);
-    }
-
-    const user = await User.findByPk(userId, {
-      include: [
-        {
-          model: Category,
-          as: "Categories",
-        },
-      ],
-    });
-
-    if (!user) {
-      throw new CustomError("Usuário não encontrado", 404);
-    }
-
+    const city = await this.findCity(cityId, cityName);
+    const user = await this.findUser(userId);
+    console.log(user);
     let eventsQuery: FindOptions = {
       include: [
         { model: Category },
@@ -314,20 +326,8 @@ class EventService {
     }
 
     const events = await Event.findAll(eventsQuery);
-
     const eventsWithRecommendations = events.map(async (event) => {
-      let recommendationPoints = 0;
-
-      user.Categories.forEach((userCategory) => {
-        if (
-          event.Categories.some(
-            (eventCategory) => eventCategory.id === userCategory.id
-          )
-        ) {
-          recommendationPoints += 5;
-          console.log(`\n\nUsuário gosta de ${userCategory.name} +5 pontos`);
-        }
-      });
+      let recommendationPoints = this.calculateCategoryPoints(user, event);
 
       return {
         ...event.get({ plain: true }),
@@ -343,34 +343,14 @@ class EventService {
     return resolvedEvents;
   }
 
-  static async getEventsByDistance(
+  async getEventsByDistance(
     cityId: string | undefined,
     cityName: string | undefined,
-    userId: string | undefined,
+    userId: string,
     searchBar: string | undefined
   ): Promise<Event[]> {
-    let city;
-    if (cityId) {
-      city = await City.findByPk(String(cityId));
-    } else if (cityName) {
-      city = await City.findOne({ where: { name: String(cityName) } });
-    }
-    if (!city) {
-      throw new CustomError("Cidade não encontrada", 404);
-    }
-
-    const user = await User.findByPk(userId, {
-      include: [
-        {
-          model: Category,
-          as: "Categories",
-        },
-      ],
-    });
-
-    if (!user) {
-      throw new CustomError("Usuário não encontrado", 404);
-    }
+    const city = await this.findCity(cityId, cityName);
+    const user = await this.findUser(userId);
 
     let eventsQuery: FindOptions = {
       include: [
@@ -419,7 +399,7 @@ class EventService {
     return resolvedEvents.map((event) => event.event);
   }
 
-  static async createEvent(eventData: EventData): Promise<Event> {
+  async createEvent(eventData: EventData): Promise<Event> {
     const {
       name,
       imageMobile,
@@ -444,10 +424,7 @@ class EventService {
       questions,
     } = eventData;
 
-    const organizer = await User.findByPk(organizerId);
-    if (!organizer) {
-      throw new CustomError("Organizador não encontrado", 404);
-    }
+    await this.findUser(organizerId.toString());
 
     const categories = await Category.findAll({ where: { id: categoryIds } });
     if (categories.length !== categoryIds.length) {
@@ -481,11 +458,15 @@ class EventService {
           throw new CustomError("Cidade não encontrada", 404);
         }
 
+        const { latitude, longitude } = await getCoordinates(zipcode.toString());
+
         location = await Location.create({
           address,
           zipcode,
           maxCapacity,
           cityId,
+          coordlat: latitude,
+          coordlon: longitude,
         });
       }
     } else {
@@ -514,24 +495,20 @@ class EventService {
     });
     await newEvent.addCategories(categories);
 
-    const sustainabilityQuestions = questions.map((question) => ({
-      ...question,
-      eventId: newEvent.id,
-    }));
+    if(questions){
+      const sustainabilityQuestions = questions.map((question) => ({
+        ...question,
+        eventId: newEvent.id,
+      }));
 
-    await SustainabilityQuestion.bulkCreate(sustainabilityQuestions);
+      await SustainabilityQuestion.bulkCreate(sustainabilityQuestions);
+    }
 
     return newEvent;
   }
 
-  static async getOrganizerEvents(
-    userId: string,
-    email: string
-  ): Promise<Event[]> {
-    const user = await User.findByPk(userId);
-    if (!user) {
-      throw new CustomError("Usuário não encontrado", 404);
-    }
+  async getOrganizerEvents(userId: string, email: string): Promise<Event[]> {
+    const user = await this.findUser(userId);
 
     if (user.email !== email) {
       throw new CustomError("Usuário não autorizado", 401);
@@ -549,13 +526,7 @@ class EventService {
     return events;
   }
 
-  static async getAnalysisEvents(email: string): Promise<Event[]> {
-    const user = await User.findOne({ where: { email } });
-
-    if (user?.administrator === false) {
-      throw new CustomError("Usuário não autorizado", 401);
-    }
-
+  async getAnalysisEvents(): Promise<Event[]> {
     const events = await Event.findAll({
       where: { status: "em análise" },
       include: [
@@ -570,4 +541,4 @@ class EventService {
   }
 }
 
-export { EventService };
+export { EventService, IEventService };
