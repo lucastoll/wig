@@ -13,7 +13,7 @@
       <div class="details">
         <img src="@/assets/Calendar.svg" alt="Calendar Icon" />
         <div class="event-date">
-          <span>{{ formatDate(events[0].finalDate.toString()) }}</span>
+          <span>{{ formatDate(events[0].initialDate.toString()) }}</span>
         </div>
         <p class="event-title">{{ events[0].name }}</p>
       </div>
