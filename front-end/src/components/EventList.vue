@@ -22,11 +22,11 @@
               class="event-date"
               :style="{
                 backgroundColor: eventDateBackgroundColor(
-                  event.finalDate.toString()
+                  event.initialDate.toString()
                 ),
               }"
             >
-              {{ formatDate(event.finalDate.toString()) }}
+              {{ formatDate(event.initialDate.toString()) }}
             </div>
             <div class="event-info">
               <div class="event-name">{{ event?.name }}</div>
