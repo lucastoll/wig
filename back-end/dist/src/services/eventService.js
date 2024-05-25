@@ -85,6 +85,16 @@ class EventService {
         }
         return points;
     }
+    calculateSustainabilityPoints(user, event) {
+        const feedbackAsNumber = Number(event.approvalFeedback);
+        if (!isNaN(feedbackAsNumber)) {
+            console.log(`${event.name} recebeu ${feedbackAsNumber} pontos de sustentabilidade`);
+            return feedbackAsNumber;
+        }
+        else {
+            return 0;
+        }
+    }
     getEvents(cityId, cityName) {
         return __awaiter(this, void 0, void 0, function* () {
             const city = yield this.findCity(cityId, cityName);
@@ -99,6 +109,22 @@ class EventService {
                     },
                 ],
                 where: { status: "aprovado" },
+            });
+            events.sort((a, b) => {
+                const aPoints = Number(a.approvalFeedback);
+                const bPoints = Number(b.approvalFeedback);
+                if (isNaN(aPoints) && isNaN(bPoints)) {
+                    return 0;
+                }
+                else if (isNaN(aPoints)) {
+                    return 1;
+                }
+                else if (isNaN(bPoints)) {
+                    return -1;
+                }
+                else {
+                    return bPoints - aPoints;
+                }
             });
             return events;
         });
@@ -217,6 +243,7 @@ class EventService {
                 let recommendationPoints = 0;
                 recommendationPoints += this.calculateDistancePoints(user, event);
                 recommendationPoints += this.calculateCategoryPoints(user, event);
+                recommendationPoints += this.calculateSustainabilityPoints(user, event);
                 return Object.assign(Object.assign({}, event.get({ plain: true })), { recommendationPoints });
             }));
             const resolvedEvents = yield Promise.all(eventsWithRecommendations);
