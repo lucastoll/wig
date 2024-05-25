@@ -133,6 +133,18 @@ class EventService implements IEventService {
     return points;
   }
 
+  calculateSustainabilityPoints(user: User, event: Event) {
+    const feedbackAsNumber = Number(event.approvalFeedback);
+    if (!isNaN(feedbackAsNumber)) {
+      console.log(
+        `${event.name} recebeu ${feedbackAsNumber} pontos de sustentabilidade`
+      );
+      return feedbackAsNumber;
+    } else {
+      return 0;
+    }
+  }
+
   async getEvents(
     cityId: string | undefined,
     cityName: string | undefined
@@ -149,6 +161,21 @@ class EventService implements IEventService {
         },
       ],
       where: { status: "aprovado" },
+    });
+
+    events.sort((a, b) => {
+      const aPoints = Number(a.approvalFeedback);
+      const bPoints = Number(b.approvalFeedback);
+
+      if (isNaN(aPoints) && isNaN(bPoints)) {
+        return 0;
+      } else if (isNaN(aPoints)) {
+        return 1;
+      } else if (isNaN(bPoints)) {
+        return -1;
+      } else {
+        return bPoints - aPoints;
+      }
     });
 
     return events;
@@ -280,6 +307,7 @@ class EventService implements IEventService {
       let recommendationPoints = 0;
       recommendationPoints += this.calculateDistancePoints(user, event);
       recommendationPoints += this.calculateCategoryPoints(user, event);
+      recommendationPoints += this.calculateSustainabilityPoints(user, event);
 
       return {
         ...event.get({ plain: true }),
@@ -458,7 +486,9 @@ class EventService implements IEventService {
           throw new CustomError("Cidade não encontrada", 404);
         }
 
-        const { latitude, longitude } = await getCoordinates(zipcode.toString());
+        const { latitude, longitude } = await getCoordinates(
+          zipcode.toString()
+        );
 
         location = await Location.create({
           address,
@@ -495,7 +525,7 @@ class EventService implements IEventService {
     });
     await newEvent.addCategories(categories);
 
-    if(questions){
+    if (questions) {
       const sustainabilityQuestions = questions.map((question) => ({
         ...question,
         eventId: newEvent.id,
