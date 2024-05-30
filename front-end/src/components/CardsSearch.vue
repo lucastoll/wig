@@ -20,9 +20,9 @@
                 active: showStatus,
                 desktop: true,
               }"
-            :style="{
-              backgroundColor: statusBackgroundColor(event.status ? event.status : ''),
-            }"
+              :style="{
+                backgroundColor: statusBackgroundColor(event.status ? event.status : ''),
+              }"
             >
               {{ event.status ? event.status.charAt(0).toUpperCase() + event.status.slice(1) : "" }}
             </div>
@@ -72,7 +72,7 @@
           </div>
         </div>
       </div>
-      <div v-else-if="loading === false" class="no-results">
+      <div v-else class="no-results">
         <img
           src="@/assets/NothingFound.png"
           alt="No results found"
@@ -87,67 +87,33 @@
 </template>
 
 <script lang="ts">
-import axios from "axios";
+import { defineComponent } from "vue";
 import { userStore } from "@/store";
 import goToEvent from "@/helpers/goToEvent";
 
-export default {
+export default defineComponent({
   props: {
-    endpoint: {
-      type: String,
+    events: {
+      type: Array,
       required: true,
     },
     title: {
       type: String,
       required: true,
     },
-    authRoute: {
-      type: Boolean,
-      required: true,
-    },
     showStatus: {
       type: Boolean,
       required: false,
+      default: false,
     },
-  },
-  data() {
-    return {
-      loading: false,
-      user: userStore,
-      events: [],
-    };
-  },
-  mounted() {
-    this.fetchEvents();
-  },
-  watch: {
-    endpoint: {
-      handler: "fetchEvents",
-      immediate: true,
+    user: {
+      type: Object,
+      required: false,
+      default: () => ({}),
     },
   },
   methods: {
     goToEvent,
-    async fetchEvents() {
-      try {
-        this.loading = true;
-        let response;
-
-        if (!this.authRoute) {
-          response = await axios.get(this.endpoint);
-        } else {
-          response = await axios.post(this.endpoint, {
-            googleToken: userStore.googleToken,
-            email: userStore.email,
-          });
-        }
-        this.events = response.data;
-      } catch (error) {
-        console.error("Erro ao buscar eventos:", error);
-      } finally {
-        this.loading = false;
-      }
-    },
     formatDate(dateString) {
       const eventDate = new Date(dateString);
       const today = new Date();
@@ -178,8 +144,11 @@ export default {
       }
     },
     isUserCategory(category) {
-      const userCategories = this.user.Categories.map((cat) => cat.name);
-      return userCategories.includes(category.name);
+      if (this.user && this.user.Categories) {
+        const userCategories = this.user.Categories.map((cat) => cat.name);
+        return userCategories.includes(category.name);
+      }
+      return false;
     },
     statusBackgroundColor(status) {
       switch (status) {
@@ -194,7 +163,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style scoped>
