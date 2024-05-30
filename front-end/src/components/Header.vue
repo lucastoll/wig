@@ -51,37 +51,17 @@ onMounted(async () => {
         <RouterLink class="header__logoLinks__logo" to="/">
           <img alt="Logo site" src="@/assets/WIG.svg" width="30" height="30" />
         </RouterLink>
-        <RouterLink class="header__logoLinks__link" to="/events"
-          >Eventos</RouterLink
-        >
-        <RouterLink class="header__logoLinks__link" to="/locations"
-          >Locais</RouterLink
-        >
+        <RouterLink class="header__logoLinks__link" to="/events">Eventos</RouterLink>
+        <RouterLink class="header__logoLinks__link" to="/locations">Locais</RouterLink>
         <div></div>
       </div>
       <div class="header__menu" @click="openPopupCity">
-        <img
-          alt="Logo site"
-          class="header__menu-icon"
-          src="@/assets/Locais.svg"
-          width="20"
-          height="20"
-        />
+        <img alt="Logo site" class="header__menu-icon" src="@/assets/Locais.svg" width="20" height="20" />
         <span class="header__menu-city">{{ cityStore.name }}</span>
-        <PopupCity
-          v-if="showPopupCity && !citiesLoading"
-          :cities="cities"
-          :closePopup="closePopupCity"
-        />
+        <PopupCity v-if="showPopupCity && !citiesLoading" :cities="cities" :closePopup="closePopupCity" />
       </div>
       <div class="header__menu" @click="openPopupLogin">
-        <img
-          alt="Usuário"
-          class="header__menu-icon"
-          src="@/assets/Direita.svg"
-          width="40"
-          height="40"
-        />
+        <img alt="Usuário" class="header__menu-icon" src="@/assets/Direita.svg" width="40" height="40" />
         <PopupLogin v-if="showPopupLogin" :closePopup="closePopupLogin" />
       </div>
     </div>

@@ -82,6 +82,7 @@ onBeforeUnmount(() => {
   height: auto;
   object-fit: cover;
   z-index: 1;
+  max-height: 532px;
 }
 
 .details {

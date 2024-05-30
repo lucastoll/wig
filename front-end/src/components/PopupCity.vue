@@ -28,6 +28,7 @@ function changeCity() {
     if (selectedCity) {
       cityStore.id = selectedCity.id;
       cityStore.name = selectedCity.name;
+      document.title = `Where i Go | ${selectedCity.name}`;
     }
 
     localStorage.setItem("city", JSON.stringify(selectedCity));

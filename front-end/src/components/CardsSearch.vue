@@ -241,7 +241,7 @@ export default {
 .event-image {
   width: 100%;
   height: auto;
-  max-height: 300px;
+  max-height: 200px;
   object-fit: cover;
   margin-bottom: -7px;
 }
@@ -379,6 +379,7 @@ export default {
     background-color: white;
     margin-left: 40px;
     margin-right: 40px;
+    min-height: 293px;
     border: none;
     margin: 6px;
   }
@@ -396,8 +397,8 @@ export default {
 
   .event-image {
     min-width: 335px;
+    height: 100%;
     width: 335px;
-    height: auto;
     max-height: 280px;
     object-fit: cover;
     border-radius: 8px 8px 8px 8px;

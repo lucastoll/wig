@@ -14,6 +14,7 @@ import Menor16 from "@/assets/sixteen.png";
 import Menor14 from "@/assets/fourteen.png";
 import Menor12 from "@/assets/twelve.png";
 import Menor10 from "@/assets/ten.png";
+import type ICategory from "@/types/ICategory";
 
 const event = ref<IEvent>(eventStore);
 const route = useRoute();
@@ -28,24 +29,14 @@ const dateStr = ref(event.value.initialDate);
 const dayOfWeek = computed(() => {
   const date = new Date(dateStr.value);
   const dayIndex = date.getDay();
-  const days = [
-    "Domingo",
-    "Segunda-feira",
-    "Terça-feira",
-    "Quarta-feira",
-    "Quinta-feira",
-    "Sexta-feira",
-    "Sábado",
-  ];
+  const days = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
   return days[dayIndex];
 });
 
 const mapUrl = computed(() => {
   if (!event.value.Location) return;
 
-  const locationName = event.value.Location.name
-    ? `${event.value.Location.name}, `
-    : "";
+  const locationName = event.value.Location.name ? `${event.value.Location.name}, ` : "";
   const address = `${locationName}${event.value.Location.address}`;
   const encodedAddress = encodeURIComponent(address);
 
@@ -94,15 +85,10 @@ const ageIcon = computed(() => {
 watch([userStore, event], () => {
   if (userStore.administrator && event.value.id) {
     axios
-      .post(
-        `${import.meta.env.VITE_API_URL}/event/${
-          event.value.id
-        }/sustainabilityQuestions`,
-        {
-          googleToken: userStore.googleToken,
-          email: userStore.email,
-        }
-      )
+      .post(`${import.meta.env.VITE_API_URL}/event/${event.value.id}/sustainabilityQuestions`, {
+        googleToken: userStore.googleToken,
+        email: userStore.email,
+      })
       .then((response) => {
         questions.value = response.data;
         console.log(questions.value);
@@ -113,12 +99,15 @@ watch([userStore, event], () => {
   }
 });
 
+function isUserCategory(category: ICategory): boolean {
+  console.log(category.id)
+  return userStore.Categories?.some((eventCategory) => eventCategory.id === category.id) ?? false;
+}
+
 onMounted(async () => {
   if (!event.value.id) {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/event/getId/${route.params.id}`
-      );
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/event/getId/${route.params.id}`);
       if (response.status === 200) {
         event.value = response.data;
       } else {
@@ -130,15 +119,10 @@ onMounted(async () => {
   }
   if (userStore.administrator) {
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/event/${
-          event.value.id
-        }/sustainabilityQuestions`,
-        {
-          googleToken: userStore.googleToken,
-          email: userStore.email,
-        }
-      );
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/event/${event.value.id}/sustainabilityQuestions`, {
+        googleToken: userStore.googleToken,
+        email: userStore.email,
+      });
       if (response.status === 200) {
         questions.value = response.data;
       } else {
@@ -161,49 +145,32 @@ onMounted(async () => {
       <div class="sectiontitle">
         <div class="title">
           <h1 class="nameEvent">{{ event.name }}</h1>
-          <div class="row">
-            <span>Categorias:</span>
-            <div v-for="(item, index) in event.Categories" :key="index">
-              <span v-if="index === (event?.Categories?.length ?? 0) - 1">
-                {{ item.name }}</span
-              >
-              <span v-else>{{ item.name }}</span>
+          <div class="category-wrapper">
+            <div
+              v-for="(category, catIndex) in event.Categories"
+              :key="catIndex"
+              :class="{
+                'event-category': true,
+                'user-category': isUserCategory(category),
+              }"
+            >
+              {{ category.name }}
             </div>
           </div>
         </div>
       </div>
       <div class="location">
-        <img
-          alt="Logo site"
-          src="@/assets/Location.svg"
-          width="20"
-          height="25"
-        />
-        <span v-if="event.Location?.name"
-          >{{ event.Location?.name }} - {{ event.Location.address }}</span
-        >
+        <img alt="Logo site" src="@/assets/Location.svg" width="20" height="25" />
+        <span v-if="event.Location?.name">{{ event.Location?.name }} - {{ event.Location.address }}</span>
         <span v-else>{{ event.Location?.address }}</span>
       </div>
       <div class="maps__infos">
         <div class="maps">
-          <iframe
-            :src="mapUrl"
-            width="100%"
-            height="300px"
-            frameborder="0"
-            style="border: 0"
-            allowfullscreen="true"
-            aria-hidden="false"
-            tabindex="0"
-          ></iframe>
+          <iframe :src="mapUrl" width="100%" height="300px" frameborder="0" style="border: 0" allowfullscreen="true" aria-hidden="false" tabindex="0"></iframe>
         </div>
         <div class="admin" v-if="userStore.administrator">
           <h2 style="color: black">Pontos de sustentabilidade</h2>
-          <div
-            class="questionsadmin"
-            v-for="(item, index) in questions"
-            :key="index"
-          >
+          <div class="questionsadmin" v-for="(item, index) in questions" :key="index">
             <div class="question">
               {{ item.question }}
             </div>
@@ -215,13 +182,7 @@ onMounted(async () => {
             <div class="question">Email: {{ event?.organizer?.email }}</div>
           </div>
         </div>
-        <div
-          class="admin"
-          v-if="
-            userStore.email === event.organizer?.email &&
-            event.status === 'recusado'
-          "
-        >
+        <div class="admin" v-if="userStore.email === event.organizer?.email && event.status === 'recusado'">
           <h2 style="color: black">Motivo da recusa</h2>
           <div class="questionsadmin">
             <div class="question">R: {{ event?.approvalFeedback }}</div>
@@ -230,22 +191,12 @@ onMounted(async () => {
         <div class="infosWrapper">
           <div class="ticket">
             <img alt="" src="@/assets/ticket.svg" width="32" height="32" />
-            <span v-if="event.finalPrice > 0"
-              >R${{ event.initialPrice }},00 a R${{ event.finalPrice }},00</span
-            >
+            <span v-if="event.finalPrice > 0">R${{ event.initialPrice }},00 a R${{ event.finalPrice }},00</span>
             <span v-else>Gratuito</span>
           </div>
           <div class="location">
-            <img
-              alt=""
-              src="@/assets/Iconecalendario.svg"
-              width="26"
-              height="26"
-            />
-            <span
-              >{{ dayOfWeek }} {{ formatDate(event.initialDate.toString()) }},
-              {{ event.startTime }}h às {{ event.endTime }}h</span
-            >
+            <img alt="" src="@/assets/Iconecalendario.svg" width="26" height="26" />
+            <span>{{ dayOfWeek }} {{ formatDate(event.initialDate.toString()) }}, {{ event.startTime }}h às {{ event.endTime }}h</span>
           </div>
           <div class="location">
             <img alt="" :src="ageIcon" width="25" height="25" />
@@ -259,30 +210,36 @@ onMounted(async () => {
       <div class="instagram">
         <h2>Confira mais fotos no instagram</h2>
         <div class="instagram_embed">
-          <iframe
-            :src="'https://www.instagram.com/p/' + instagramId + '/embed'"
-            width="100%"
-            height="100%"
-            frameborder="0"
-            scrolling="yes"
-            allowtransparency="true"
-          ></iframe>
+          <iframe :src="'https://www.instagram.com/p/' + instagramId + '/embed'" width="100%" height="100%" frameborder="0" scrolling="yes" allowtransparency="true"></iframe>
         </div>
       </div>
       <div class="footer">
         <span class="foot">WIG 2024 © - Todos os direitos reservados</span>
       </div>
     </div>
-    <div
-      v-if="userStore.administrator && event.status === 'em análise'"
-      class="analise"
-    >
+    <div v-if="userStore.administrator && event.status === 'em análise'" class="analise">
       <Approval />
     </div>
   </div>
 </template>
 
 <style scoped>
+.category-wrapper {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0;
+}
+.event-category {
+  font-size: 12px;
+  color: black;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: solid black 1.5px;
+}
+.user-category {
+  border-color: #1597b1;
+  color: #1597b1
+}
 .analise {
   display: flex;
   flex-direction: column;
@@ -395,8 +352,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   margin-top: 8px;
-  font-size: 20px;
-  height: 80px;
+  font-size: 24px;
   max-width: 100%;
   text-align: center;
   justify-content: center;
@@ -412,8 +368,9 @@ onMounted(async () => {
   color: black;
   font-weight: 700;
   width: 100%;
-  font-size: 20px;
+  font-size: 24px;
   line-height: 28px;
+  margin-top: 16px;
 }
 .sectiontitle {
   display: flex;
@@ -428,6 +385,8 @@ onMounted(async () => {
 }
 .imgEventDesktop {
   display: none;
+  max-height: 530px;
+  object-fit: cover;
 }
 .instagram {
   display: flex;
