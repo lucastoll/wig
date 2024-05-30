@@ -91,7 +91,6 @@ watch([userStore, event], () => {
       })
       .then((response) => {
         questions.value = response.data;
-        console.log(questions.value);
       })
       .catch((error) => {
         router.push({ name: "NotFound" });
@@ -100,7 +99,6 @@ watch([userStore, event], () => {
 });
 
 function isUserCategory(category: ICategory): boolean {
-  console.log(category.id)
   return userStore.Categories?.some((eventCategory) => eventCategory.id === category.id) ?? false;
 }
 
@@ -228,6 +226,9 @@ onMounted(async () => {
   display: flex;
   gap: 8px;
   margin: 16px 0;
+  max-width: 300px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 .event-category {
   font-size: 12px;
@@ -238,7 +239,7 @@ onMounted(async () => {
 }
 .user-category {
   border-color: #1597b1;
-  color: #1597b1
+  color: #1597b1;
 }
 .analise {
   display: flex;
@@ -409,6 +410,9 @@ onMounted(async () => {
 }
 
 @media screen and (min-width: 1024px) {
+  .category-wrapper{
+    max-width: none;
+  }
   .imgEventMobile {
     display: none;
   }
