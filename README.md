@@ -5,8 +5,6 @@ Plataforma web para divulgação e amostra de eventos nas cidades, bem como amos
 # Video Pitch 
 <a href="https://www.youtube.com/watch?v=7sQLDTHgErk">![image](https://github.com/user-attachments/assets/00e70e44-b54a-4e95-890d-97a6d4f9e0f8)</a>
 
-
-
 # Como rodar a aplicação ⚙
 
 Para rodar a aplicação é necessário rodar tanto o back-end como front-end simultaneamente, abra dois terminais separados e siga os seguintes passos
